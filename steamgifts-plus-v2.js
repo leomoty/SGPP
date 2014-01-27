@@ -79,7 +79,7 @@ var SGPlusV2 = {
             'overflow': 'hidden'
         });
         $('.comment__description').each(function () {
-            if ($(this).find('form').length > 0) return;
+            if ($(this).find('form').length > 0) return true;
             if ($(this).innerHeight() > 100) {
                 $(this).next().prepend("<div class='comment__actions__button comment_more'>More</div>");
             }
