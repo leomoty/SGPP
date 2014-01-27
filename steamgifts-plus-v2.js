@@ -62,9 +62,8 @@
             $('header').css('top', '0');
             $('header').css('width', '100%');
             $('header').css('z-index', '1');
-            $('.nav__left-container').css('margin-left', '25px');
-            $('.nav__right-container').css('margin-right', '25px');
-
+            //$('.nav__left-container').css('margin-left', '25px');
+            //$('.nav__right-container').css('margin-right', '25px');
         }
 
         return {
