@@ -74,7 +74,15 @@ var SGPlusV2 = {
         }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
     },
     generateShortenedComments: function () {
-
+        $('.comment__description').css({
+            'max-height': '100px',
+            'overflow': 'hidden'
+        });
+        $('.comment__description').each(function () {
+            if ($(this).innerHeight() > 100) {
+                $(this).next().prepend("<div>More</div>");
+            }
+        });
     }
 };
 
@@ -84,4 +92,5 @@ var SGPlusV2 = {
         SGPlusV2.generateGridview();
     SGPlusV2.generateScrollingSidebar();
     SGPlusV2.generateFixedNavbar();
+    SGPlusV2.generateShortenedComments();
 })(jQuery);
