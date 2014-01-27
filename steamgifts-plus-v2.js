@@ -78,7 +78,7 @@ var SGPlusV2 = {
             'max-height': '100px',
             'overflow': 'hidden'
         });
-        $('.comment__description .markdown').each(function () {
+        $('.comment__description.markdown').each(function () {
             if ($(this).find('form').length == 0){
                 if ($(this).innerHeight() > 100) {
                     $(this).next().prepend("<div class='comment__actions__button comment_more'>More</div>");
