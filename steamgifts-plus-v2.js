@@ -13,7 +13,7 @@ var SGPlusV2 = {
             justifyContent: 'center'
         });
 
-        var parent = $('.page__heading')[0].next();
+        var parent = $('.page__heading').next()[0];
 
         $('.giveaway-summary__thumbnail-outer-wrap').css('margin', '5px');
 
