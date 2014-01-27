@@ -102,7 +102,7 @@ var SGPlusV2 = {
                 });
                 $(this).text("More");
                 $(".sidebar").stop().animate({
-                    marginTop: $(this).top()
+                    marginTop: $(this).offset().top
                 });
             }
         });
