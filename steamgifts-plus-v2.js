@@ -31,7 +31,7 @@
                 var whitelist = $(this).find('.giveaway-summary__column--whitelist');
                 var group = $(this).find('.giveaway-summary__column--group');
 
-                $(eachDiv).append(alternative($(this).find('.giveaway-summary__thumbnail-outer-wrap'), group.length, whitelist.length));
+                $(eachDiv).append(giveawayColorByType($(this).find('.giveaway-summary__thumbnail-outer-wrap'), group.length, whitelist.length));
                 $(container).append(eachDiv);
             });
             $(parent).empty();
