@@ -75,14 +75,13 @@ var SGPlusV2 = {
         
     },
     generateShortenedComments: function () {
-        $('.comment__description.markdown').css({
-            'max-height': '100px',
-            'overflow': 'hidden'
-        });
         $('.comment__description.markdown').each(function () {
             if ($(this).find('form').length == 0){
                 if ($(this).innerHeight() > 100) {
-                    $(this).next().prepend("<div class='comment__actions__button comment_more'>More</div>");
+                    $(this).css({
+                        'max-height': '100px',
+                        'overflow': 'hidden'
+                    }).next().prepend("<div class='comment__actions__button comment_more'>More</div>");
                 }
             }
         });
