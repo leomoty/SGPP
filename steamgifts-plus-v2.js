@@ -66,12 +66,13 @@ var SGPlusV2 = {
         $('#navbar_fixed').html(nav);
 
         $('nav .nav__button--is-dropdown-arrow').click(function () {
-            var active = $(this).hasClass('is-selected');
-            $('nav .nav__button').removeClass('is-selected');
-            $('nav .nav__relative-dropdown').hide();
-            if (!active) $(this).addClass('is-selected').siblings('.nav__relative-dropdown').show();
-            return false;
-        }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
+	    var active = $(this).hasClass('is-selected');
+	    $('nav .nav__button').removeClass('is-selected');
+	    $('nav .nav__relative-dropdown').addClass('is-hidden');
+	    if (!active) $(this).addClass('is-selected').siblings('.nav__relative-dropdown').removeClass('is-hidden');
+	    return false;
+	}).attr('unselectable', 'on').bind('selectstart', function () { return false; });
+        
     },
     generateShortenedComments: function () {
         $('.comment__description').css({
