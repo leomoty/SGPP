@@ -1,6 +1,6 @@
 (function ($) {
 
-    var SGPlusV2 = function () {
+    var SGPlusV2 = (function () {
         giveawayColorByType = function (el, hasGroup, hasWhitelist) {
             if (hasGroup && hasWhitelist) {
                 el.css('background-color', '#F06969');
@@ -63,7 +63,13 @@
             $('header').css('width', '100%');
             $('header').css('z-index', '1');
         }
-    };
+
+        return {
+            generateGridview: generateGridview,
+            generateScrollingSidebar: generateScrollingSidebar,
+            generateFixedNavbar: generateFixedNavbar
+        };
+    })();
 
     $(document).ready(function () {
         if (window.location.pathname.indexOf('/giveaways/open') > -1)
