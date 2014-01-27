@@ -89,7 +89,7 @@ var SGPlusV2 = {
             if (comment_div.css('overflow') == 'hidden') {
                 comment_div.css({
                     'overflow': 'visible',
-                    'max-height': 'auto'
+                    'max-height': 'none'
                 });
                 $(this).text("More");
             } else {
