@@ -98,5 +98,4 @@ SGPlusV2 = (function(){
             scrollingSidebar();
             fixedNavbar();
         });
-    }
 }();
