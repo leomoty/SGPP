@@ -82,15 +82,15 @@ var SGPlusV2 = {
             if ($(this).innerHeight() > 100) {
                 $(this).next().prepend("<div class='comment__actions__button comment_more'>More</div>");
             }
+        });
 
-            $(".comment_more").click(function () {
-                var comment_div = $(this).parent().prev();
-                if (comment_div.css('overflow') == 'hidden') {
-                    comment_div.css('overflow', 'visible');
-                } else {
-                    comment_div.css('overflow', 'hidden');
-                }
-            });
+        $(".comment_more").click(function () {
+            var comment_div = $(this).parent().prev();
+            if (comment_div.css('overflow') == 'hidden') {
+                comment_div.css('overflow', 'visible');
+            } else {
+                comment_div.css('overflow', 'hidden');
+            }
         });
     }
 };
