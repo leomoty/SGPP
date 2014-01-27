@@ -87,9 +87,17 @@ var SGPlusV2 = {
         $(".comment_more").click(function () {
             var comment_div = $(this).parent().prev();
             if (comment_div.css('overflow') == 'hidden') {
-                comment_div.css('overflow', 'visible');
+                comment_div.css({
+                    'overflow': 'visible',
+                    'max-height': 'auto'
+                });
+                $(this).text("More");
             } else {
-                comment_div.css('overflow', 'hidden');
+                comment_div.css({
+                    'overflow': 'hidden',
+                    'max-height': '100px'
+                });
+                $(this).text("Less");
             }
         });
     }
