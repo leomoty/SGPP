@@ -75,7 +75,7 @@ var SGPlusV2 = {
         
     },
     generateShortenedComments: function () {
-        $('.comment__description').css({
+        $('.comment__description.markdown').css({
             'max-height': '100px',
             'overflow': 'hidden'
         });
