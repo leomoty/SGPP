@@ -69,15 +69,10 @@
             $('#navbar_fixed').html(nav);
 
             $('nav .nav__button--is-dropdown-arrow').click(function () {
+                var active = $(this).hasClass('is-selected');
                 $('nav .nav__button').removeClass('is-selected');
                 $('nav .nav__relative-dropdown').hide();
-                $(this).addClass('is-selected');
-                $(this).siblings('.nav__relative-dropdown').show();
-                return false;
-            });
-            $('.page__heading__toggle-dropdown').click(function () {
-                $(this).addClass('is-selected');
-                $(this).find('.page__heading__relative-dropdown').removeClass('is-hidden');
+                if (!active) $(this).addClass('is-selected').siblings('.nav__relative-dropdown').show();
                 return false;
             });
 
