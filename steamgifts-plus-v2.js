@@ -101,7 +101,7 @@ var SGPlusV2 = {
                     'max-height': '100px'
                 });
                 $(this).text("More");
-                $(window).scrollTop($(this).offset().top);
+                $(window).scrollTop($(comment_div).offset().top);
             }
         });
     }
