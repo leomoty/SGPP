@@ -1,4 +1,4 @@
-SGPlusV2 = (function () {
+(function ($) {
 
     function summary_button(el) {
         el.css('z-index', '1');
@@ -98,4 +98,4 @@ SGPlusV2 = (function () {
         scrollingSidebar();
         fixedNavbar();
     });
-}());
+})(jQuery);
