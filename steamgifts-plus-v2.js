@@ -91,13 +91,13 @@ var SGPlusV2 = {
                     'overflow': 'visible',
                     'max-height': 'none'
                 });
-                $(this).text("More");
+                $(this).text("Less");
             } else {
                 comment_div.css({
                     'overflow': 'hidden',
                     'max-height': '100px'
                 });
-                $(this).text("Less");
+                $(this).text("More");
             }
         });
     }
