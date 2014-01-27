@@ -66,22 +66,23 @@ var SGPlusV2 = {
         $('#navbar_fixed').html(nav);
 
         $('nav .nav__button--is-dropdown-arrow').click(function () {
-	    var active = $(this).hasClass('is-selected');
-	    $('nav .nav__button').removeClass('is-selected');
-	    $('nav .nav__relative-dropdown').addClass('is-hidden');
-	    if (!active) $(this).addClass('is-selected').siblings('.nav__relative-dropdown').removeClass('is-hidden');
-	    return false;
-	}).attr('unselectable', 'on').bind('selectstart', function () { return false; });
-        
+            var active = $(this).hasClass('is-selected');
+            $('nav .nav__button').removeClass('is-selected');
+            $('nav .nav__relative-dropdown').addClass('is-hidden');
+            if (!active) $(this).addClass('is-selected').siblings('.nav__relative-dropdown').removeClass('is-hidden');
+            return false;
+        }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
+
     },
     generateShortenedComments: function () {
         $('.comment__description.markdown').each(function () {
-            if ($(this).find('form').length == 0){
+            if ($(this).find('form').length == 0) {
                 if ($(this).innerHeight() > 100) {
                     $(this).css({
                         'max-height': '100px',
                         'overflow': 'hidden'
-                    }).next().prepend("<div class='comment__actions__button comment_more'>More</div>");
+                    })
+                    .next().prepend("<div class='comment__actions__button comment_more'>More</div>");
                 }
             }
         });
