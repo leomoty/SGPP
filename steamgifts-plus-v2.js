@@ -101,9 +101,7 @@ var SGPlusV2 = {
                     'max-height': '100px'
                 });
                 $(this).text("More");
-                $(".sidebar").stop().animate({
-                    marginTop: $(this).offset().top
-                });
+                $(window).scrollTop();
             }
         });
     }
