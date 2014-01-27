@@ -56,7 +56,7 @@
             });
         },
         generateFixedNavbar = function () {
-            //$('header').css('margin-left', '-25px');
+            $('header').css('margin-left', '-25px');
             $('body').css('margin-top', '39px');
             $('header').css('position', 'fixed');
             $('header').css('top', '0');
