@@ -14,7 +14,4 @@ if (window.top == window) {
     SGPscript.type = 'text/javascript';
     SGPscript.src = 'https://raw2.github.com/leomoty/SGV2-/master/steamgifts-plus-v2.js?v=' + new Date().getTime();
     document.body.appendChild(SGPscript);
-    
-    var SGPstyle = document.head.appendChild(document.createElement('style'));
-    SGPstyle.innerHTML = '@import url("https://raw2.github.com/leomoty/SGV2-/master/steamgifts-plus-v2.css?v=' + new Date().getTime() + '")';
 }
