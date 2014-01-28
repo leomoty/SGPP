@@ -86,10 +86,10 @@ var SGPlusV2 = {
         $('.comment__description.markdown').each(function () {
             if ($(this).find('form').length == 0) {
                 if ($(this).innerHeight() > 120) {
+                    $(this).parent().addClass('short');
                     var sub = ($(this).closest('.comment__children').length > 0) ? ' sub' : '';
-                    $(this).addClass('short')
-                    .children('.markdown').append("<div class='less__beautify" + sub + "'></div>");
-                    $(this).children('.comment__actions').prepend("<div class='comment__actions__button comment_more'>More</div><div class='comment__actions__button comment_less'>Less</div>");
+                    $(this).append("<div class='less__beautify" + sub + "'></div>");
+                    $(this).next().prepend("<div class='comment__actions__button comment_more'>More</div><div class='comment__actions__button comment_less'>Less</div>");
                 }
             }
         });
