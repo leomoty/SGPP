@@ -1,93 +1,154 @@
-(function ($) {
+var SGPlusV2 = {
+    giveawayColorByType: function (el, hasGroup, hasWhitelist) {
+        if (hasGroup && hasWhitelist) el.css('background-color', '#F06969');
+        else if (hasGroup) el.css('background-color', 'rgba(63,115,0,0.95)');
+        else if (hasWhitelist) el.css('background-color', '#556da9');
+        return el;
+    },
+    generateGridview: function () {
+        var container = document.createElement('div');
+        $(container).css({
+            display: 'inline-flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+        });
 
-    var SGPlusV2 = (function () {
-        giveawayColorByType = function (el, hasGroup, hasWhitelist) {
-            if (hasGroup && hasWhitelist) {
-                el.css('background-color', '#F06969');
-            } else if (hasGroup) {
-                el.css('background-color', 'rgba(63,115,0,0.95)');
-            } else if (hasWhitelist) {
-                el.css('background-color', '#556da9');
+        var parent = $('.page__heading').next()[0];
+
+        $('.giveaway-summary__thumbnail-outer-wrap').css('margin', '5px');
+
+        $('.giveaway-summary').each(function () {
+
+            if ($(this).parents('.giveaway-container--featured').length != 0) return;
+
+            var eachDiv = document.createElement('div');
+
+            var whitelist = $(this).find('.giveaway-summary__column--whitelist');
+            var group = $(this).find('.giveaway-summary__column--group');
+
+            $(eachDiv).append(SGPlusV2.giveawayColorByType($(this).find('.giveaway-summary__thumbnail-outer-wrap'), group.length, whitelist.length));
+            $(container).append(eachDiv);
+        });
+
+        $(parent).empty().append(container);
+    },
+    generateScrollingSidebar: function () {
+        var $sidebar = $(".sidebar"),
+		$window = $(window),
+		offset = $sidebar.offset(),
+		topPadding = 64;
+
+        $window.scroll(function () {
+            if ($window.scrollTop() > offset.top) {
+                $sidebar.stop().animate({
+                    marginTop: $window.scrollTop() - offset.top + topPadding
+                });
+            } else {
+                $sidebar.stop().animate({
+                    marginTop: 0
+                });
             }
-            return el;
-        },
-        generateGridview = function () {
-            var container = document.createElement('div');
-            $(container).css('display', 'inline-flex');
-            $(container).css('flex-wrap', 'wrap');
-            $(container).css('justify-content', 'center');
+        });
+    },
+    generateFixedNavbar: function () {
+        $('body').css('margin-top', '39px');
+        $('header').css({
+            marginLeft: '-25px',
+            position: 'fixed',
+            top: 0,
+            width: '100%',
+            zIndex: 1
+        });
 
-            var parent = $('.page__heading').next()[0];
+        var nav = $('header').html();
+        $('nav').remove();
+        $('header').html('<div id="navbar_fixed" style="padding:0 25px;"></div>');
+        $('#navbar_fixed').html(nav);
 
-            $('.giveaway-summary__thumbnail-outer-wrap').css('margin', '5px');
+        $('nav .nav__button--is-dropdown-arrow').click(function () {
+            var active = $(this).hasClass('is-selected');
+            $('nav .nav__button').removeClass('is-selected');
+            $('nav .nav__relative-dropdown').addClass('is-hidden');
+            if (!active) $(this).addClass('is-selected').siblings('.nav__relative-dropdown').removeClass('is-hidden');
+            return false;
+        }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
 
-            $('.giveaway-summary').each(function () {
-
-                if ($(this).parents('.giveaway-container--featured').length != 0)
-                    return;
-
-                var eachDiv = document.createElement('div');
-
-                var whitelist = $(this).find('.giveaway-summary__column--whitelist');
-                var group = $(this).find('.giveaway-summary__column--group');
-
-                $(eachDiv).append(giveawayColorByType($(this).find('.giveaway-summary__thumbnail-outer-wrap'), group.length, whitelist.length));
-                $(container).append(eachDiv);
-            });
-            $(parent).empty();
-            $(parent).append(container);
-        },
-        generateScrollingSidebar = function () {
-            var $sidebar = $(".sidebar"),
-            $window = $(window),
-            offset = $sidebar.offset(),
-            topPadding = 64;
-
-            $window.scroll(function () {
-                if ($window.scrollTop() > offset.top) {
-                    $sidebar.stop().animate({
-                        marginTop: $window.scrollTop() - offset.top + topPadding
-                    });
-                } else {
-                    $sidebar.stop().animate({
-                        marginTop: 0
-                    });
+    },
+    generateShortenedText: function () {
+        SGPlusV2.generateShortenedComments();
+        SGPlusV2.generateShortenedDescriptions();
+    },
+    generateShortenedComments: function () {
+        $('.comment__description.markdown').each(function () {
+            if ($(this).find('form').length == 0) {
+                if ($(this).innerHeight() > 100) {
+                    $(this).css({
+                        'max-height': '100px',
+                        'overflow': 'hidden'
+                    })
+                    .next().prepend("<div class='comment__actions__button comment_more'>More</div>");
                 }
-            });
-        },
-        generateFixedNavbar = function () {
-            $('header').css('margin-left', '-25px');
-            $('body').css('margin-top', '39px');
-            $('header').css('position', 'fixed');
-            $('header').css('top', '0');
-            $('header').css('width', '100%');
-            $('header').css('z-index', '1');
+            }
+        });
 
-            var nav = $('header').html();
-            $('nav').remove();
-            $('header').html('<div id="myowncontainer" style="padding:0 25px;"></div>');
-            $('#myowncontainer').html(nav);
+        $(".comment_more").click(function () {
+            var comment_div = $(this).parent().prev();
+            if (comment_div.css('overflow') == 'hidden') {
+                comment_div.css({
+                    'overflow': 'visible',
+                    'max-height': 'none'
+                });
+                $(this).text("Less");
+            } else {
+                comment_div.css({
+                    'overflow': 'hidden',
+                    'max-height': '100px'
+                });
+                $(this).text("More");
+                if ($(comment_div).offset().top < $(window).scrollTop())
+                    $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
+            }
+        });
+    },
+    generateShortenedDescriptions: function () {
+        $('.giveaway-description__display-state .ajax .markdown').each(function () {
+            if ($(this).find('form').length == 0) {
+                if ($(this).innerHeight() > 100) {
+                    $(this).css({
+                        'max-height': '500px',
+                        'overflow': 'hidden'
+                    })
+                    .after("<div style='font-size:11px;color:#aaa;display:inline-block;margin-right:10px;' class='comment__actions__button description_more'>More</div>");
+                }
+            }
+        });
 
-            $('nav .nav__button--is-dropdown-arrow').click(function () {
-                var active = $(this).hasClass('is-selected');
-                $('nav .nav__button').removeClass('is-selected');
-                $('nav .nav__relative-dropdown').hide();
-                if (!active) $(this).addClass('is-selected').siblings('.nav__relative-dropdown').show();
-                return false;
-            }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
-        }
+        $(".description_more").click(function () {
+            var description_div = $(this).prev();
+            if (description_div.css('overflow') == 'hidden') {
+                description_div.css({
+                    'overflow': 'visible',
+                    'max-height': 'none'
+                });
+                $(this).text("Less");
+            } else {
+                description_div.css({
+                    'overflow': 'hidden',
+                    'max-height': '500px'
+                });
+                $(this).text("More");
+                if ($(description_div).offset().top < $(window).scrollTop())
+                    $(window).scrollTop($(description_div).offset().top - $('.sidebar').height());
+            }
+        });
+    }
 
-        return {
-            generateGridview: generateGridview,
-            generateScrollingSidebar: generateScrollingSidebar,
-            generateFixedNavbar: generateFixedNavbar
-        };
-    })();
+};
 
-    $(document).ready(function () {
-        if (window.location.pathname.indexOf('/giveaways/open') > -1)
-            SGPlusV2.generateGridview();
-        SGPlusV2.generateScrollingSidebar();
-        SGPlusV2.generateFixedNavbar();
-    });
+(function ($) {
+    if (window.location.pathname.indexOf('/giveaways/open') > -1)
+        SGPlusV2.generateGridview();
+    SGPlusV2.generateScrollingSidebar();
+    SGPlusV2.generateFixedNavbar();
+    SGPlusV2.generateShortenedText();
 })(jQuery);
