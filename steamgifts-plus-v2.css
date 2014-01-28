@@ -1,4 +1,10 @@
+/* After changes have been made, please go to http://cssminifier.com/, minify the css code and add it to steamgifts-plus-v2.js */
+
 .comment__description.markdown {position:relative;}
+
+.short {
+	overflow:hidden;max-height:100px;
+}
 
 .less__beautify {
     position:absolute;
@@ -19,6 +25,7 @@
 
 .short .less__beautify {display:block;}
 
-.comment_more {display:none;}
-.short .comment_more {display:block;}
-.short .comment_less {display:none;}
+
+.more {display:none;}
+.short .more {display:block;}
+.short .less {display:none;}
