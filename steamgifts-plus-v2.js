@@ -117,7 +117,7 @@ var SGPlusV2 = {
                         'max-height': '500px',
                         'overflow': 'hidden'
                     })
-                    .append("<div class='comment__actions__button description_more'>More</div>");
+                    .parent().append("<div class='comment__actions__button description_more'>More</div>");
                 }
             }
         });
