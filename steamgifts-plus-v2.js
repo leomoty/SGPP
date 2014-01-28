@@ -5,6 +5,10 @@ var SGPlusV2 = {
         else if (hasWhitelist) el.css('background-color', '#556da9');
         return el;
     },
+    generateStyles: function () {
+    	var styles = document.head.appendChild(document.createElement('style'));
+    	styles.innerHTML = '.comment__description.markdown{position:relative}.short{overflow:hidden;max-height:100px}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.more{display:none}.short .more{display:block}.short .less{display:none}';
+    },
     generateGridview: function () {
         var container = document.createElement('div');
         $(container).css({
@@ -131,6 +135,7 @@ var SGPlusV2 = {
 };
 
 (function ($) {
+    SGPlusV2.generateStyles();
     if (window.location.pathname.indexOf('/giveaways/open') > -1)
         SGPlusV2.generateGridview();
     SGPlusV2.generateScrollingSidebar();
