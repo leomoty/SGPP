@@ -92,8 +92,7 @@ var SGPlusV2 = {
             var comment_div = $(this).parent().prev();
             comment_div.toggleClass('short');
             if (comment_div.hasClass('short') && comment_div.offset().top < $(window).scrollTop())
-                    $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
-            }
+                $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
         });
     },
     generateShortenedDescriptions: function () {
