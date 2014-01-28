@@ -117,7 +117,7 @@ var SGPlusV2 = {
                         'max-height': '500px',
                         'overflow': 'hidden'
                     })
-                    .parent().append("<div class='comment__actions__button description_more'>More</div>");
+                    .parent().append("<div style='width:27px' class='comment__actions__button description_more'>More</div>");
                 }
             }
         });
@@ -133,7 +133,7 @@ var SGPlusV2 = {
             } else {
                 comment_div.css({
                     'overflow': 'hidden',
-                    'max-height': '100px'
+                    'max-height': '500px'
                 });
                 $(this).text("More");
                 $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
