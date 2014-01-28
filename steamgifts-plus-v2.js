@@ -74,7 +74,7 @@ var SGPlusV2 = {
         }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
 
     },
-    generateShortenedText: function(){
+    generateShortenedText: function () {
         SGPlusV2.generateShortenedComments();
         SGPlusV2.generateShortenedDescriptions();
     },
@@ -105,7 +105,8 @@ var SGPlusV2 = {
                     'max-height': '100px'
                 });
                 $(this).text("More");
-                $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
+                if ($(comment_div).offset().top < $(window).scrollTop())
+                    $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
             }
         });
     },
@@ -136,7 +137,8 @@ var SGPlusV2 = {
                     'max-height': '500px'
                 });
                 $(this).text("More");
-                $(window).scrollTop($(description_div).offset().top - $('.sidebar').height());
+                if ($(description_div).offset().top < $(window).scrollTop())
+                    $(window).scrollTop($(description_div).offset().top - $('.sidebar').height());
             }
         });
     }
