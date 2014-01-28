@@ -20,5 +20,5 @@ if (window.top == window) {
     SGPstyle.type = 'text/css';
     SGPstyle.href = 'https://raw2.github.com/leomoty/SGV2-/master/steamgifts-plus-v2.css?v=' + new Date().getTime();
     SGPstyle.media = 'all';
-    document.body.appendChild(SGPstyle);
+    document.head.appendChild(SGPstyle);
 }
