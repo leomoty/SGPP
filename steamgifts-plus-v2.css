@@ -26,6 +26,6 @@
 .short .less__beautify {display:block;}
 
 
-.more {display:none;}
-.short .more {display:block;}
-.short .less {display:none;}
+.comment_more {display:none;}
+.short .comment_more {display:block;}
+.short .comment_less {display:none;}
