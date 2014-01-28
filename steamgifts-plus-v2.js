@@ -74,6 +74,10 @@ var SGPlusV2 = {
         }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
 
     },
+    generateShortenedText: function(){
+        SGPlusV2.generateShortenedComments();
+        SGPlusV2.generateShortenedDescriptions();
+    },
     generateShortenedComments: function () {
         $('.comment__description.markdown').each(function () {
             if ($(this).find('form').length == 0) {
@@ -104,7 +108,39 @@ var SGPlusV2 = {
                 $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
             }
         });
+    },
+    generateShortenedDescriptions: function () {
+        $('.giveaway-description__display-state .ajax .markdown').each(function () {
+            if ($(this).find('form').length == 0) {
+                if ($(this).innerHeight() > 100) {
+                    $(this).css({
+                        'max-height': '500px',
+                        'overflow': 'hidden'
+                    })
+                    .append("<div class='comment__actions__button description_more'>More</div>");
+                }
+            }
+        });
+
+        $(".description_more").click(function () {
+            var comment_div = $(this).parent().prev();
+            if (comment_div.css('overflow') == 'hidden') {
+                comment_div.css({
+                    'overflow': 'visible',
+                    'max-height': 'none'
+                });
+                $(this).text("Less");
+            } else {
+                comment_div.css({
+                    'overflow': 'hidden',
+                    'max-height': '100px'
+                });
+                $(this).text("More");
+                $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
+            }
+        });
     }
+
 };
 
 (function ($) {
@@ -112,5 +148,5 @@ var SGPlusV2 = {
         SGPlusV2.generateGridview();
     SGPlusV2.generateScrollingSidebar();
     SGPlusV2.generateFixedNavbar();
-    SGPlusV2.generateShortenedComments();
+    SGPlusV2.generateShortenedText();
 })(jQuery);
