@@ -15,10 +15,6 @@ if (window.top == window) {
     SGPscript.src = 'https://raw2.github.com/leomoty/SGV2-/master/steamgifts-plus-v2.js?v=' + new Date().getTime();
     document.body.appendChild(SGPscript);
     
-    var SGPstyle = document.createElement('link');
-    SGPstyle.rel = 'stylesheet';
-    SGPstyle.type = 'text/css';
-    SGPstyle.href = 'https://raw2.github.com/leomoty/SGV2-/master/steamgifts-plus-v2.css?v=' + new Date().getTime();
-    SGPstyle.media = 'all';
-    document.head.appendChild(SGPstyle);
+    var SGPstyle = document.head.appendChild(window.createElement('style'));
+    SGPstyle.innerHTML = '@import url("https://raw2.github.com/leomoty/SGV2-/master/steamgifts-plus-v2.css?v=' + new Date().getTime() + '")';
 }
