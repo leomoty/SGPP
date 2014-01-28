@@ -81,31 +81,17 @@ var SGPlusV2 = {
     generateShortenedComments: function () {
         $('.comment__description.markdown').each(function () {
             if ($(this).find('form').length == 0) {
-                if ($(this).innerHeight() > 100) {
-                    $(this).css({
-                        'max-height': '100px',
-                        'overflow': 'hidden'
-                    })
-                    .next().prepend("<div class='comment__actions__button comment_more'>More</div>");
+                if ($(this).innerHeight() > 120) {
+                    $(this).addClass('short')
+                    .next().prepend("<div class='comment__actions__button comment_more'>More</div><div class='comment__actions__button comment_less'>Less</div>");
                 }
             }
         });
 
-        $(".comment_more").click(function () {
+        $(".comment_more, .comment_less").click(function () {
             var comment_div = $(this).parent().prev();
-            if (comment_div.css('overflow') == 'hidden') {
-                comment_div.css({
-                    'overflow': 'visible',
-                    'max-height': 'none'
-                });
-                $(this).text("Less");
-            } else {
-                comment_div.css({
-                    'overflow': 'hidden',
-                    'max-height': '100px'
-                });
-                $(this).text("More");
-                if ($(comment_div).offset().top < $(window).scrollTop())
+            comment_div.toggleClass('short');
+            if (comment_div.hasClass('short') && comment_div.offset().top < $(window).scrollTop())
                     $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
             }
         });

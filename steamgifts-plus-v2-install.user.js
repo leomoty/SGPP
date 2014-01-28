@@ -10,8 +10,15 @@
 // ==/UserScript==
 
 if (window.top == window) {
-    var steamgiftsPlus = document.createElement('script');
-    steamgiftsPlus.type = 'text/javascript';
-    steamgiftsPlus.src = 'https://raw2.github.com/leomoty/SGV2-/master/steamgifts-plus-v2.js?v=' + new Date().getTime();
-    document.body.appendChild(steamgiftsPlus);
+    var SGPscript = document.createElement('script');
+    SGPscript.type = 'text/javascript';
+    SGPscript.src = 'https://raw2.github.com/leomoty/SGV2-/master/steamgifts-plus-v2.js?v=' + new Date().getTime();
+    document.body.appendChild(SGPscript);
+    
+    var SGPstyle = document.createElement('link');
+    SGPstyle.rel = 'stylesheet';
+    SGPstyle.type = 'text/css';
+    SGPstyle.href = 'https://raw2.github.com/leomoty/SGV2-/master/steamgifts-plus-v2.css?v=' + new Date().getTime();
+    SGPstyle.media = 'all';
+    document.head.appendChild(SGPstyle);
 }
