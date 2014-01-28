@@ -7,7 +7,7 @@ var SGPlusV2 = {
     },
     generateStyles: function () {
     	var styles = document.head.appendChild(document.createElement('style'));
-    	styles.innerHTML = '.comment__description.markdown{position:relative}.short{overflow:hidden;max-height:100px}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}';
+    	styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}';
     },
     generateGridview: function () {
         var container = document.createElement('div');
@@ -86,14 +86,16 @@ var SGPlusV2 = {
         $('.comment__description.markdown').each(function () {
             if ($(this).find('form').length == 0) {
                 if ($(this).innerHeight() > 120) {
+                    var sub = ($(this).closest('.comment__children').length > 0) ? ' sub' : '';
                     $(this).addClass('short')
-                    .next().prepend("<div class='comment__actions__button comment_more'>More</div><div class='comment__actions__button comment_less'>Less</div>");
+                    .children('.markdown').append("<div class='less__beautify" + sub + "'></div>");
+                    $(this).children('.comment__actions').prepend("<div class='comment__actions__button comment_more'>More</div><div class='comment__actions__button comment_less'>Less</div>");
                 }
             }
         });
 
         $(".comment_more, .comment_less").click(function () {
-            var comment_div = $(this).parent().prev();
+            var comment_div = $(this).parent().parent();
             comment_div.toggleClass('short');
             if (comment_div.hasClass('short') && comment_div.offset().top < $(window).scrollTop())
                 $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
