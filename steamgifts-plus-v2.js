@@ -117,7 +117,7 @@ var SGPlusV2 = {
                         'max-height': '500px',
                         'overflow': 'hidden'
                     })
-                    .after("<div style='width:27px;font-size:11px;color:#aaa;' class='comment__actions__button description_more'>More</div>");
+                    .after("<div style='font-size:11px;color:#aaa;display:inline-block;margin-right:10px;' class='comment__actions__button description_more'>More</div>");
                 }
             }
         });
