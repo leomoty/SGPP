@@ -123,7 +123,7 @@ var SGPlusV2 = {
         });
 
         $(".description_more").click(function () {
-            var comment_div = $(this).parent().prev();
+            var comment_div = $(this).prev();
             if (comment_div.css('overflow') == 'hidden') {
                 comment_div.css({
                     'overflow': 'visible',
