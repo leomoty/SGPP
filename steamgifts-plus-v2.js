@@ -117,26 +117,26 @@ var SGPlusV2 = {
                         'max-height': '500px',
                         'overflow': 'hidden'
                     })
-                    .parent().append("<div style='width:27px' class='comment__actions__button description_more'>More</div>");
+                    .after("<div style='width:27px;font-size:11px;color:#aaa;' class='comment__actions__button description_more'>More</div>");
                 }
             }
         });
 
         $(".description_more").click(function () {
-            var comment_div = $(this).prev();
-            if (comment_div.css('overflow') == 'hidden') {
-                comment_div.css({
+            var description_div = $(this).prev();
+            if (description_div.css('overflow') == 'hidden') {
+                description_div.css({
                     'overflow': 'visible',
                     'max-height': 'none'
                 });
                 $(this).text("Less");
             } else {
-                comment_div.css({
+                description_div.css({
                     'overflow': 'hidden',
                     'max-height': '500px'
                 });
                 $(this).text("More");
-                $(window).scrollTop($(comment_div).offset().top - $('.sidebar').height());
+                $(window).scrollTop($(description_div).offset().top - $('.sidebar').height());
             }
         });
     }
