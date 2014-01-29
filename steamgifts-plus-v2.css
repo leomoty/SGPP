@@ -28,3 +28,14 @@
 .comment_more {display:none;}
 .short .comment_more {display:block;}
 .short .comment_less {display:none;}
+body { margin-top: 39px;}
+
+header {
+margin-left: -25px;
+position: fixed;
+top: 0;
+width: 100%;
+z-index: 1
+}
+
+.navbar_fixed { padding: 0 25;} 
