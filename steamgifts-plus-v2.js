@@ -1,7 +1,4 @@
 var SGPlusV2 = {
-    config : {
-
-    },
     giveawayColorByType: function (el, hasGroup, hasWhitelist) {
         if (hasGroup && hasWhitelist) el.css('background-color', '#F06969');
         else if (hasGroup) el.css('background-color', 'rgba(63,115,0,0.95)');
@@ -74,7 +71,6 @@ var SGPlusV2 = {
                 }
             }
         });
-
         $(".comment_more, .comment_less").click(function () {
             var comment_div = $(this).parent().parent();
             comment_div.toggleClass('short');
@@ -101,7 +97,7 @@ var SGPlusV2 = {
                     'overflow': 'visible',
                     'max-height': 'none'
                 });
-                $(this).text("Less");
+                $(this).text("Less"); 
             } else {
                 description_div.css({
                     'overflow': 'hidden',
@@ -113,7 +109,6 @@ var SGPlusV2 = {
             }
         });
     }
-
 };
 
 (function ($) {
