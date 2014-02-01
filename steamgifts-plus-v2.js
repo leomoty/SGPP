@@ -1,4 +1,7 @@
 var SGPlusV2 = {
+    config : {
+
+    },
     giveawayColorByType: function (el, hasGroup, hasWhitelist) {
         if (hasGroup && hasWhitelist) el.css('background-color', '#F06969');
         else if (hasGroup) el.css('background-color', 'rgba(63,115,0,0.95)');
@@ -7,29 +10,23 @@ var SGPlusV2 = {
     },
     generateStyles: function () {
     	var styles = document.head.appendChild(document.createElement('style'));
-    	styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}body{margin-top:39px}header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:1}.navbar_fixed{padding:0 25px}.gridview_flex{display:inline-flex;flex-wrap:wrap;justify-content:center}';
+    	styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}body{margin-top:39px}header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:1}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}';
     },
     generateGridview: function () {
+        if (window.location.pathname.indexOf('/giveaways/open') == -1)
+            return;
         var container = document.createElement('div');
         $(container).addClass('gridview_flex');
-
         var parent = $('.page__heading').next()[0];
-
         $('.giveaway-summary__thumbnail-outer-wrap').css('margin', '5px');
-
         $('.giveaway-summary').each(function () {
-
             if ($(this).parents('.giveaway-container--featured').length != 0) return;
-
             var eachDiv = document.createElement('div');
-
             var whitelist = $(this).find('.giveaway-summary__column--whitelist');
             var group = $(this).find('.giveaway-summary__column--group');
-
             $(eachDiv).append(SGPlusV2.giveawayColorByType($(this).find('.giveaway-summary__thumbnail-outer-wrap'), group.length, whitelist.length));
             $(container).append(eachDiv);
         });
-
         $(parent).empty().append(container);
     },
     generateScrollingSidebar: function () {
@@ -37,7 +34,6 @@ var SGPlusV2 = {
 		$window = $(window),
 		offset = $sidebar.offset(),
 		topPadding = 64;
-
         $window.scroll(function () {
             if ($window.scrollTop() > offset.top) {
                 $sidebar.stop().animate({
@@ -55,7 +51,6 @@ var SGPlusV2 = {
         $('nav').remove();
         $('header').html('<div class="navbar_fixed"></div>');
         $('.navbar_fixed').html(nav);
-
         $('nav .nav__button--is-dropdown-arrow').click(function () {
             var active = $(this).hasClass('is-selected');
             $('nav .nav__button').removeClass('is-selected');
@@ -63,7 +58,6 @@ var SGPlusV2 = {
             if (!active) $(this).addClass('is-selected').siblings('.nav__relative-dropdown').removeClass('is-hidden');
             return false;
         }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
-
     },
     generateShortenedText: function () {
         SGPlusV2.generateShortenedComments();
@@ -100,7 +94,6 @@ var SGPlusV2 = {
                 }
             }
         });
-
         $(".description_more").click(function () {
             var description_div = $(this).prev();
             if (description_div.css('overflow') == 'hidden') {
@@ -125,8 +118,7 @@ var SGPlusV2 = {
 
 (function ($) {
     SGPlusV2.generateStyles();
-    if (window.location.pathname.indexOf('/giveaways/open') > -1)
-        SGPlusV2.generateGridview();
+    SGPlusV2.generateGridview();
     SGPlusV2.generateScrollingSidebar();
     SGPlusV2.generateFixedNavbar();
     SGPlusV2.generateShortenedText();

@@ -41,7 +41,7 @@ header {
 .navbar_fixed { padding: 0 25px;} 
 
 .gridview_flex {
-    display: inline-flex;
+    display: flex;
     flex-wrap: wrap;
     justify-content: center;
 }
