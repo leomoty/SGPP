@@ -162,24 +162,22 @@ var SGPlusV2 = {
                     $(window).scrollTop($(description_div).offset().top - $('.sidebar').height());
             }
         });
+    },
+    init: function () {
+        SGPlusV2.localStorage = Storage();
+        SGPlusV2.generateStyles();
+        SGPlusV2.generateGridview();
+        SGPlusV2.generateScrollingSidebar();
+        SGPlusV2.generateFixedNavbar();
+        SGPlusV2.generateShortenedText();
     }
 };
-
-function init() {
-    SGPlusV2.localStorage = Storage();
-    SGPlusV2.generateStyles();
-    SGPlusV2.generateGridview();
-    SGPlusV2.generateScrollingSidebar();
-    SGPlusV2.generateFixedNavbar();
-    SGPlusV2.generateShortenedText();
-}
-
 if (typeof chrome === 'undefined') {
     (function ($) {
-        init();
+        SGPlusV2.init();
     })(jQuery);
 } else {
     $(document).ready(function () {
-        init();
+        SGPlusV2.init();
     });
 }

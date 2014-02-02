@@ -1,14 +1,3 @@
-// ==UserScript==
-// @name            SteamGifts Plus v2
-// @version         2.0.0 - BETA
-// @namespace       steamgiftsplusv2
-// @description     Initial Beta Release.
-// @copyright       2014 leomoty <leomoty@gmail.com>
-// @license         MIT; http://en.wikipedia.org/wiki/Mit_license
-// @match           http://www.steamsocial.com/*
-// @run-at          document-end
-// ==/UserScript==
-
 var Storage = function () {
     function normalizeSetArgs(key, val, cb) {
         var toStore, callback;
@@ -173,24 +162,22 @@ var SGPlusV2 = {
                     $(window).scrollTop($(description_div).offset().top - $('.sidebar').height());
             }
         });
+    },
+    init: function () {
+        SGPlusV2.localStorage = Storage();
+        SGPlusV2.generateStyles();
+        SGPlusV2.generateGridview();
+        SGPlusV2.generateScrollingSidebar();
+        SGPlusV2.generateFixedNavbar();
+        SGPlusV2.generateShortenedText();
     }
 };
-
-function init() {
-    SGPlusV2.localStorage = Storage();
-    SGPlusV2.generateStyles();
-    SGPlusV2.generateGridview();
-    SGPlusV2.generateScrollingSidebar();
-    SGPlusV2.generateFixedNavbar();
-    SGPlusV2.generateShortenedText();
-}
-
 if (typeof chrome === 'undefined') {
     (function ($) {
-        init();
+        SGPlusV2.init();
     })(jQuery);
 } else {
     $(document).ready(function () {
-        init();
+        SGPlusV2.init();
     });
 }
