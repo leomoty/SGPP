@@ -185,12 +185,12 @@ function init() {
     SGPlusV2.generateShortenedText();
 }
 
-if (chrome) {
-    $(document).ready(function () {
-        init();
-    });
-} else {
+if (typeof chrome === 'undefined') {
     (function ($) {
         init();
     })(jQuery);
+} else {
+    $(document).ready(function () {
+        init();
+    });
 }
