@@ -16,21 +16,7 @@ var Storage = function () {
         };
     }
     var localStorage;
-    if (chrome === 'undefined' && chrome.storage === 'undefined' && chrome.storage.sync === 'undefined') {
-        localStorage = {
-            get: function (key, cb) {
-                cb(null, window.localStorage.getItem(key));
-            },
-            set: function (key, val, cb) {
-                var args = normalizeSetArgs(key, val, cb);
-                $.each(args, function (v, k) {
-                    window.localStorage.setItem(k, v);
-                });
-                args.callback && args.callback();
-            }
-        };
-    }
-    else {
+    if (chrome != 'undefined' && chrome.storage != 'undefined' && chrome.storage.sync != 'undefined') {
         console.log("Chrome Storage Sync selected");
         localStorage = {
             get: function (key, cb) {
@@ -45,7 +31,21 @@ var Storage = function () {
                 });
             }
         };
+    }
+    else {
         console.log("Localstorage selected");
+        localStorage = {
+            get: function (key, cb) {
+                cb(null, window.localStorage.getItem(key));
+            },
+            set: function (key, val, cb) {
+                var args = normalizeSetArgs(key, val, cb);
+                $.each(args, function (v, k) {
+                    window.localStorage.setItem(k, v);
+                });
+                args.callback && args.callback();
+            }
+        };
     }
     return localStorage;
 };
