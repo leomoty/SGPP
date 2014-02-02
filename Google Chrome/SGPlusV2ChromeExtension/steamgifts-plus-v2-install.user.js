@@ -9,6 +9,58 @@
 // @run-at          document-end
 // ==/UserScript==
 
+var Storage = function () {
+    function normalizeSetArgs(key, val, cb) {
+        var toStore, callback;
+        if (typeof key === 'object') {
+            toStore = key;
+            callback = val;
+        }
+        else {
+            toStore = {};
+            toStore[key] = val;
+            callback = cb;
+        }
+        return {
+            data: toStore,
+            callback: callback
+        };
+    }
+    var localStorage;
+    if (chrome && chrome.storage && chrome.storage.sync) {
+        console.log("Chrome Storage Sync selected");
+        localStorage = {
+            get: function (key, cb) {
+                chrome.storage.sync.get(key, function (result) {
+                    cb(null, result && result[key]);
+                });
+            },
+            set: function (key, val, cb) {
+                var args = normalizeSetArgs(key, val, cb);
+                chrome.storage.sync.set(args.data, function () {
+                    args.callback && args.callback();
+                });
+            }
+        };
+    }
+    else {
+        console.log("Localstorage selected");
+        localStorage = {
+            get: function (key, cb) {
+                cb(null, window.localStorage.getItem(key));
+            },
+            set: function (key, val, cb) {
+                var args = normalizeSetArgs(key, val, cb);
+                $.each(args, function (v, k) {
+                    window.localStorage.setItem(k, v);
+                });
+                args.callback && args.callback();
+            }
+        };
+    }
+    return localStorage;
+};
+
 var SGPlusV2 = {
     giveawayColorByType: function (el, hasGroup, hasWhitelist) {
         if (hasGroup && hasWhitelist) el.css('background-color', '#F06969');
