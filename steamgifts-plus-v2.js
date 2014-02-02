@@ -1,7 +1,7 @@
 var Storage = function () {
     function normalizeSetArgs(key, val, cb) {
         var toStore, callback;
-        if (_.isObject(key)) {
+        if (typeof key === 'object') {
             toStore = key;
             callback = val;
         }
@@ -17,6 +17,7 @@ var Storage = function () {
     }
     var localStorage;
     if (chrome && chrome.storage && chrome.storage.sync) {
+        console.log("Chrome Storage Sync selected");
         localStorage = {
             get: function (key, cb) {
                 chrome.storage.sync.get(key, function (result) {
@@ -32,6 +33,7 @@ var Storage = function () {
         };
     }
     else {
+        console.log("Localstorage selected");
         localStorage = {
             get: function (key, cb) {
                 cb(null, window.localStorage.getItem(key));
