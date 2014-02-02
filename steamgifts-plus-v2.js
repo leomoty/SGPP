@@ -51,6 +51,8 @@ var Storage = function () {
 }
 
 var SGPlusV2 = {
+    localStorage: {
+    },
     giveawayColorByType: function (el, hasGroup, hasWhitelist) {
         if (hasGroup && hasWhitelist) el.css('background-color', '#F06969');
         else if (hasGroup) el.css('background-color', 'rgba(63,115,0,0.95)');
@@ -164,7 +166,7 @@ var SGPlusV2 = {
 };
 
 (function ($) {
-    Storage();
+    SGPlusV2.localStorage = Storage();
     SGPlusV2.generateStyles();
     SGPlusV2.generateGridview();
     SGPlusV2.generateScrollingSidebar();
