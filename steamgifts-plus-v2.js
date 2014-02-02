@@ -41,9 +41,10 @@ var Storage = function () {
             set: function (key, val, cb) {
                 var args = normalizeSetArgs(key, val, cb);
                 console.log(args);
-                $.each(args, function (v, k) {
-                    window.localStorage.setItem(k, v);
-                });
+                window.localStorage.setItem(key, val);
+                //$.each(args, function (v, k) {
+                //    window.localStorage.setItem(k, v);
+                //});
                 args.callback && args.callback();
             }
         };
