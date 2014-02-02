@@ -7,6 +7,9 @@
       "matches": [ "http://www.steamsocial.com/*" ],
       "run_at": "document_end"
    } ],
+   "background": {
+    "scripts": ["jquery-1.11.0.min.js"] 
+   },
    "description": "Adds various features.",
    "name": "SteamGifts Plus v2",
    "permissions": [
@@ -14,6 +17,6 @@
       "http://www.steamsocial.com/"
     ],
    "version": "1.0",
-   "update_url": "https://raw2.github.com/leomoty/SGV2-/dev/Google%20Chrome/updates.xml",
+   "update_url": "https://raw2.github.com/leomoty/SGV2-/dev/Google%20Chrome/updates.xml   ",
    "manifest_version" : 2
 }
