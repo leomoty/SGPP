@@ -114,7 +114,6 @@ var SGPlusV2 = {
 };
 
 (function ($) {
-    SGPlusV2.localStorage = Storage;
     SGPlusV2.generateStyles();
     SGPlusV2.generateGridview();
     SGPlusV2.generateScrollingSidebar();

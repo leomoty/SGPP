@@ -65,5 +65,8 @@ if (window.top == window) {
     var SGPscript = document.createElement('script');
     SGPscript.type = 'text/javascript';
     SGPscript.src = 'https://raw2.github.com/leomoty/SGV2-/dev/steamgifts-plus-v2.js?v=' + new Date().getTime();
+    SGPscript.onload = function () {
+        SGPlusV2.localStorage = Storage;
+    };
     document.body.appendChild(SGPscript);
 }
