@@ -1,7 +1,7 @@
 var Storage = function () {
     function normalizeSetArgs(key, val, cb) {
         var toStore, callback;
-        if (typeof key === 'object') {
+        if ($.isPlainObject('object')) {
             toStore = key;
             callback = val;
         }
