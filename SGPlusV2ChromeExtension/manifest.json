@@ -10,7 +10,8 @@
    "description": "Adds various features.",
    "name": "SteamGifts Plus v2",
    "permissions": [
-      "storage"
+      "storage",
+      "http://www.steamsocial.com/"
     ],
    "version": "1.0",
    "manifest_version" : 2
