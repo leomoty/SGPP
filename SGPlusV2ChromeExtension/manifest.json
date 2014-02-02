@@ -3,7 +3,7 @@
       "exclude_globs": [  ],
       "exclude_matches": [  ],
       "include_globs": [  ],
-      "js": [ "steamgifts-plus-v2.js" ],
+      "js": [ "steamgifts-plus-v2-install.user.js" ],
       "matches": [ "http://www.steamsocial.com/*" ],
       "run_at": "document_end"
    } ],
@@ -12,5 +12,6 @@
    "permissions": [
       "storage"
     ],
-   "version": "1.0"
+   "version": "1.0",
+   "manifest_version" : 2
 }
