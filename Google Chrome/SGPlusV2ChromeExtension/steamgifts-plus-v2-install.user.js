@@ -27,7 +27,7 @@ var Storage = function () {
         };
     }
     var localStorage;
-    if (chrome != 'undefined' && chrome.storage != 'undefined' && chrome.storage.sync != 'undefined') {
+    if (typeof chrome != 'undefined' && typeof chrome.storage != 'undefined' && typeof chrome.storage.sync != 'undefined') {
         console.log("Chrome Storage Sync selected");
         localStorage = {
             get: function (key, cb) {
