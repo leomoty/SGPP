@@ -1,0 +1,16 @@
+{
+   "content_scripts": [ {
+      "exclude_globs": [  ],
+      "exclude_matches": [  ],
+      "include_globs": [  ],
+      "js": [ "steamgifts-plus-v2.js" ],
+      "matches": [ "http://www.steamsocial.com/*" ],
+      "run_at": "document_end"
+   } ],
+   "description": "Adds various features.",
+   "name": "SteamGifts Plus v2",
+   "permissions": [
+      "storage"
+    ],
+   "version": "1.0"
+}
