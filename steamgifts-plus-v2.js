@@ -40,7 +40,7 @@ var Storage = function () {
             },
             set: function (key, val, cb) {
                 var args = normalizeSetArgs(key, val, cb);
-                _.each(args, function (v, k) {
+                $.each(args, function (v, k) {
                     window.localStorage.setItem(k, v);
                 });
                 args.callback && args.callback();
@@ -48,7 +48,7 @@ var Storage = function () {
         };
     }
     return localStorage;
-}();
+}
 
 var SGPlusV2 = {
     giveawayColorByType: function (el, hasGroup, hasWhitelist) {
@@ -164,6 +164,7 @@ var SGPlusV2 = {
 };
 
 (function ($) {
+    Storage();
     SGPlusV2.generateStyles();
     SGPlusV2.generateGridview();
     SGPlusV2.generateScrollingSidebar();
