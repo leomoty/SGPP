@@ -3,7 +3,7 @@
       "exclude_globs": [  ],
       "exclude_matches": [  ],
       "include_globs": [  ],
-      "js": ["jquery-1.11.0.min.js", "steamgifts-plus-v2-install.user.js" ],
+      "js": ["jquery-1.11.0.min.js", "steamgifts-plus-v2.js" ],
       "matches": [ "http://www.steamsocial.com/*" ],
       "run_at": "document_end"
    } ],
