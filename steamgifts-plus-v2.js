@@ -29,6 +29,12 @@ var Storage = function () {
                 chrome.storage.sync.set(args.data, function () {
                     args.callback && args.callback();
                 });
+            },
+            setObject: function (key, val, cb) {
+                var args = normalizeSetArgs(key, val, cb);
+                chrome.storage.sync.set(args.data, function () {
+                    args.callback && args.callback();
+                });
             }
         };
     }
@@ -42,9 +48,12 @@ var Storage = function () {
                 var args = normalizeSetArgs(key, val, cb);
                 console.log(args);
                 window.localStorage.setItem(key, val);
-                //$.each(args, function (v, k) {
-                //    window.localStorage.setItem(k, v);
-                //});
+                args.callback && args.callback();
+            },
+            setObject: function (key, val, cb) {
+                var args = normalizeSetArgs(key, val, cb);
+                console.log(args);
+                window.localStorage.setItem(key, JSON.stringify(val));
                 args.callback && args.callback();
             }
         };
