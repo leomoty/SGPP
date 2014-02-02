@@ -174,10 +174,10 @@ var SGPlusV2 = {
     }
 };
 
-(function ($) {
+$(document).ready(function () {
     SGPlusV2.generateStyles();
     SGPlusV2.generateGridview();
     SGPlusV2.generateScrollingSidebar();
     SGPlusV2.generateFixedNavbar();
     SGPlusV2.generateShortenedText();
-})(jQuery);
+});
