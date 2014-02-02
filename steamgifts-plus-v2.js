@@ -167,7 +167,7 @@ var SGPlusV2 = {
 
 (function ($) {
     SGPlusV2.localStorage = Storage;
-
+    console.log(chrome.storage);
     SGPlusV2.generateStyles();
     SGPlusV2.generateGridview();
     SGPlusV2.generateScrollingSidebar();
