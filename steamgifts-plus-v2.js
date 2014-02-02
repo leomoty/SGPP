@@ -1,3 +1,53 @@
+var Storage = function () {
+    function normalizeSetArgs(key, val, cb) {
+        var toStore, callback;
+        if (_.isObject(key)) {
+            toStore = key;
+            callback = val;
+        }
+        else {
+            toStore = {};
+            toStore[key] = val;
+            callback = cb;
+        }
+        return {
+            data: toStore,
+            callback: callback
+        };
+    }
+    var localStorage;
+    if (chrome && chrome.storage && chrome.storage.sync) {
+        localStorage = {
+            get: function (key, cb) {
+                chrome.storage.sync.get(key, function (result) {
+                    cb(null, result && result[key]);
+                });
+            },
+            set: function (key, val, cb) {
+                var args = normalizeSetArgs(key, val, cb);
+                chrome.storage.sync.set(args.data, function () {
+                    args.callback && args.callback();
+                });
+            }
+        };
+    }
+    else {
+        localStorage = {
+            get: function (key, cb) {
+                cb(null, window.localStorage.getItem(key));
+            },
+            set: function (key, val, cb) {
+                var args = normalizeSetArgs(key, val, cb);
+                _.each(args, function (v, k) {
+                    window.localStorage.setItem(k, v);
+                });
+                args.callback && args.callback();
+            }
+        };
+    }
+    return localStorage;
+}();
+
 var SGPlusV2 = {
     giveawayColorByType: function (el, hasGroup, hasWhitelist) {
         if (hasGroup && hasWhitelist) el.css('background-color', '#F06969');
@@ -6,8 +56,8 @@ var SGPlusV2 = {
         return el;
     },
     generateStyles: function () {
-    	var styles = document.head.appendChild(document.createElement('style'));
-    	styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}body{margin-top:39px}header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:1}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}';
+        var styles = document.head.appendChild(document.createElement('style'));
+        styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}body{margin-top:39px}header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:1}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}';
     },
     generateGridview: function () {
         if (window.location.pathname.indexOf('/giveaways/open') == -1)
@@ -97,7 +147,7 @@ var SGPlusV2 = {
                     'overflow': 'visible',
                     'max-height': 'none'
                 });
-                $(this).text("Less"); 
+                $(this).text("Less");
             } else {
                 description_div.css({
                     'overflow': 'hidden',
