@@ -34,6 +34,11 @@ var Storage = function () {
                 chrome.storage.sync.set(args.data, function () {
                     args.callback && args.callback();
                 });
+            },
+            getObject: function (key, cb) {
+                chrome.storage.sync.get(key, function (result) {
+                    cb(null, result && result[key]);
+                });
             }
         };
     }
@@ -44,15 +49,16 @@ var Storage = function () {
             },
             set: function (key, val, cb) {
                 var args = normalizeSetArgs(key, val, cb);
-                console.log(args);
                 window.localStorage.setItem(key, val);
                 args.callback && args.callback();
             },
             setObject: function (key, val, cb) {
                 var args = normalizeSetArgs(key, val, cb);
-                console.log(args);
                 window.localStorage.setItem(key, JSON.stringify(val));
                 args.callback && args.callback();
+            },
+            getObject: function (key, cb) {
+                cb(null, JSON.parse(window.localStorage.getItem(key)));
             }
         };
     }
@@ -61,6 +67,12 @@ var Storage = function () {
 
 var SGPlusV2 = {
     localStorage: {
+    },
+    config : {
+        gridView: false,
+        sidebar: false,
+        fixedNavbar: true,
+        shortenText: false
     },
     giveawayColorByType: function (el, hasGroup, hasWhitelist) {
         if (hasGroup && hasWhitelist) el.css('background-color', '#F06969');
@@ -174,6 +186,13 @@ var SGPlusV2 = {
     },
     init: function () {
         SGPlusV2.localStorage = Storage();
+        SGPlusV2.localStorage.getObject('config', function (key, value) {
+            if (value === 'undefined')
+                SGPlusV2.localStorage.set('config', SGPlusV2.config, function () { console.log("Salvo"); });
+            else
+                SGPlusV2.config = value;
+
+        });
         SGPlusV2.generateStyles();
         SGPlusV2.generateGridview();
         SGPlusV2.generateScrollingSidebar();
