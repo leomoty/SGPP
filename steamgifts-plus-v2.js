@@ -58,7 +58,7 @@ var Storage = function () {
                 args.callback && args.callback();
             },
             getObject: function (key, cb) {
-                cb(null, JSON.parse(window.localStorage.getItem(key)));
+                cb(null, $.parseJSON(window.localStorage.getItem(key)));
             }
         };
     }
