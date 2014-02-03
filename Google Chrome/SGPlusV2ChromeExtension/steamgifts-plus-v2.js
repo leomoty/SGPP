@@ -187,7 +187,7 @@ var SGPlusV2 = {
     init: function () {
         SGPlusV2.localStorage = Storage();
         SGPlusV2.localStorage.getObject('config', function (key, value) {
-            if (typeof value === 'undefined' || typeof value === 'null')
+            if (!value || value === null)
                 SGPlusV2.localStorage.set('config', SGPlusV2.config, function () { console.log("Salvo"); });
             else
                 SGPlusV2.config = value;
