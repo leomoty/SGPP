@@ -13,7 +13,7 @@
       "storage",
       "http://www.steamsocial.com/"
     ],
-   "version": "1.0",
+   "version": "1.1",
    "update_url": "https://raw2.github.com/leomoty/SGV2-/dev/Google%20Chrome/updates.xml",
    "manifest_version" : 2
 }
