@@ -91,7 +91,7 @@ var SGPlusV2 = {
         $(container).addClass('gridview_flex');
         var parent = $('.page__heading').next()[0];
         $('.giveaway-summary__thumbnail-outer-wrap').css('margin', '5px');
-        $('.giveaway-summary').each(function () {
+        $('.giveaway-summary-inner-wrap').each(function () {
             if ($(this).parents('.giveaway-container--featured').length != 0) return;
             var eachDiv = document.createElement('div');
             var whitelist = $(this).find('.giveaway-summary__column--whitelist');
