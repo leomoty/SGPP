@@ -139,6 +139,8 @@ var SGPlusV2 = {
         }
     },
     hideFeaturedWrapper : function(){
+        if (SGPlusV2.location.indexOf('/giveaways/') == -1)
+            return;
         $('.featured__outer-wrap').hide();
     },
     init_helper: function(){
