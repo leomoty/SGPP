@@ -4,7 +4,8 @@ var SGPlusV2 = {
         gridView: false,
         sidebar: true,
         fixedNavbar: true,
-        shortenText: false
+        shortenText: false,
+        featuredWrapper: false
     },
     giveawayColorByType: function (el, hasGroup, hasWhitelist) {
         if (hasGroup && hasWhitelist) el.css('background-color', '#F06969');
@@ -137,8 +138,14 @@ var SGPlusV2 = {
                 $('.sidebar__navigation').first().append(el);
         }
     },
+    hideFeaturedWrapper : function(){
+        $('.featured__outer-wrap').hide();
+    },
     init_helper: function(){
         SGPlusV2.generateStyles();
+        SGPlusV2.addGroupLink();
+        if(SGPlusV2.config.featuredWrapper === true)
+            SGPlusV2.hideFeaturedWrapper();
         if(SGPlusV2.config.gridView === true)
             SGPlusV2.generateGridview();
         if(SGPlusV2.config.sidebar === true)
@@ -147,7 +154,6 @@ var SGPlusV2 = {
             SGPlusV2.generateFixedNavbar();
         if(SGPlusV2.config.shortenText === true)
             SGPlusV2.generateShortenedText();
-        SGPlusV2.addGroupLink();
     },
     init: function () {
         if (typeof chrome != 'undefined' && typeof chrome.storage != 'undefined' && typeof chrome.storage.sync != 'undefined') {
@@ -156,11 +162,12 @@ var SGPlusV2 = {
                 if(settings.shorten_comments === undefined) { settings.shorten_comments = SGPlusV2.config.shortenText; chrome.storage.sync.set({'shorten_comments': settings.shorten_comments});}
                 if(settings.scrolling_sidebar === undefined) { settings.scrolling_sidebar = SGPlusV2.config.sidebar; chrome.storage.sync.set({'scrolling_sidebar': settings.scrolling_sidebar}); }
                 if(settings.fixed_navbar === undefined) { settings.fixed_navbar = SGPlusV2.config.fixedNavbar; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
-
+                if(settings.featured_wrapper === undefined) { settings.featured_wrapper = SGPlusV2.config.featuredWrapper; chrome.storage.sync.set({'featured_wrapper': settings.featured_wrapper}); }
                 SGPlusV2.config.gridView = settings.gridview;
                 SGPlusV2.config.shortenText =  settings.shorten_comments;
                 SGPlusV2.config.sidebar = settings.scrolling_sidebar;
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
+                SGPlusV2.config.featuredWrapper = settings.featured_wrapper;
 
                 SGPlusV2.init_helper();
             });
