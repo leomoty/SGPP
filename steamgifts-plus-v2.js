@@ -118,6 +118,25 @@ var SGPlusV2 = {
             }
         });
     },
+    selectSidebarItem : function(el){
+        $(el).prepend('<i class="fa fa-caret-right"></i>');
+        $(el).addClass('is-selected');
+        return el;
+    },
+    addGroupLink : function() {
+        if(/\/giveaway\/\w{5}\//.test(SGPlusV2.location) === false)
+            return;
+        if($('.featured__columns > .giveaway-summary__column--group').length)
+        {
+            var groupsLocation = window.location.pathname.replace('comments','groups');
+            var selected = /\/giveaway\/\w{5}\/(\w|\W)+\/groups/.test(SGPlusV2.location);
+            var el = $('<li class="sidebar__navigation__item"><a class="sidebar__navigation__item__link" href="' + groupsLocation + '"><div class="sidebar__navigation__item__name">Groups</div><div class="sidebar__navigation__item__underline"></div></a></li>');
+            if(selected)
+                $('.sidebar__navigation').append(SGPlusV2.selectSidebarItem(el));
+            else
+                $('.sidebar__navigation').append(el);
+        }
+    },
     init_helper: function(){
         SGPlusV2.generateStyles();
         if(SGPlusV2.config.gridView === true)
@@ -128,6 +147,7 @@ var SGPlusV2 = {
             SGPlusV2.generateFixedNavbar();
         if(SGPlusV2.config.shortenText === true)
             SGPlusV2.generateShortenedText();
+        SGPlusV2.addGroupLink();
     },
     init: function () {
         if (typeof chrome != 'undefined' && typeof chrome.storage != 'undefined' && typeof chrome.storage.sync != 'undefined') {
