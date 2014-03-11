@@ -51,8 +51,8 @@ var SGPlusV2 = {
         });
     },
     generateFixedNavbar: function () {
-        $('header').addClass('.header');
-        $('body').addClass('.body');
+        $('header').addClass('header');
+        $('body').addClass('body');
         var nav = $('header').html();
         $('nav').remove();
         $('header').html('<div class="navbar_fixed"></div>');
