@@ -124,6 +124,13 @@ var SGPlusV2 = {
             }
         });
     },
+    init_helper: function(){
+        SGPlusV2.generateStyles();
+        SGPlusV2.generateGridview();
+        SGPlusV2.generateScrollingSidebar();
+        SGPlusV2.generateFixedNavbar();
+        SGPlusV2.generateShortenedText();
+    },
     init: function () {
         if (typeof chrome != 'undefined' && typeof chrome.storage != 'undefined' && typeof chrome.storage.sync != 'undefined') {
             chrome.storage.sync.get(function(settings){
@@ -136,13 +143,12 @@ var SGPlusV2 = {
                 SGPlusV2.config.sidebar =  settings.shorten_comments;
                 SGPlusV2.config.shortenText = settings.scrolling_sidebar;
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
+
+                SGPlusV2.init_helper();
             });
+        } else {
+            SGPlusV2.init_helper();
         }
-        SGPlusV2.generateStyles();
-        SGPlusV2.generateGridview();
-        SGPlusV2.generateScrollingSidebar();
-        SGPlusV2.generateFixedNavbar();
-        SGPlusV2.generateShortenedText();
     }
 };
 if (typeof chrome === 'undefined') {
