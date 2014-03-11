@@ -159,7 +159,24 @@ var SGPlusV2 = {
             });
         });
     },
+    addHandlers : function(){
+        $(".js__comment-edit-save, .js__comment-undelete").off("click","**");
+        $(document).on("click", ".js__comment-edit-save, .js__comment-undelete", function(){
+           var elem = $(this);
+           $.ajax({
+               url: $(this).closest('form').attr('action'),
+               type: 'POST',
+               data: $(this).closest('form').serialize(),
+               success: function(data){
+                   elem.closest('.comment .ajax').html(data);
+                   SGPlusV2.putImagesInPlace();
+               }
+           });
+           return false;
+        });
+    },
     init_nondelayed : function() {
+        SGPlusV2.addHandlers();
         SGPlusV2.generateStyles();
         SGPlusV2.addGroupLink();
         SGPlusV2.putImagesInPlace();
