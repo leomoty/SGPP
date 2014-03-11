@@ -1,76 +1,8 @@
-var Storage = function () {
-    function normalizeSetArgs(key, val, cb) {
-        var toStore, callback;
-        if ($.isPlainObject('object')) {
-            toStore = key;
-            callback = val;
-        }
-        else {
-            toStore = {};
-            toStore[key] = val;
-            callback = cb;
-        }
-        return {
-            data: toStore,
-            callback: callback
-        };
-    }
-    var localStorage;
-    if (typeof chrome != 'undefined' && typeof chrome.storage != 'undefined' && typeof chrome.storage.sync != 'undefined') {
-        localStorage = {
-            get: function (key, cb) {
-                chrome.storage.sync.get(key, function (result) {
-                    cb(null, result && result[key]);
-                });
-            },
-            set: function (key, val, cb) {
-                var args = normalizeSetArgs(key, val, cb);
-                chrome.storage.sync.set(args.data, function () {
-                    args.callback && args.callback();
-                });
-            },
-            setObject: function (key, val, cb) {
-                var args = normalizeSetArgs(key, val, cb);
-                chrome.storage.sync.set(args.data, function () {
-                    args.callback && args.callback();
-                });
-            },
-            getObject: function (key, cb) {
-                chrome.storage.sync.get(key, function (result) {
-                    cb(null, result && result[key]);
-                });
-            }
-        };
-    }
-    else {
-        localStorage = {
-            get: function (key, cb) {
-                cb(null, window.localStorage.getItem(key));
-            },
-            set: function (key, val, cb) {
-                var args = normalizeSetArgs(key, val, cb);
-                window.localStorage.setItem(key, val);
-                args.callback && args.callback();
-            },
-            setObject: function (key, val, cb) {
-                var args = normalizeSetArgs(key, val, cb);
-                window.localStorage.setItem(key, JSON.stringify(val));
-                args.callback && args.callback();
-            },
-            getObject: function (key, cb) {
-                cb(null, $.parseJSON(window.localStorage.getItem(key)));
-            }
-        };
-    }
-    return localStorage;
-};
-
 var SGPlusV2 = {
-    localStorage: {
-    },
+    location : window.location.pathname,
     config : {
         gridView: false,
-        sidebar: false,
+        sidebar: true,
         fixedNavbar: true,
         shortenText: false
     },
@@ -85,7 +17,9 @@ var SGPlusV2 = {
         styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}body{margin-top:39px}header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:1}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}';
     },
     generateGridview: function () {
-        if (window.location.pathname.indexOf('/giveaways/open') == -1)
+        if(!SGPlusV2.config.gridView)
+            return;
+        if (SGPlusV2.location.indexOf('/giveaways/open') == -1)
             return;
         var container = document.createElement('div');
         $(container).addClass('gridview_flex');
@@ -102,6 +36,8 @@ var SGPlusV2 = {
         $(parent).empty().append(container);
     },
     generateScrollingSidebar: function () {
+        if(!SGPlusV2.config.sidebar)
+            return;
         var $sidebar = $(".sidebar"),
 		$window = $(window),
 		offset = $sidebar.offset(),
@@ -119,6 +55,8 @@ var SGPlusV2 = {
         });
     },
     generateFixedNavbar: function () {
+        if(!SGPlusV2.config.fixedNavbar)
+            return;
         var nav = $('header').html();
         $('nav').remove();
         $('header').html('<div class="navbar_fixed"></div>');
@@ -132,6 +70,8 @@ var SGPlusV2 = {
         }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
     },
     generateShortenedText: function () {
+        if(!SGPlusV2.config.shortenText)
+            return;
         SGPlusV2.generateShortenedComments();
         SGPlusV2.generateShortenedDescriptions();
     },
@@ -185,13 +125,19 @@ var SGPlusV2 = {
         });
     },
     init: function () {
-        SGPlusV2.localStorage = Storage();
-        SGPlusV2.localStorage.getObject('config', function (key, value) {
-            if (!value || value === null)
-                SGPlusV2.localStorage.set('config', SGPlusV2.config, function () { console.log("Salvo"); });
-            else
-                SGPlusV2.config = value;
-        });
+        if (typeof chrome != 'undefined' && typeof chrome.storage != 'undefined' && typeof chrome.storage.sync != 'undefined') {
+            chrome.storage.sync.get(function(settings){
+                if(settings.gridview === undefined) { settings.gridview = false; chrome.storage.sync.set({'gridview': settings.gridview}); }
+                if(settings.shorten_comments === undefined) { settings.shorten_comments = false; chrome.storage.sync.set({'shorten_comments': settings.shorten_comments});}
+                if(settings.scrolling_sidebar === undefined) { settings.scrolling_sidebar = true; chrome.storage.sync.set({'scrolling_sidebar': settings.scrolling_sidebar}); }
+                if(settings.fixed_navbar === undefined) { settings.fixed_navbar = true; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
+
+                SGPlusV2.config.gridView = settings.gridview;
+                SGPlusV2.config.sidebar =  settings.shorten_comments;
+                SGPlusV2.config.shortenText = settings.scrolling_sidebar;
+                SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
+            });
+        }
         SGPlusV2.generateStyles();
         SGPlusV2.generateGridview();
         SGPlusV2.generateScrollingSidebar();
