@@ -140,8 +140,8 @@ var SGPlusV2 = {
                 if(settings.fixed_navbar === undefined) { settings.fixed_navbar = true; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
 
                 SGPlusV2.config.gridView = settings.gridview;
-                SGPlusV2.config.sidebar =  settings.shorten_comments;
-                SGPlusV2.config.shortenText = settings.scrolling_sidebar;
+                SGPlusV2.config.shortenText =  settings.shorten_comments;
+                SGPlusV2.config.sidebar = settings.scrolling_sidebar;
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
 
                 SGPlusV2.init_helper();
