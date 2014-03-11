@@ -17,8 +17,6 @@ var SGPlusV2 = {
         styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}body{margin-top:39px}header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:1}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}';
     },
     generateGridview: function () {
-        if(SGPlusV2.config.gridView === false)
-            return;
         if (SGPlusV2.location.indexOf('/giveaways/open') == -1)
             return;
         var container = document.createElement('div');
@@ -36,8 +34,6 @@ var SGPlusV2 = {
         $(parent).empty().append(container);
     },
     generateScrollingSidebar: function () {
-        if(SGPlusV2.config.sidebar === false)
-            return;
         var $sidebar = $(".sidebar"),
 		$window = $(window),
 		offset = $sidebar.offset(),
@@ -55,8 +51,6 @@ var SGPlusV2 = {
         });
     },
     generateFixedNavbar: function () {
-        if(SGPlusV2.config.fixedNavbar === false)
-            return;
         var nav = $('header').html();
         $('nav').remove();
         $('header').html('<div class="navbar_fixed"></div>');
@@ -70,8 +64,6 @@ var SGPlusV2 = {
         }).attr('unselectable', 'on').bind('selectstart', function () { return false; });
     },
     generateShortenedText: function () {
-        if(SGPlusV2.config.shortenText === false)
-            return;
         SGPlusV2.generateShortenedComments();
         SGPlusV2.generateShortenedDescriptions();
     },
@@ -126,18 +118,22 @@ var SGPlusV2 = {
     },
     init_helper: function(){
         SGPlusV2.generateStyles();
-        SGPlusV2.generateGridview();
-        SGPlusV2.generateScrollingSidebar();
-        SGPlusV2.generateFixedNavbar();
-        SGPlusV2.generateShortenedText();
+        if(SGPlusV2.config.gridView === true)
+            SGPlusV2.generateGridview();
+        if(SGPlusV2.config.sidebar === true)
+            SGPlusV2.generateScrollingSidebar();
+        if(SGPlusV2.config.fixedNavbar === true)
+            SGPlusV2.generateFixedNavbar();
+        if(SGPlusV2.config.shortenText === true)
+            SGPlusV2.generateShortenedText();
     },
     init: function () {
         if (typeof chrome != 'undefined' && typeof chrome.storage != 'undefined' && typeof chrome.storage.sync != 'undefined') {
             chrome.storage.sync.get(function(settings){
-                if(settings.gridview === undefined) { settings.gridview = false; chrome.storage.sync.set({'gridview': settings.gridview}); }
-                if(settings.shorten_comments === undefined) { settings.shorten_comments = false; chrome.storage.sync.set({'shorten_comments': settings.shorten_comments});}
-                if(settings.scrolling_sidebar === undefined) { settings.scrolling_sidebar = true; chrome.storage.sync.set({'scrolling_sidebar': settings.scrolling_sidebar}); }
-                if(settings.fixed_navbar === undefined) { settings.fixed_navbar = true; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
+                if(settings.gridview === undefined) { settings.gridview = SGPlusV2.config.gridView; chrome.storage.sync.set({'gridview': settings.gridview}); }
+                if(settings.shorten_comments === undefined) { settings.shorten_comments = SGPlusV2.config.shortenText; chrome.storage.sync.set({'shorten_comments': settings.shorten_comments});}
+                if(settings.scrolling_sidebar === undefined) { settings.scrolling_sidebar = SGPlusV2.config.sidebar; chrome.storage.sync.set({'scrolling_sidebar': settings.scrolling_sidebar}); }
+                if(settings.fixed_navbar === undefined) { settings.fixed_navbar = SGPlusV2.config.fixedNavbar; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
 
                 SGPlusV2.config.gridView = settings.gridview;
                 SGPlusV2.config.shortenText =  settings.shorten_comments;
