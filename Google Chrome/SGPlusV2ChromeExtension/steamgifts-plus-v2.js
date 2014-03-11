@@ -119,7 +119,7 @@ var SGPlusV2 = {
         });
     },
     selectSidebarItem : function(el){
-        $(el).prepend('<i class="fa fa-caret-right"></i>');
+        $(el).children().prepend('<i class="fa fa-caret-right"></i>');
         $(el).addClass('is-selected');
         return el;
     },
@@ -132,9 +132,9 @@ var SGPlusV2 = {
             var selected = /\/giveaway\/\w{5}\/(\w|\W)+\/groups/.test(SGPlusV2.location);
             var el = $('<li class="sidebar__navigation__item"><a class="sidebar__navigation__item__link" href="' + groupsLocation + '"><div class="sidebar__navigation__item__name">Groups</div><div class="sidebar__navigation__item__underline"></div></a></li>');
             if(selected)
-                $('.sidebar__navigation').append(SGPlusV2.selectSidebarItem(el));
+                $('.sidebar__navigation').first().append(SGPlusV2.selectSidebarItem(el));
             else
-                $('.sidebar__navigation').append(el);
+                $('.sidebar__navigation').first().append(el);
         }
     },
     init_helper: function(){
