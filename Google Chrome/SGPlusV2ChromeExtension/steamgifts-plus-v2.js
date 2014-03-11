@@ -143,9 +143,28 @@ var SGPlusV2 = {
             return;
         $('.featured__outer-wrap').hide();
     },
-    init_helper: function(){
+    putImagesInPlace : function(){
+        $('.comment__description.markdown').each(function(){
+            var images = $(this).find('.comment__toggle-attached').parent();
+            if(images.length == 0)
+                return;
+            var pivot = 0;
+            $(this).find('a').each(function(){
+                if(pivot < images.length && /(\w|\W)+\/img/.test($(this).prop('href'))){
+                    console.log('here');
+                    $(this).parent().append(images[pivot]);
+                    $(this).remove();
+                    pivot++;
+                 }
+            });
+        });
+    },
+    init_nondelayed : function() {
         SGPlusV2.generateStyles();
         SGPlusV2.addGroupLink();
+        SGPlusV2.putImagesInPlace();
+    },
+    init_delayed: function(){
         if(SGPlusV2.config.featuredWrapper === true)
             SGPlusV2.hideFeaturedWrapper();
         if(SGPlusV2.config.gridView === true)
@@ -158,6 +177,7 @@ var SGPlusV2 = {
             SGPlusV2.generateShortenedText();
     },
     init: function () {
+        SGPlusV2.init_nondelayed();
         if (typeof chrome != 'undefined' && typeof chrome.storage != 'undefined' && typeof chrome.storage.sync != 'undefined') {
             chrome.storage.sync.get(function(settings){
                 if(settings.gridview === undefined) { settings.gridview = SGPlusV2.config.gridView; chrome.storage.sync.set({'gridview': settings.gridview}); }
@@ -171,10 +191,10 @@ var SGPlusV2 = {
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
                 SGPlusV2.config.featuredWrapper = settings.featured_wrapper;
 
-                SGPlusV2.init_helper();
+                SGPlusV2.init_delayed();
             });
         } else {
-            SGPlusV2.init_helper();
+            SGPlusV2.init_delayed();
         }
     }
 };
