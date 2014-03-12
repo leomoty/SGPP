@@ -141,6 +141,8 @@ var SGPlusV2 = {
     hideFeaturedWrapper : function(){
         if (SGPlusV2.location.indexOf('/giveaways/') == -1)
             return;
+        if (SGPlusV2.location.indexOf('/user/') >= 0)
+            return;
         $('.featured__outer-wrap').hide();
     },
     putImagesInPlace : function(){
@@ -151,7 +153,6 @@ var SGPlusV2 = {
             var pivot = 0;
             $(this).find('a').each(function(){
                 if(pivot < images.length && /(\w|\W)+\/img/.test($(this).prop('href'))){
-                    console.log('here');
                     $(this).parent().append(images[pivot]);
                     $(this).remove();
                     pivot++;
