@@ -5,7 +5,8 @@ var SGPlusV2 = {
         sidebar: true,
         fixedNavbar: true,
         shortenText: false,
-        featuredWrapper: false
+        featuredWrapper: false,
+        endlessScroll: true
     },
     giveawayColorByType: function (el, hasGroup, hasWhitelist) {
         if (hasGroup && hasWhitelist) el.css('background-color', '#F06969');
@@ -119,6 +120,37 @@ var SGPlusV2 = {
             }
         });
     },
+    lastLoadedPage : 1,
+    lastPage : 1,
+    canLoadNewPage : true,
+    generateEndlessScroll(){
+        if (SGPlusV2.location.indexOf('/giveaways/') == -1)
+            return;
+        if (SGPlusV2.location.indexOf('/user/') >= 0)
+            return;
+        $('.pagination').before($('<div id="loading" class="is-hidden"><span>Loading</span></div'));
+        $('.pagination').css('visibility','hidden');
+        SGPlusV2.lastPage = $('.pagination__navigation > a').last().attr('data-page-number') || 1; //assumes this is the only page available if undefined
+        $(window).scroll(function(){
+            if(SGPlusV2.canLoadNewPage && $(window).scrollTop() >  ($('.pagination').offset().top - $(window).height())){
+                var pos = SGPlusV2.lastLoadedPage + 1;
+                SGPlusV2.canLoadNewPage = false;
+                if(pos > SGPlusV2.lastPage)
+                    return;
+                $('#loading').removeClass('is-hidden');
+                $.ajax({ url:'/giveaways/open/page/' + pos})
+                .done(function (html){
+                    $('.pagination').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
+                    $('.pagination').before($(html).find('.pagination').prev());
+                    SGPlusV2.lastLoadedPage = pos;
+                })
+                .always(function(){
+                    SGPlusV2.canLoadNewPage = true; //needs to assume something can go wrong
+                    $('#loading').addClass('is-hidden');
+                });
+            }
+        });
+    }
     selectSidebarItem : function(el){
         $(el).children().prepend('<i class="fa fa-caret-right"></i>');
         $(el).addClass('is-selected');
@@ -193,6 +225,8 @@ var SGPlusV2 = {
             SGPlusV2.generateFixedNavbar();
         if(SGPlusV2.config.shortenText === true)
             SGPlusV2.generateShortenedText();
+        if(SGPlusV2.config.endlessScroll === true)
+            SGPlusV2.generateEndlessScroll();
     },
     init: function () {
         SGPlusV2.init_nondelayed();
@@ -203,11 +237,14 @@ var SGPlusV2 = {
                 if(settings.scrolling_sidebar === undefined) { settings.scrolling_sidebar = SGPlusV2.config.sidebar; chrome.storage.sync.set({'scrolling_sidebar': settings.scrolling_sidebar}); }
                 if(settings.fixed_navbar === undefined) { settings.fixed_navbar = SGPlusV2.config.fixedNavbar; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
                 if(settings.featured_wrapper === undefined) { settings.featured_wrapper = SGPlusV2.config.featuredWrapper; chrome.storage.sync.set({'featured_wrapper': settings.featured_wrapper}); }
+                if(settings.endless_scroll === undefined) { settings.endless_scroll = SGPlusV2.config.endlessScroll; chrome.storage.sync.set({'endless_scroll': settings.endless_scroll}); }
+
                 SGPlusV2.config.gridView = settings.gridview;
                 SGPlusV2.config.shortenText =  settings.shorten_comments;
                 SGPlusV2.config.sidebar = settings.scrolling_sidebar;
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
                 SGPlusV2.config.featuredWrapper = settings.featured_wrapper;
+                SGPlusV2.config.endlessScroll = settings.endless_scroll;
 
                 SGPlusV2.init_delayed();
             });
