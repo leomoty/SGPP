@@ -141,8 +141,8 @@ var SGPlusV2 = {
                 $('#loading').removeClass('is-hidden');
                 $.ajax({ url: SGPlusV2.location + '/page/' + pos})
                 .done(function (html){
-                    $('.pagination').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
-                    $('.pagination').before($(html).find('.pagination').prev());
+                    $('#loading').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
+                    $('#loading').before($(html).find('.pagination').prev());
                     SGPlusV2.lastLoadedPage = pos;
                 })
                 .always(function(){
