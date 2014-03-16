@@ -124,9 +124,10 @@ var SGPlusV2 = {
     lastPage : 1,
     canLoadNewPage : true,
     generateEndlessScroll : function () {
-        if (SGPlusV2.location.indexOf('/giveaways/') == -1)
-            return;
         if (SGPlusV2.location.indexOf('/user/') >= 0)
+            return;
+        if (SGPlusV2.location.indexOf('/giveaways/open') == -1 && SGPlusV2.location.indexOf('/giveaways/closed') == -1
+            && SGPlusV2.location.indexOf('/giveaways/coming-soon') == -1 && SGPlusV2.location.indexOf('/giveaways/today') == -1)
             return;
         $('.pagination').before($('<div id="loading" class="is-hidden"><span>Loading</span></div'));
         $('.pagination').css('visibility','hidden');
@@ -138,7 +139,7 @@ var SGPlusV2 = {
                 if(pos > SGPlusV2.lastPage)
                     return;
                 $('#loading').removeClass('is-hidden');
-                $.ajax({ url:'/giveaways/open/page/' + pos})
+                $.ajax({ url: SGPlusV2.location + '/page/' + pos})
                 .done(function (html){
                     $('.pagination').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
                     $('.pagination').before($(html).find('.pagination').prev());
