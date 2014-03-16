@@ -150,7 +150,7 @@ var SGPlusV2 = {
                 });
             }
         });
-    }
+    },
     selectSidebarItem : function(el){
         $(el).children().prepend('<i class="fa fa-caret-right"></i>');
         $(el).addClass('is-selected');
