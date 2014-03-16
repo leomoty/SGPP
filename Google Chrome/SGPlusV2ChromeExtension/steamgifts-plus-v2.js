@@ -123,7 +123,7 @@ var SGPlusV2 = {
     lastLoadedPage : 1,
     lastPage : 1,
     canLoadNewPage : true,
-    generateEndlessScroll(){
+    generateEndlessScroll : function () {
         if (SGPlusV2.location.indexOf('/giveaways/') == -1)
             return;
         if (SGPlusV2.location.indexOf('/user/') >= 0)
