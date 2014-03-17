@@ -200,7 +200,7 @@ var SGPlusV2 = {
         });
     },
     createSettingsPageLink : function(){
-        $('a[href="/account/sync"]:last').after($('<a target="_blank" class="nav__row" href="chrome-extension://dcijiifipngipoimajijhpkboeapdpof/settings.html"><i class="settings_logo fa fa-cog fa-fw"></i><div class="nav__row__summary"><p class="nav__row__summary__name">Steamgifts Plus V2</p><p class="nav__row__summary__description">Open Steamgifts Plus V2 settings page.</p></div></a>'));
+        $('.nav__right-container a[href="/account/sync"]:last').after($('<a target="_blank" class="nav__row" href="chrome-extension://dcijiifipngipoimajijhpkboeapdpof/settings.html"><i class="settings_logo fa fa-cog fa-fw"></i><div class="nav__row__summary"><p class="nav__row__summary__name">Steamgifts Plus V2</p><p class="nav__row__summary__description">Open Steamgifts Plus V2 settings page.</p></div></a>'));
     },
     addHandlers : function(){
         $(".js__comment-edit-save, .js__comment-undelete").off("click","**");
