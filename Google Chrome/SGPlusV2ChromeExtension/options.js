@@ -18,7 +18,7 @@
                 $("#" + $(this)[0].classList[1]).removeClass('is-hidden');
             });
 
-
+            $('#save').click(save_options);
         });
 
         // Saves options to localStorage.
@@ -64,4 +64,3 @@
             });
         }
         document.addEventListener('DOMContentLoaded', restore_options);
-        document.querySelector('#save').addEventListener('click', save_options);
