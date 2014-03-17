@@ -16,5 +16,6 @@
    "options_page": "settings.html",
    "version": "1.2",
    "update_url": "https://raw2.github.com/leomoty/SGV2-/dev/Google%20Chrome/updates.xml",
+   "web_accessible_resources": [ "settings.html"],
    "manifest_version" : 2
 }
