@@ -9,5 +9,9 @@ The current functionality is:
 - Scrolling Sidebar
 - Fixed Navbar
 - Shorten comments
+- Endless Scroll
+- Hide Featured Giveaway
+- Put images in place
+
 
 Any bugs please let us know.

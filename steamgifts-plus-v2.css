@@ -45,3 +45,13 @@
     flex-wrap: wrap;
     justify-content: center;
 }
+
+.center_endless_loading {
+    margin: 0 auto;
+    width: 10%;
+}
+
+.center_endless_end {
+    margin: 0 auto;
+    width: 20%;
+}
