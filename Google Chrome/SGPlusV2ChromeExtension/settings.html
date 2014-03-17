@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Steamgifts Plus V2 - Settings</title>
+    <link rel='stylesheet' type='text/css' href='settings.css' />
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <script src="jquery-1.11.0.min.js"></script>
+    <script src="options.js"></script>
+</head>
+<body>
+    <div class="page__outer-wrap">
+        <div class="page__inner-wrap">
+            <div class="widget-container">
+                <div class="sidebar">
+                    <h3 class="sidebar__heading">Steamgifts Plus V2</h3>
+                    <ul class="sidebar__navigation">
+                        <li class="sidebar__navigation__item  is-selected">
+                            <a class="sidebar__navigation__item__link main" href="#">
+                                <i class="is_caustic_soda"></i>
+                                <div class="sidebar__navigation__item__name">Settings</div>
+                                <div class="sidebar__navigation__item__underline"></div>
+                            </a>
+                        </li>
+                        <li class="sidebar__navigation__item ">
+                            <a class="sidebar__navigation__item__link readme" href="#">
+                                <div class="sidebar__navigation__item__name">Readme</div>
+                                <div class="sidebar__navigation__item__underline"></div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar_entry" id="main">
+                    <div class="page__heading">
+                        <div class="page__heading__breadcrumbs">Settings</div>
+                    </div>
+                    <div class="form__row">
+                        <div class="form__heading">
+                            <div class="form__heading__text">Stable features</div>
+                            <div class="is-clear"></div>
+                        </div>
+                        <div class="form__row__indent">
+
+                            <div class="add_hydrogen">
+                                <input type="checkbox" id="shorten_comments" /> Shorten Comments
+                            </div>
+
+                            <div class="add_hydrogen">
+                                <input type="checkbox" id="scrolling_sidebar" /> Scrolling Sidebar
+                            </div>
+
+                            <div class="add_hydrogen">
+                                <input type="checkbox" id="fixed_navbar" /> Fixed Navbar
+                            </div>
+
+                            <div class="add_hydrogen">
+                                <input type="checkbox" id="featured_wrapper" /> Hide Featured Wrapper
+                            </div>
+                            <div class="add_hydrogen">
+                                <input type="checkbox" id="endless_scroll" /> Endless Scroll
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form__heading">
+                        <div class="form__heading__text">Experimental features</div>
+                        <div class="is-clear"></div>
+                    </div>
+                    <div class="form__row__indent">
+                        <div class="add_hydrogen">
+                            <input type="checkbox" id="gridview" /> Gridview
+                        </div>
+                        <div class="form__input-description">These features might be unstable and not work properly, please be cautious when using them. We are not responsible if you would be attacked by cute kittens. You have been warned.</div>
+                    </div>
+                    <br>
+                    <div id="status" style="display:none">Options saved.</div>
+                    <div class="form__submit-button js__submit-form" id="save">Save</div>
+                </div>
+                <div class="sidebar_entry is-hidden" id="readme">
+                    <div class="page__heading">
+                        <div class="page__heading__breadcrumbs">README</div>
+                    </div>
+                    <div class="form__row">
+                        <div class="form__heading">
+                            <div class="form__heading__text">README</div>
+                            <div class="is-clear"></div>
+                        </div>
+                        <div class="form__row__indent">
+                            <span> Readme will be here.
+                        </div>
+                    </div>
+                </div> <!-- end readme-->
+            </div> <!-- end widget_container-->
+
+
+        </div>
+    </div>
+    <div class="footer__outer-wrap">
+        <div class="footer__inner-wrap">
+            <div class="footer__left-container">
+                <div>Always on beta.</div>
+            </div> <!-- End left container -->
+            <div class="footer__right-container">
+                <div class="github"></div>
+                <a href="http://github.com/leomoty/SGV2-/">SGv2+ on GitHub</a>
+                <div></div>
+                <div class="spacer"></div>
+                <div></div>
+                <div class="twitter"></div>
+                <div><a href="https://twitter.com/leomoty">&#64;leomoty</a></div>
+            </div> <!-- End right container -->
+        </div> <!-- End footer, inner-wrap -->
+    </div> <!-- End footer, outer-wrap -->
+</body>
+</html>

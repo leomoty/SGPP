@@ -1,3 +1,25 @@
+        $(document).ready(function(){
+
+            function selectSidebarEl(el){
+                $(el).addClass('is-selected');
+                $(el).children().prepend($('<i class="is_caustic_soda"></i>'));
+            }
+
+            function clearSidebar(){
+                $('.is-selected').removeClass('is-selected');
+                $('.is_caustic_soda').remove();
+            }
+
+            $('.sidebar__navigation__item__link').click(function(){
+                clearSidebar();
+                selectSidebarEl($(this).parent());
+
+                $('.sidebar_entry').addClass('is-hidden');
+                $("#" + $(this)[0].classList[1]).removeClass('is-hidden');
+            });
+
+
+        });
 
         // Saves options to localStorage.
         function save_options() {
