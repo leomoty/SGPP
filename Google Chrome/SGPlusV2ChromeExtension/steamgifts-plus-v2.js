@@ -132,7 +132,7 @@ var SGPlusV2 = {
         if (SGPlusV2.location.indexOf('/giveaways/open') == -1 && SGPlusV2.location.indexOf('/giveaways/closed') == -1
             && SGPlusV2.location.indexOf('/giveaways/coming-soon') == -1 && SGPlusV2.location.indexOf('/giveaways/today') == -1)
             return;
-        $('.pagination').before($('<div id="loading" class="center_endless_loading is-hidden"><img src="'+ SGPlusV2.images.loader + '></img>"<span class="giveaway-summary__heading__name">Loading</span></div'));
+        $('.pagination').before($('<div id="loading" class="center_endless_loading is-hidden"><img src="'+ SGPlusV2.images.loader + '"></img>"<span class="giveaway-summary__heading__name">Loading</span></div'));
         $('.pagination').before($('<div id="end" class="center_endless_end is-hidden"><span class="giveaway-summary__heading__name">You\'ve reached the end.</span></div'));
         $('.pagination').css('visibility','hidden');
         SGPlusV2.lastPage = $('.pagination__navigation > a').last().attr('data-page-number') || 1; //assumes this is the only page available if undefined
