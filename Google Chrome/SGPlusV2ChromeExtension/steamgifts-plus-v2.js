@@ -21,8 +21,11 @@ var SGPlusV2 = {
         var styles = document.head.appendChild(document.createElement('style'));
         styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}.body{margin-top:39px}.header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:1}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}.center_endless_loading{margin:0 auto;width:10%}.center_endless_end{margin:0 auto;width:20%}.settings_logo{color:#494c64}';
     },
-    generateGridview: function () {
-        if (SGPlusV2.location.indexOf('/giveaways/open') == -1)
+    generateGridview: function (root) {
+        if (SGPlusV2.location.indexOf('/user/') >= 0)
+            return;
+        if (SGPlusV2.location.indexOf('/giveaways/open') == -1 && SGPlusV2.location.indexOf('/giveaways/closed') == -1
+            && SGPlusV2.location.indexOf('/giveaways/coming-soon') == -1 && SGPlusV2.location.indexOf('/giveaways/today') == -1)
             return;
         var container = document.createElement('div');
         $(container).addClass('gridview_flex');
@@ -148,7 +151,10 @@ var SGPlusV2 = {
                 $.ajax({ url: SGPlusV2.location + '/page/' + pos})
                 .done(function (html){
                     $('#loading').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
-                    $('#loading').before($(html).find('.pagination').prev());
+                    if(SGPlusV2.config.gridView)
+                        $('#loading').before(SGPlusV2.generateGridview($(html).find('.pagination').prev()));
+                    else
+                        $('#loading').before($(html).find('.pagination').prev());
                     SGPlusV2.lastLoadedPage = pos;
                 })
                 .always(function(){
@@ -228,7 +234,7 @@ var SGPlusV2 = {
         if(SGPlusV2.config.featuredWrapper === true)
             SGPlusV2.hideFeaturedWrapper();
         if(SGPlusV2.config.gridView === true)
-            SGPlusV2.generateGridview();
+            SGPlusV2.generateGridview($('.pagination').prev());
         if(SGPlusV2.config.sidebar === true)
             SGPlusV2.generateScrollingSidebar();
         if(SGPlusV2.config.fixedNavbar === true)
