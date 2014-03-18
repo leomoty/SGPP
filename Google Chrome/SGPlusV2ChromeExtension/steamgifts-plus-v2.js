@@ -29,9 +29,9 @@ var SGPlusV2 = {
             return;
         var container = document.createElement('div');
         $(container).addClass('gridview_flex');
-        var parent = $('.page__heading').next()[0];
-        $('.giveaway-summary__thumbnail-outer-wrap').css('margin', '5px');
-        $('.giveaway-summary-inner-wrap').each(function () {
+        //var parent = $('.page__heading').next()[0];
+        $(root).find('.giveaway-summary__thumbnail-outer-wrap').css('margin', '5px');
+        $(root).find('.giveaway-summary-inner-wrap').each(function () {
             if ($(this).parents('.giveaway-container--featured').length != 0) return;
             var eachDiv = document.createElement('div');
             var whitelist = $(this).find('.giveaway-summary__column--whitelist');
@@ -39,7 +39,8 @@ var SGPlusV2 = {
             $(eachDiv).append(SGPlusV2.giveawayColorByType($(this).find('.giveaway-summary__thumbnail-outer-wrap'), group.length, whitelist.length));
             $(container).append(eachDiv);
         });
-        $(parent).empty().append(container);
+        return container;
+        //$(parent).empty().append(container);
     },
     generateScrollingSidebar: function () {
         var $sidebar = $(".sidebar"),
@@ -234,7 +235,7 @@ var SGPlusV2 = {
         if(SGPlusV2.config.featuredWrapper === true)
             SGPlusV2.hideFeaturedWrapper();
         if(SGPlusV2.config.gridView === true)
-            SGPlusV2.generateGridview($('.pagination').prev());
+            $($('.page__heading').next()[0]).empty().append(SGPlusV2.generateGridview($('.pagination').prev()));
         if(SGPlusV2.config.sidebar === true)
             SGPlusV2.generateScrollingSidebar();
         if(SGPlusV2.config.fixedNavbar === true)
