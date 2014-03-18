@@ -234,8 +234,10 @@ var SGPlusV2 = {
     init_delayed: function(){
         if(SGPlusV2.config.featuredWrapper === true)
             SGPlusV2.hideFeaturedWrapper();
-        if(SGPlusV2.config.gridView === true)
-            $($('.page__heading').next()[0]).empty().append(SGPlusV2.generateGridview($('.pagination').prev()));
+        if(SGPlusV2.config.gridView === true){
+            var content = SGPlusV2.generateGridview($('.pagination').prev());
+            $($('.page__heading').next()[0]).html(content);
+        }
         if(SGPlusV2.config.sidebar === true)
             SGPlusV2.generateScrollingSidebar();
         if(SGPlusV2.config.fixedNavbar === true)
