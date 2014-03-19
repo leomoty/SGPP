@@ -171,7 +171,7 @@ var SGPlusV2 = {
     },
     generateMarkdownLivePreview : function(){
         $('.comment__description textarea').on("keyup",function(){
-            if(!$('textarea').val().length)
+            if(!$(this).val().length)
                 $('.preview').remove();
             else if(!$('.comment__description .livepreview').length){
                 $('.comment__description form').append('<div class="preview"><span>Live Preview</span><div class="livepreview markdown"></div></div>');
