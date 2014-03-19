@@ -251,7 +251,6 @@ var SGPlusV2 = {
     init_nondelayed : function() {
         SGPlusV2.addHandlers();
         SGPlusV2.generateStyles();
-        SGPlusV2.highlightComment();
         SGPlusV2.addGroupLink();
         SGPlusV2.putImagesInPlace();
         SGPlusV2.generateMarkdownLivePreview();
@@ -271,6 +270,7 @@ var SGPlusV2 = {
             SGPlusV2.generateShortenedText();
         if(SGPlusV2.config.endlessScroll === true)
             SGPlusV2.generateEndlessScroll();
+        SGPlusV2.highlightComment();
     },
     init: function () {
         SGPlusV2.init_nondelayed();
