@@ -240,8 +240,13 @@ var SGPlusV2 = {
         });
     },
     highlightComment : function() {
-        if(SGPlusV2.location.indexOf('/discussion') == 0 && $(window.location.hash).length)
+        if(SGPlusV2.location.indexOf('/discussion') == 0 && $(window.location.hash).length){
             $(window.location.hash).parent().css('border-color','#da5d88');
+            if(SGPlusV2.config.fixedNavbar)
+                $(window).scrollTop($(window).scrollTop() - 60);
+            else
+                $(window).scrollTop($(window).scrollTop() - 80);
+        }
     },
     init_nondelayed : function() {
         SGPlusV2.addHandlers();
