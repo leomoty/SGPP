@@ -23,7 +23,7 @@ var SGPlusV2 = {
     },
     generateStyles: function () {
         var styles = document.head.appendChild(document.createElement('style'));
-        styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}.body{margin-top:39px}.header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:1}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}.center_endless_loading{margin:0 auto;width:10%}.center_endless_end{margin:0 auto;width:20%}.settings_logo{color:#494c64}';
+        styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}.body{margin-top:39px}.header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:1}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}.center_endless_loading{margin:0 auto;width:10%}.center_endless_end{margin:0 auto;width:20%}.settings_logo{color:#494c64}.preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,.2);border:1px solid #cbcfdb;border-radius:4px;padding:15px;margin-top:10px}.preview_text{font-weight:700;margin-bottom:10px;color:#4b72d4}';
     },
     generateGridview: function (root) {
         if (SGPlusV2.location.indexOf('/user/') >= 0)
@@ -172,11 +172,11 @@ var SGPlusV2 = {
     generateMarkdownLivePreview : function(){
         $('.comment__description textarea').on("keyup",function(){
             if(!$(this).val().length)
-                $('.preview').remove();
-            else if(!$('.comment__description .livepreview').length){
-                $('.comment__description form').append('<div class="preview"><span>Live Preview</span><div class="livepreview markdown"></div></div>');
+                $(this).siblings('.preview').remove();
+            else if(!$(this).parents('.comment__description').find('.livepreview').length){
+                $(this).parents('.comment__description form').append('<div class="preview"><div class="preview_text">Live Preview</div><div class="livepreview markdown"></div></div>');
             }
-            $('.livepreview').html(SGPlusV2.markdownConverter.makeHtml($(this).val()));
+            $(this).siblings('.livepreview').html(SGPlusV2.markdownConverter.makeHtml($(this).val()));
         });
     },
     selectSidebarItem : function(el){
