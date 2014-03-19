@@ -176,7 +176,7 @@ var SGPlusV2 = {
             else if(!$(this).parents('.comment__description').find('.livepreview').length){
                 $(this).parents('.comment__description form').append('<div class="preview"><div class="preview_text">Live Preview</div><div class="livepreview markdown"></div></div>');
             }
-            $(this).siblings('.livepreview').html(SGPlusV2.markdownConverter.makeHtml($(this).val()));
+            $(this).siblings('.preview').children('.livepreview').html(SGPlusV2.markdownConverter.makeHtml($(this).val()));
         });
     },
     selectSidebarItem : function(el){
