@@ -244,8 +244,6 @@ var SGPlusV2 = {
             $(window.location.hash).parent().css('border-color','#da5d88');
             if(SGPlusV2.config.fixedNavbar)
                 $(window).scrollTop($(window).scrollTop() - 60);
-            else
-                $(window).scrollTop($(window).scrollTop() - 80);
         }
     },
     init_nondelayed : function() {
