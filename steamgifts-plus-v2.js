@@ -182,8 +182,8 @@ var SGPlusV2 = {
         if(paragraphEnd != -1 && paragraphEnd < spoilerEnd)
             return SGPlusV2.parseSpoiler(content, paragraphEnd + 4);
         if((spoilerStart + 1 == spoilerEnd) || content.charAt(spoilerStart + 1) === ' ' || content.charAt(spoilerEnd + 1) === '~' || content.charAt(spoilerEnd - 1) === ' ')
-            return SGPlusV2.parseSpoiler(content, spoilerEnd + 1);
-        return SGPlusV2.parseSpoiler(content.replace(content.substr(spoilerStart, spoilerEnd - spoilerStart + 1), SGPlusV2.tags.spoiler_pre_tag + content.substr(spoilerStart + 1 , spoilerEnd - spoilerStart - 1) + SGPlusV2.tags.spoiler_pos_tag), spoilerEnd);
+            return SGPlusV2.parseSpoiler(content, spoilerEnd);
+        return SGPlusV2.parseSpoiler(content.substr(0,spoilerStart) +  SGPlusV2.tags.spoiler_pre_tag + content.substr(spoilerStart +1 , spoilerEnd - spoilerStart - 1) + SGPlusV2.tags.spoiler_pos_tag + content.substr(spoilerEnd + 1, content.length - spoilerEnd), spoilerEnd + 1);
     },
     generateMarkdownLivePreview : function(){
         $('.comment__description textarea').on("keyup",function(){
