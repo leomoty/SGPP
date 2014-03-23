@@ -176,8 +176,11 @@ var SGPlusV2 = {
             return content;
         var spoilerStart = content.indexOf("~", start);
         var spoilerEnd = content.indexOf("~", spoilerStart + 1);
+        var paragraphEnd = content.indexOf("</p>", spoilerStart + 1);
         if(spoilerStart == - 1 || spoilerEnd == - 1)
             return content;
+        if(paragraphEnd != -1 && paragraphEnd < spoilerEnd)
+            return SGPlusV2.parseSpoiler(content, paragraphEnd + 1);
         if((spoilerStart + 1 == spoilerEnd) || content.charAt(spoilerStart + 1) === ' ' || content.charAt(spoilerEnd + 1) === '~' || content.charAt(spoilerEnd - 1) === ' ')
             return SGPlusV2.parseSpoiler(content, spoilerEnd + 1);
         return SGPlusV2.parseSpoiler(content.replace(content.substr(spoilerStart, spoilerEnd - spoilerStart + 1), SGPlusV2.tags.spoiler_pre_tag + content.substr(spoilerStart + 1 , spoilerEnd - spoilerStart - 1) + SGPlusV2.tags.spoiler_pos_tag), spoilerEnd);
