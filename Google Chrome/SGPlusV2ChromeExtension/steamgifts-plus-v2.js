@@ -180,7 +180,7 @@ var SGPlusV2 = {
         if(spoilerStart == - 1 || spoilerEnd == - 1)
             return content;
         if(paragraphEnd != -1 && paragraphEnd < spoilerEnd)
-            return SGPlusV2.parseSpoiler(content, paragraphEnd + 1);
+            return SGPlusV2.parseSpoiler(content, paragraphEnd + 4);
         if((spoilerStart + 1 == spoilerEnd) || content.charAt(spoilerStart + 1) === ' ' || content.charAt(spoilerEnd + 1) === '~' || content.charAt(spoilerEnd - 1) === ' ')
             return SGPlusV2.parseSpoiler(content, spoilerEnd + 1);
         return SGPlusV2.parseSpoiler(content.replace(content.substr(spoilerStart, spoilerEnd - spoilerStart + 1), SGPlusV2.tags.spoiler_pre_tag + content.substr(spoilerStart + 1 , spoilerEnd - spoilerStart - 1) + SGPlusV2.tags.spoiler_pos_tag), spoilerEnd);
@@ -243,16 +243,19 @@ var SGPlusV2 = {
         $(".js__comment-edit-save, .js__comment-undelete").off("click","**");
         $(document).on("click", ".js__comment-edit-save, .js__comment-undelete", function(){
            var elem = $(this);
-           $.ajax({
-               url: $(this).closest('form').attr('action'),
-               type: 'POST',
-               data: $(this).closest('form').serialize(),
-               success: function(data){
-                   elem.closest('.comment .ajax').html(data);
-                   SGPlusV2.putImagesInPlace();
-               }
-           });
-           return false;
+            $.ajax({
+            url: '/ajax.php',
+            type: 'POST',
+            dataType: 'json',
+            data: $(this).closest('form').serialize(),
+            success: function(data){
+                if (data.type === 'success'){
+                    elem.closest('.comment .ajax').html(data.comment);
+                    SGPlusV2.putImagesInPlace();
+                }
+            }
+        });
+        return false;
         });
     },
     highlightComment : function() {
