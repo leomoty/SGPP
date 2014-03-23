@@ -180,7 +180,7 @@ var SGPlusV2 = {
             return content;
         if((spoilerStart + 1 == spoilerEnd) || content.charAt(spoilerStart + 1) === ' ' || content.charAt(spoilerEnd + 1) === '~' || content.charAt(spoilerEnd - 1) === ' ')
             return SGPlusV2.parseSpoiler(content, spoilerEnd + 1);
-        return SGPlusV2.parseSpoiler(content.replace(content.substr(spoilerStart, spoilerEnd - spoilerStart + 1), SGplusV2.tags.spoiler_pre_tag + content.substr(spoilerStart + 1 , spoilerEnd - spoilerStart - 1) + SGplusV2.tags.spoiler_pos_tag), spoilerEnd);
+        return SGPlusV2.parseSpoiler(content.replace(content.substr(spoilerStart, spoilerEnd - spoilerStart + 1), SGPlusV2.tags.spoiler_pre_tag + content.substr(spoilerStart + 1 , spoilerEnd - spoilerStart - 1) + SGPlusV2.tags.spoiler_pos_tag), spoilerEnd);
     },
     generateMarkdownLivePreview : function(){
         $('.comment__description textarea').on("keyup",function(){
