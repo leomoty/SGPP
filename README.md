@@ -12,6 +12,7 @@ The current functionality is:
 - Endless Scroll
 - Hide Featured Giveaway
 - Put images in place
+- Live preview
 
 
 Any bugs please let us know.
