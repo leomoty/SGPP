@@ -74,3 +74,10 @@
     margin-bottom: 10px;
     color: #4b72d4;
 }
+
+.highlight{
+    border-radius: 4px;
+    box-shadow: 1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,0.37) inset;
+    border: 1px solid #da5d88;
+    padding: 15px;
+}
