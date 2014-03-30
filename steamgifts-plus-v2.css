@@ -91,3 +91,10 @@
 .small_text{
    font-size:12px;
 }
+
+.gridview_flex .pagination{
+    visibility: hidden;
+    height: 0px;
+    padding: 0px;
+    margin: 0px;
+}
