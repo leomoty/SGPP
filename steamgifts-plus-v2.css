@@ -112,3 +112,11 @@
     width: 24px;
     padding: 2px;
 }
+
+.tile_view_faded{
+    width: 184px;
+    height: 69px;
+    margin-top: -69px;
+    background-color: white;
+    opacity: 0.75;
+}
