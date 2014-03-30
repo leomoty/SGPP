@@ -88,13 +88,26 @@
     padding-bottom: 116px;
 }
 
-.small_text{
-   font-size:12px;
+.tile_view_header{
+    min-height: 35px;
+    margin-top: 5px;
+    font-size:12px;
 }
 
-.gridview_flex .pagination{
+.hide_pagination{
     visibility: hidden;
     height: 0px;
     padding: 0px;
     margin: 0px;
+}
+
+.tile_view_avatar_outer{
+    float: right;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.tile_view_avatar{
+    height: 24px;
+    width: 24px;
 }
