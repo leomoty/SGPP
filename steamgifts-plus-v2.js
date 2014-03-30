@@ -76,7 +76,7 @@ var SGPlusV2 = {
             $(gridview_extra).append('<div style="float:left;"><strong>' + copies + '</strong> Copies</div>');
             $(gridview_extra).append('<div style="float:right;"><strong>' + cost + '</strong></div>');
             $(gridview_extra).append('<div style="clear:both;"></div>');
-            $(gridview_extra).append('<div><strong>' + timeSplit[0] + '</strong> ' + timeSplit[1] + '</div>');
+            $(gridview_extra).append('<div style="margin-top:-14px;"><strong>' + timeSplit[0] + '</strong> ' + timeSplit[1] + '</div>');
             $(gridview_extra).append('<div style="clear:both;"></div>');
             $(gridview_extra).append('<div style="float:left;"><strong>' + entriesSplit[0] + '</strong> Entries</div>');
             $(gridview_extra).append('<div style="float:right;"><strong>' + SGPlusV2.calculateWinChance(copies,entriesSplit[0]) + '</strong>% Chance</div>');
