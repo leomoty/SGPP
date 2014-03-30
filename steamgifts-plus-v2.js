@@ -23,7 +23,6 @@ var SGPlusV2 = {
         return giveaway.replace(/[0-9]+ Copies of /, "");
     },
     getNumberOfCopies : function (giveaway){
-        if()
         var index = giveaway.indexOf("Copies of");
         if(index == -1)
             return "1";
