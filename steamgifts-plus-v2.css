@@ -35,7 +35,7 @@
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1
+    z-index: 100
 }
 
 .navbar_fixed { padding: 0 25px;} 
@@ -80,4 +80,8 @@
     box-shadow: 1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,0.37) inset;
     border: 1px solid #da5d88;
     padding: 15px;
+}
+
+.gridview_flex .giveaway-summary__thumbnail-outer-wrap:hover{
+    padding-bottom: 116px;
 }
