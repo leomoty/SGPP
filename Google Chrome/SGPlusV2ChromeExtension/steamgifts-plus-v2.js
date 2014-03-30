@@ -46,17 +46,17 @@ var SGPlusV2 = {
             var giveawayName = $(this).find('.giveaway-summary__heading__name').text();
             $(eachDiv).append(SGPlusV2.giveawayColorByType($(this).find('.giveaway-summary__thumbnail-outer-wrap'), group.length, whitelist.length));
 
-            $(eachDiv).children().first().append('<div class="gridview_extra is-hidden"></div>');
-            var gridview_extra = $(eachDiv).find('gridview_extra');
+            var gridview_extra = $('<div class="gridview_extra is-hidden"></div>');
             $(gridview_extra).append('<div class=".giveaway-summary__heading__name">' + giveawayName +  '</div>');
+            $(eachDiv).children().first().append(gridview_extra);
             $(container).append(eachDiv);
         });
         $(container).find('.giveaway-summary__thumbnail-outer-wrap').hover(
             function(){
-                $(this).closest('gridview_extra').removeClass('is-hidden');
+                $(this).find('.gridview_extra').removeClass('is-hidden');
             },
             function(){
-                $(this).closest('gridview_extra').addClass('is-hidden');
+                $(this).find('.gridview_extra').addClass('is-hidden');
             });
         return container;
     },
