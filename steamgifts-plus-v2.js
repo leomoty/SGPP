@@ -40,7 +40,7 @@ var SGPlusV2 = {
     },
     calculateWinChance: function(copies, entries){
         return (+(parseFloat(copies)/parseFloat(entries)).toFixed(2)*100);
-    }
+    },
     generateGridview: function (root) {
         if (SGPlusV2.location.indexOf('/user/') >= 0)
             return;
