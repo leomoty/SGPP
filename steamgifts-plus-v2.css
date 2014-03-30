@@ -85,3 +85,7 @@
 .gridview_flex .giveaway-summary__thumbnail-outer-wrap:hover{
     padding-bottom: 116px;
 }
+
+.small_text{
+   font-size:12px;
+}
