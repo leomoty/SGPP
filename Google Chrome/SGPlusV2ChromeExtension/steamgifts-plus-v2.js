@@ -36,8 +36,11 @@ var SGPlusV2 = {
     },
     generateStyles: function () {
         var styles = document.head.appendChild(document.createElement('style'));
-        styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}.body{margin-top:39px}.header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:100}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}.center_endless_loading{margin:0 auto;width:10%}.center_endless_end{margin:0 auto;width:20%}.settings_logo{color:#494c64}.preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,.2);border:1px solid #cbcfdb;border-radius:4px;padding:15px;margin-top:10px}.preview_text{font-weight:700;margin-bottom:10px;color:#4b72d4}.highlight{border-radius:4px;box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;border:1px solid #da5d88;padding:15px}.gridview_flex .giveaway-summary__thumbnail-outer-wrap:hover{position:absolute;z-index:5;padding-bottom:116px}.tile_view_header{min-height:35px;margin-top:5px;font-size:12px}.hide_pagination{visibility:hidden;height:0;padding:0;margin:0}.tile_view_avatar_outer{float:right;display:inline-block;margin-left:5px}.tile_view_avatar{height:24px;width:24px}';
+        styles.innerHTML = '.short .markdown{overflow:hidden;max-height:100px;position:relative}.less__beautify{position:absolute;width:100%;bottom:0;display:none;background:-webkit-gradient(linear,left top,left bottom,from(rgba(240,242,245,0)),to(rgba(240,242,245,1)));background:-moz-linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));background:linear-gradient(top,rgba(240,242,245,0),rgba(240,242,245,1));height:20px}.less__beautify.sub{background:-webkit-gradient(linear,left top,left bottom,from(rgba(243,244,247,0)),to(rgba(243,244,247,1)));background:-moz-linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1));background:linear-gradient(top,rgba(243,244,247,0),rgba(243,244,247,1))}.short .less__beautify{display:block}.comment_more{display:none}.short .comment_more{display:block}.short .comment_less{display:none}.body{margin-top:39px}.header{margin-left:-25px;position:fixed;top:0;width:100%;z-index:100}.navbar_fixed{padding:0 25px}.gridview_flex{display:flex;flex-wrap:wrap;justify-content:center}.center_endless_loading{margin:0 auto;width:10%}.center_endless_end{margin:0 auto;width:20%}.settings_logo{color:#494c64}.preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,.2);border:1px solid #cbcfdb;border-radius:4px;padding:15px;margin-top:10px}.preview_text{font-weight:700;margin-bottom:10px;color:#4b72d4}.highlight{border-radius:4px;box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;border:1px solid #da5d88;padding:15px}.gridview_flex .giveaway-summary__thumbnail-outer-wrap:hover{position:absolute;z-index:5;padding-bottom:116px}.tile_view_header{min-height:35px;margin-top:5px;font-size:12px}.hide_pagination{visibility:hidden;height:0;padding:0;margin:0}.tile_view_avatar_outer{float:right;display:inline-block;margin-left:5px}.tile_view_avatar{height:24px;width:24px;padding:2px}';
     },
+    calculateWinChance: function(copies, entries){
+        return (+(parseFloat(copies)/parseFloat(entries)).toFixed(2)*100);
+    }
     generateGridview: function (root) {
         if (SGPlusV2.location.indexOf('/user/') >= 0)
             return;
@@ -60,11 +63,23 @@ var SGPlusV2 = {
             avatar.addClass('tile_view_avatar');
             var cost = $(this).find('.giveaway-summary__heading__points').text();
             cost = cost.substr(1,cost.length-2);
+            var timeLeft = $(this).find('.fa-clock-o').next().text();
+            var timeSplit = timeLeft.split(" ");
+            var entries = $(this).find('.fa-tag').next().text();
+            var entriesSplit = entries.split(" ");
+            var comments = $(this).find('.fa-comment').next().text();
+            var commentsSplit = comments.split(" ");
+            var copies = SGPlusV2.getNumberOfCopies(giveawayName);
             $(gridview_extra).append('<div class="giveaway-summary__heading__name tile_view_header">' + SGPlusV2.clearGiveawayName(giveawayName) +  '</div>');
             $(gridview_extra).append('<div class="tile_view_avatar_outer">'+ avatar[0].outerHTML +'</div>');
-            $(gridview_extra).append('<div style="float:left;"><strong>' + SGPlusV2.getNumberOfCopies(giveawayName) + '</strong> Copies</div>');
+            $(gridview_extra).append('<div><strong>' + copies + '</strong> Copies</div>');
             $(gridview_extra).append('<div style="float:right;"><strong>' + cost + '</strong></div>');
             $(gridview_extra).append('<div style="clear:both;"></div>');
+            $(gridview_extra).append('<div><strong>' + timeSplit[0] + '</strong> ' + timeSplit[1] + '</div>');
+            $(gridview_extra).append('<div style="clear:both;"></div>');
+            $(gridview_extra).append('<div><strong>' + entriesSplit[0] + '</strong> Entries</div>');
+            $(gridview_extra).append('<div style="float:right;"><strong>' + SGPlusV2.calculateWinChance(copies,entriesSplit[0]) + '</strong>% Chance</div>');
+            $(gridview_extra).append('<div><strong>' + commentsSplit[0] + '</strong> Comments</div>');
             $(eachDiv).children().first().append(gridview_extra);
             $(container).append(eachDiv);
         });
