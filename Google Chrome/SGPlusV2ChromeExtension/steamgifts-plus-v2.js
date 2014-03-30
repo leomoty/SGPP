@@ -58,7 +58,7 @@ var SGPlusV2 = {
             var giveawayName = $(this).find('.giveaway-summary__heading__name').text();
             var avatar = $(this).find('.giveaway-summary__avatar-outer-wrap');
             avatar.addClass('tile_view_avatar');
-            var cost = $(this).find('giveaway-summary__heading__points').text();
+            var cost = $(this).find('.giveaway-summary__heading__points').text();
             cost = cost.substr(1,cost.length-2);
             $(gridview_extra).append('<div class="giveaway-summary__heading__name tile_view_header">' + SGPlusV2.clearGiveawayName(giveawayName) +  '</div>');
             $(gridview_extra).append('<div class="tile_view_avatar_outer">'+ avatar[0].outerHTML +'</div>');
