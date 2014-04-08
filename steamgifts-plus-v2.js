@@ -307,7 +307,8 @@ var SGPlusV2 = {
                 ['green', 'red', 'blue'],
                 ['purple', 'pink', 'orange']
             ],
-            change: function(color) { $('.color-target').css('color',color.toHexString());}
+            change: function(color) { $('.color-target').css('color',color.toHexString());},
+            dragstop: function(e, color) {$('.color-target').css('color',color.toHexString()); }
         });
 
     },
