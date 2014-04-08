@@ -310,14 +310,17 @@ var SGPlusV2 = {
             ],
         });
 
-        $('.color-palette').on("dragstop.spectrum, change.spectrum", function(e, color) {
+        $('.color-palette').on("change.spectrum", function(color){
+             SGPlusV2.userTaggingSelectedColor = color.toHexString();
+            $('.color-target').css('color',color.toHexString());
+        });
+
+        $('.color-palette').on("dragstop.spectrum", function(e, color) {
             SGPlusV2.userTaggingSelectedColor = color.toHexString();
             $('.color-target').css('color',color.toHexString());
         });
-        $('.color-palette').on("hide.spectrum", function(color){
-            if(color.toHexString().localeCompare(SGPlusV2.userTaggingSelectedColor) != 0)
-                $(".color-target").spectrum("set", SGPlusV2.userTaggingSelectedColor);
-
+        $('.color-palette').on("hide.spectrum", function(){
+            $(".color-target").spectrum("set", SGPlusV2.userTaggingSelectedColor);
         });
     },
     createSettingsPageLink : function(){
