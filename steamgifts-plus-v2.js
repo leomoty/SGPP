@@ -304,6 +304,7 @@ var SGPlusV2 = {
 
         $(".color-palette").spectrum({
             showPalette: true,
+            clickoutFiresChange: true,
             palette: [
                 ['green', 'red', 'blue'],
                 ['purple', 'pink', 'orange']
@@ -318,9 +319,6 @@ var SGPlusV2 = {
         $('.color-palette').on("dragstop.spectrum", function(e, color) {
             SGPlusV2.userTaggingSelectedColor = color.toHexString();
             $('.color-target').css('color',color.toHexString());
-        });
-        $('.color-palette').on("hide.spectrum", function(){
-            $(".color-target").spectrum("set", SGPlusV2.userTaggingSelectedColor);
         });
     },
     createSettingsPageLink : function(){
