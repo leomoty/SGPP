@@ -305,20 +305,15 @@ var SGPlusV2 = {
         $(".color-palette").spectrum({
             showPalette: true,
             clickoutFiresChange: true,
+            showSelectionPalette: false,
             palette: [
                 ['green', 'red', 'blue'],
                 ['purple', 'pink', 'orange']
             ],
-        });
-
-        $('.color-palette').on("change.spectrum", function(color){
-             SGPlusV2.userTaggingSelectedColor = color.toHexString();
-            $('.color-target').css('color',color.toHexString());
-        });
-
-        $('.color-palette').on("dragstop.spectrum", function(e, color) {
-            SGPlusV2.userTaggingSelectedColor = color.toHexString();
-            $('.color-target').css('color',color.toHexString());
+            change: function(color){
+                SGPlusV2.userTaggingSelectedColor = color.toHexString();
+                $('.color-target').css('color',color.toHexString());
+            }
         });
     },
     createSettingsPageLink : function(){
