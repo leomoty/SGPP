@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
   <app appid='dcijiifipngipoimajijhpkboeapdpof'>
-    <updatecheck codebase='https://github.com/leomoty/SGV2-/raw/dev/Google%20Chrome/SGPlusV2ChromeExtension.crx' version='2.1.89' />
+    <updatecheck codebase='https://github.com/leomoty/SGV2-/raw/dev/Google%20Chrome/SGPlusV2ChromeExtension.crx' version='2.1.90' />
   </app>
 </gupdate>

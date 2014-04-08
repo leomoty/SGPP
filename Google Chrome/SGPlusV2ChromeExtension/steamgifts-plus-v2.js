@@ -296,6 +296,7 @@ var SGPlusV2 = {
             });
         });
     },
+    userTaggingSelectedColor : "",
     toggleUserTagging : function(){
         if(SGPlusV2.location.indexOf('/user/') == -1)
             return;
@@ -307,10 +308,17 @@ var SGPlusV2 = {
                 ['green', 'red', 'blue'],
                 ['purple', 'pink', 'orange']
             ],
-            change: function(color) { $('.color-target').css('color',color.toHexString());},
-            dragstop: function(e, color) {$('.color-target').css('color',color.toHexString()); }
         });
 
+        $('.color-palette').on("dragstop.spectrum, change.spectrum", function(e, color) {
+            SGPlusV2.userTaggingSelectedColor = color.toHexString();
+            $('.color-target').css('color',color.toHexString());
+        });
+        $('.color-palette').on("hide.spectrum", function(color){
+            if(color.toHexString().localeCompare(SGPlusV2.userTaggingSelectedColor) != 0)
+                $(".color-target").spectrum("set", SGPlusV2.userTaggingSelectedColor);
+
+        });
     },
     createSettingsPageLink : function(){
         $('.nav__right-container a[href="/account/sync"]:last').after($('<a target="_blank" class="nav__row" href="chrome-extension://' + chrome.i18n.getMessage("@@extension_id") + '/settings.html"><i class="settings_logo fa fa-cog fa-fw"></i><div class="nav__row__summary"><p class="nav__row__summary__name">Steamgifts Plus V2</p><p class="nav__row__summary__description">Open Steamgifts Plus V2 settings page.</p></div></a>'));
