@@ -308,8 +308,8 @@ var SGPlusV2 = {
 
         var userName = $('.featured__heading').text().trim();
 
-        var content = SGPlusV2.configs.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].tag : "";
-        var color = SGPlusV2.configs.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].color : "#ffffff";
+        var content = SGPlusV2.config.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].tag : "";
+        var color = SGPlusV2.config.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].color : "#ffffff";
 
         if(!SGPlusV2.isUserTaggingPromptVisible)            
             $('.featured__heading').append($('<div class="color-target" style="margin-left:10px;">' + content + '</div><div style="margin-left: 10px;"><input type="text" value="' + color + '" class="color-palette is-hidden"></div>'));
