@@ -16,7 +16,8 @@ var SGPlusV2 = {
         fixedNavbar: true,
         shortenText: false,
         featuredWrapper: false,
-        endlessScroll: true
+        endlessScroll: true,
+        usersTagged: new Object()
     },
     images : {
         loader : 'data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=='
@@ -297,11 +298,28 @@ var SGPlusV2 = {
         });
     },
     userTaggingSelectedColor : "",
+    isUserTaggingPromptVisible : true,
+    persistUserTagging : function(){
+        chrome.storage.sync.set({'users_tagged': SGPlusV2.config.users_tagged});
+    },
     toggleUserTagging : function(){
         if(SGPlusV2.location.indexOf('/user/') == -1)
             return;
-        $('.featured__heading').html($('<div class="color-target">' + $('.featured__heading').html() + '</div><div style="margin-left: 10px;"><input type="text" value="rgb(255,255,255)" class="color-palette is-hidden"></div>'));
 
+        var userName = $('.featured__heading').text().trim();
+
+        var content = SGPlusV2.configs.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].tag : "";
+        var color = SGPlusV2.configs.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].color : "#ffffff";
+
+        if(!SGPlusV2.isUserTaggingPromptVisible)            
+            $('.featured__heading').append($('<div class="color-target" style="margin-left:10px;">' + content + '</div><div style="margin-left: 10px;"><input type="text" value="' + color + '" class="color-palette is-hidden"></div>'));
+        else{
+            $('.featured__heading').append($('<div style="margin-left:10px;"><input class="color-target" type="text" style="height: 40px;width: 200px; value="'+content+'"></div><div style="margin-left: 10px;"><input type="text" value="' + color + '" class="color-palette is-hidden"><div class="form__submit-button user-tagging-submit">Save</div></div>'));
+            $('.user-tagging-submit').on("click", function(){
+                SGPlusV2.config.usersTagged[userName] = {tag: $('.color-target').val(), color: SGPlusV2.userTaggingSelectedColor};
+                SGPlusV2.persistUserTagging();
+            });
+        }
         $(".color-palette").spectrum({
             showPalette: true,
             clickoutFiresChange: true,
@@ -379,6 +397,7 @@ var SGPlusV2 = {
                 if(settings.fixed_navbar === undefined) { settings.fixed_navbar = SGPlusV2.config.fixedNavbar; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
                 if(settings.featured_wrapper === undefined) { settings.featured_wrapper = SGPlusV2.config.featuredWrapper; chrome.storage.sync.set({'featured_wrapper': settings.featured_wrapper}); }
                 if(settings.endless_scroll === undefined) { settings.endless_scroll = SGPlusV2.config.endlessScroll; chrome.storage.sync.set({'endless_scroll': settings.endless_scroll}); }
+                if(settings.users_tagged === undefined) { SGPlusV2.persistUserTagging(); }
 
                 SGPlusV2.config.gridView = settings.gridview;
                 SGPlusV2.config.shortenText =  settings.shorten_comments;
@@ -386,6 +405,7 @@ var SGPlusV2 = {
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
                 SGPlusV2.config.featuredWrapper = settings.featured_wrapper;
                 SGPlusV2.config.endlessScroll = settings.endless_scroll;
+                SGPlusV2.config.usersTagged = settings.users_tagged;
 
                 SGPlusV2.createSettingsPageLink(); //only for chrome for now
                 SGPlusV2.toggleUserTagging(); //it won't work with firefox since we don't have settings there yet...
