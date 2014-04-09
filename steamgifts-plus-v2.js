@@ -9,6 +9,7 @@ var SpectrumCSS = '.sp-container{position:absolute;top:0;left:0;display:inline-b
 
 var SGPlusV2 = {
     location : window.location.pathname,
+    user : "",
     markdownConverter : new Markdown.Converter(),
     config : {
         gridView: false,
@@ -299,6 +300,12 @@ var SGPlusV2 = {
     },
     userTaggingSelectedColor : "",
     isUserTaggingPromptVisible : true,
+    tagComments : function(){
+        /** Needs a check to see if it is a valid page **/
+        var users = SGPlusV2.config.usersTagged;
+        for(var x in users)
+            $('.comment__username a[href="/user/' + x + '"]').parent().append('<a style="margin-left: 5px; color:'+users[x].color + '">' + users[x].tag + '</a>');
+    },
     persistUserTagging : function(){
         chrome.storage.sync.set({'users_tagged': SGPlusV2.config.usersTagged});
     },
@@ -308,8 +315,11 @@ var SGPlusV2 = {
 
         var userName = $('.featured__heading').text().trim();
 
+        if(SGPlusV2.user === userName)
+            return;
+
         var content = SGPlusV2.config.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].tag : "";
-        var color = SGPlusV2.config.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].color : "#ffffff";
+        var color = SGPlusV2.config.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].color : "#000000";
 
         if(!SGPlusV2.isUserTaggingPromptVisible)            
             $('.featured__heading').append($('<div class="color-target" style="margin-left:10px; color:'+color+'">' + content + '</div><div style="margin-left: 10px;"><input type="text" value="' + color + '" class="color-palette is-hidden"></div>'));
@@ -372,6 +382,7 @@ var SGPlusV2 = {
         SGPlusV2.generateMarkdownLivePreview();
     },
     init_delayed: function(){
+        SGPlusV2.user = $('.nav__avatar-inner-wrap').attr('href').replace('/user/','');
         if(SGPlusV2.config.featuredWrapper === true)
             SGPlusV2.hideFeaturedWrapper();
         if(SGPlusV2.config.gridView === true){
@@ -414,6 +425,7 @@ var SGPlusV2 = {
 
                 SGPlusV2.createSettingsPageLink(); //only for chrome for now
                 SGPlusV2.toggleUserTagging(); //it won't work with firefox since we don't have settings there yet...
+                SGPlusV2.tagComments();
 
                 SGPlusV2.init_delayed();
             });
