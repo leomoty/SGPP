@@ -300,7 +300,7 @@ var SGPlusV2 = {
     userTaggingSelectedColor : "",
     isUserTaggingPromptVisible : true,
     persistUserTagging : function(){
-        chrome.storage.sync.set({'users_tagged': SGPlusV2.config.users_tagged});
+        chrome.storage.sync.set({'users_tagged': SGPlusV2.config.usersTagged});
     },
     toggleUserTagging : function(){
         if(SGPlusV2.location.indexOf('/user/') == -1)
@@ -397,7 +397,11 @@ var SGPlusV2 = {
                 if(settings.fixed_navbar === undefined) { settings.fixed_navbar = SGPlusV2.config.fixedNavbar; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
                 if(settings.featured_wrapper === undefined) { settings.featured_wrapper = SGPlusV2.config.featuredWrapper; chrome.storage.sync.set({'featured_wrapper': settings.featured_wrapper}); }
                 if(settings.endless_scroll === undefined) { settings.endless_scroll = SGPlusV2.config.endlessScroll; chrome.storage.sync.set({'endless_scroll': settings.endless_scroll}); }
-                if(settings.users_tagged === undefined) { SGPlusV2.persistUserTagging(); }
+                if(settings.users_tagged === undefined) {
+                    SGPlusV2.persistUserTagging();
+                } else {
+                    SGPlusV2.config.usersTagged = settings.users_tagged;
+                }                
 
                 SGPlusV2.config.gridView = settings.gridview;
                 SGPlusV2.config.shortenText =  settings.shorten_comments;
@@ -405,7 +409,7 @@ var SGPlusV2 = {
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
                 SGPlusV2.config.featuredWrapper = settings.featured_wrapper;
                 SGPlusV2.config.endlessScroll = settings.endless_scroll;
-                SGPlusV2.config.usersTagged = settings.users_tagged;
+                
 
                 SGPlusV2.createSettingsPageLink(); //only for chrome for now
                 SGPlusV2.toggleUserTagging(); //it won't work with firefox since we don't have settings there yet...
