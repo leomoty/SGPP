@@ -312,9 +312,9 @@ var SGPlusV2 = {
         var color = SGPlusV2.config.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].color : "#ffffff";
 
         if(!SGPlusV2.isUserTaggingPromptVisible)            
-            $('.featured__heading').append($('<div class="color-target" style="margin-left:10px;">' + content + '</div><div style="margin-left: 10px;"><input type="text" value="' + color + '" class="color-palette is-hidden"></div>'));
+            $('.featured__heading').append($('<div class="color-target" style="margin-left:10px; color:'+color+'">' + content + '</div><div style="margin-left: 10px;"><input type="text" value="' + color + '" class="color-palette is-hidden"></div>'));
         else{
-            $('.featured__heading').append($('<div style="margin-left:10px;"><input class="color-target" type="text" style="height: 40px;width: 200px;"></div><div style="margin-left: 10px;"><input type="text" value="' + color + '" class="color-palette is-hidden"><div class="form__submit-button user-tagging-submit">Save</div></div>'));
+            $('.featured__heading').append($('<div style="margin-left:10px;"><input class="color-target" type="text" style="height: 40px;width: 200px; color:'+color+'"></div><div style="margin-left: 10px;"><input type="text" value="' + color + '" class="color-palette is-hidden"><div class="form__submit-button user-tagging-submit">Save</div></div>'));
             $('.color-target').val(content);
             $('.user-tagging-submit').on("click", function(){
                 SGPlusV2.config.usersTagged[userName] = {tag: $('.color-target').val(), color: SGPlusV2.userTaggingSelectedColor};
