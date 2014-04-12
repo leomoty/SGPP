@@ -218,6 +218,7 @@ var SGPlusV2 = {
                     $('#end').removeClass('is-hidden');
                     return;
                 }
+                $('.content').css('height','');
                 $('#loading').removeClass('is-hidden');
                 $.ajax({ url: SGPlusV2.location + '/page/' + pos})
                 .done(function (html){
