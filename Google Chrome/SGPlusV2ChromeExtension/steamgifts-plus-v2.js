@@ -349,6 +349,9 @@ var SGPlusV2 = {
         $('.nav__right-container a[href="/account/sync"]:last').after($('<a target="_blank" class="nav__row" href="chrome-extension://' + chrome.i18n.getMessage("@@extension_id") + '/settings.html"><i class="settings_logo fa fa-cog fa-fw"></i><div class="nav__row__summary"><p class="nav__row__summary__name">Steamgifts Plus V2</p><p class="nav__row__summary__description">Open Steamgifts Plus V2 settings page.</p></div></a>'));
     },
     addHandlers : function(){
+
+        $('.sidebar').next().addClass('content');
+
         $(".js__comment-edit-save, .js__comment-undelete").off("click","**");
         $(document).on("click", ".js__comment-edit-save, .js__comment-undelete", function(){
            var elem = $(this);
@@ -388,6 +391,13 @@ var SGPlusV2 = {
         if(SGPlusV2.config.gridView === true){
             var content = SGPlusV2.generateGridview($('.pagination').prev());
             $($('.page__heading').next()[0]).html(content);
+            //bug fix, force the div size to be recalculated else it might keep the old height (chrome 34).
+            var sum = 0;
+            $('.content').children().each(function(){
+            	sum += $(this).height();
+            }); 
+            $('.content').height(sum+100); 
+            $(window).scrollTop(0);
         }
         if(SGPlusV2.config.sidebar === true)
             SGPlusV2.generateScrollingSidebar();
