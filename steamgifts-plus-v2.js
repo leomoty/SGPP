@@ -392,13 +392,17 @@ var SGPlusV2 = {
         if(SGPlusV2.config.gridView === true){
             var content = SGPlusV2.generateGridview($('.pagination').prev());
             $($('.page__heading').next()[0]).html(content);
+
             //bug fix, force the div size to be recalculated else it might keep the old height (chrome 34).
-            var sum = 0;
-            $('.content').children().each(function(){
-            	sum += $(this).height();
-            }); 
-            $('.content').height(sum+100); 
-            $(window).scrollTop(0);
+            if (SGPlusV2.location.indexOf('/user/') == -1 && (SGPlusV2.location.indexOf('/giveaways/open') >= 0 || SGPlusV2.location.indexOf('/giveaways/closed') >= 0
+            || SGPlusV2.location.indexOf('/giveaways/coming-soon') >= 0 || SGPlusV2.location.indexOf('/giveaways/today') >= 0)){
+	            var sum = 0;
+	            $('.content').children().each(function(){
+	            	sum += $(this).height();
+	            }); 
+	            $('.content').height(sum+100); 
+	            $(window).scrollTop(0);
+            }
         }
         if(SGPlusV2.config.sidebar === true)
             SGPlusV2.generateScrollingSidebar();
