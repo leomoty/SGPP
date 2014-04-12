@@ -315,7 +315,7 @@ var SGPlusV2 = {
 
         var userName = $('.featured__heading').text().trim();
 
-        if(SGPlusV2.user.localeCompare(userName) == 0)
+        if(SGPlusV2.user == userName)
             return;
 
         var content = SGPlusV2.config.usersTagged.hasOwnProperty(userName) ? SGPlusV2.config.usersTagged[userName].tag : "";
@@ -375,6 +375,7 @@ var SGPlusV2 = {
         }
     },
     init_nondelayed : function() {
+    	SGPlusV2.user = $('.nav__avatar-inner-wrap').attr('href').replace('/user/','');
         SGPlusV2.addHandlers();
         SGPlusV2.generateStyles();
         SGPlusV2.addGroupLink();
@@ -382,7 +383,6 @@ var SGPlusV2 = {
         SGPlusV2.generateMarkdownLivePreview();
     },
     init_delayed: function(){
-        SGPlusV2.user = $('.nav__avatar-inner-wrap').attr('href').replace('/user/','');
         if(SGPlusV2.config.featuredWrapper === true)
             SGPlusV2.hideFeaturedWrapper();
         if(SGPlusV2.config.gridView === true){
