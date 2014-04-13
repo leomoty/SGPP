@@ -18,7 +18,8 @@ var SGPlusV2 = {
         shortenText: false,
         featuredWrapper: false,
         endlessScroll: true,
-        usersTagged: new Object()
+        usersTagged: new Object(),
+        imagesList: "https://github.com/leomoty/SGv2-Assets/raw/master/images-list.json"
     },
     images : {
         loader : 'data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=='
@@ -378,6 +379,23 @@ var SGPlusV2 = {
                 $(window).scrollTop($(window).scrollTop() - 60);
         }
     },
+    setGiveawayCustomBackground : function(){
+    	if(SGPlusV2.location.indexOf('/giveaway/') == -1)
+    		return;
+		var callImages = function(json) {
+			needle = $('.sidebar').find("a[href*='store.steampowered.com']").attr('href');
+			$.each(json.images, function(index, value){
+				if(needle.indexOf(value.app) >= 0)
+					$('.featured__outer-wrap').css('background-image','url(' + value.link + ')');
+			});
+		}
+
+		$.ajax({
+			url: SGPlusV2.config.imagesList,
+			jsonp: "callImages",
+		    dataType: "jsonp"
+		});
+    },
     init_nondelayed : function() {
     	SGPlusV2.user = $('.nav__avatar-inner-wrap').attr('href').replace('/user/','');
         SGPlusV2.addHandlers();
@@ -385,6 +403,8 @@ var SGPlusV2 = {
         SGPlusV2.addGroupLink();
         SGPlusV2.putImagesInPlace();
         SGPlusV2.generateMarkdownLivePreview();
+        SGPlusV2.highlightComment();
+        SGPlusV2.setGiveawayCustomBackground();
     },
     init_delayed: function(){
         if(SGPlusV2.config.featuredWrapper === true)
@@ -412,7 +432,6 @@ var SGPlusV2 = {
             SGPlusV2.generateShortenedText();
         if(SGPlusV2.config.endlessScroll === true)
             SGPlusV2.generateEndlessScroll();
-        SGPlusV2.highlightComment();
     },
     init: function () {
         SGPlusV2.init_nondelayed();
