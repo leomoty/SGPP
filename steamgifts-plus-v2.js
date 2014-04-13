@@ -379,20 +379,19 @@ var SGPlusV2 = {
                 $(window).scrollTop($(window).scrollTop() - 60);
         }
     },
+    callImages : function(json){
+		needle = $('.sidebar').find("a[href*='store.steampowered.com']").attr('href');
+		$.each(json.images, function(index, value){
+			if(needle.indexOf(value.app) >= 0)
+				$('.featured__outer-wrap').css('background-image','url(' + value.link + ')');
+		});
+    },
     setGiveawayCustomBackground : function(){
     	if(SGPlusV2.location.indexOf('/giveaway/') == -1)
     		return;
-		var callImages = function(json) {
-			needle = $('.sidebar').find("a[href*='store.steampowered.com']").attr('href');
-			$.each(json.images, function(index, value){
-				if(needle.indexOf(value.app) >= 0)
-					$('.featured__outer-wrap').css('background-image','url(' + value.link + ')');
-			});
-		}
-
 		$.ajax({
 			url: SGPlusV2.config.imagesList,
-			jsonp: "callImages",
+			jsonp: "SGPlusV2.callImages",
 		    dataType: "jsonp"
 		});
     },
