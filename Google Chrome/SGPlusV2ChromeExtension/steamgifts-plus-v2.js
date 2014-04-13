@@ -354,6 +354,16 @@ var SGPlusV2 = {
 
         $('.sidebar').next().addClass('content');
 
+        var scriptImage = document.head.appendChild(document.createElement('script'));
+        scriptImage.innerHTML = " \
+        var callImages = function(json){\
+			needle = $('.sidebar').find(\"a[href*='store.steampowered.com']\").attr('href');\
+			$.each(json.images, function(index, value){\
+				if(needle.indexOf(value.app) >= 0)\
+					$('.featured__outer-wrap').css('background-image','url(' + value.link + ')');\
+			});\
+    	}"
+
         $(".js__comment-edit-save, .js__comment-undelete").off("click","**");
         $(document).on("click", ".js__comment-edit-save, .js__comment-undelete", function(){
            var elem = $(this);
@@ -379,19 +389,12 @@ var SGPlusV2 = {
                 $(window).scrollTop($(window).scrollTop() - 60);
         }
     },
-    callImages : function(json){
-		needle = $('.sidebar').find("a[href*='store.steampowered.com']").attr('href');
-		$.each(json.images, function(index, value){
-			if(needle.indexOf(value.app) >= 0)
-				$('.featured__outer-wrap').css('background-image','url(' + value.link + ')');
-		});
-    },
     setGiveawayCustomBackground : function(){
     	if(SGPlusV2.location.indexOf('/giveaway/') == -1)
     		return;
 		$.ajax({
 			url: SGPlusV2.config.imagesList,
-			jsonp: "SGPlusV2.callImages",
+			jsonp: "callImages",
 		    dataType: "jsonp"
 		});
     },
