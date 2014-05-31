@@ -389,6 +389,26 @@ var SGPlusV2 = {
                 $(window).scrollTop($(window).scrollTop() - 60);
         }
     },
+	/** Hides comment i from page (starting from 0) **/
+	hideComment : function(i) {
+		if(SGPlusV2.location.indexOf('/giveaway') == 0 || SGPlusV2.location.indexOf('/discussion') == 0){
+			if(SGPlusV2.location.indexOf('/discussion') == 0){
+					i++; //comments on forum pages begin at 1
+			}
+			//hides comment from view
+			$("#" + $(".comment__summary")[i].id).parent().hide();
+		}
+	},
+	/** Makes visible comment i from page (starting from 0) **/
+	showComment : function(i) {
+		if(SGPlusV2.location.indexOf('/giveaway') == 0 || SGPlusV2.location.indexOf('/discussion') == 0){
+			if(SGPlusV2.location.indexOf('/discussion') == 0){
+					i++; //comments on forum pages begin at 1
+			}
+			//returns comment to view
+			$("#" + $(".comment__summary")[i].id).parent().show();
+		}
+	},
     setGiveawayCustomBackground : function(){
     	if(SGPlusV2.location.indexOf('/giveaway/') == -1)
     		return;
