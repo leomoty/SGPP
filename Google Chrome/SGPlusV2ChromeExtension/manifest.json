@@ -1,0 +1,21 @@
+{
+   "content_scripts": [ {
+      "exclude_globs": [  ],
+      "exclude_matches": [  ],
+      "include_globs": [  ],
+      "js": ["jquery-1.11.0.min.js", "steamgifts-plus-v2.js" ],
+      "matches": [ "http://www.steamsocial.com/*" ],
+      "run_at": "document_end"
+   } ],
+   "description": "Adds various features.",
+   "name": "SteamGifts Plus v2",
+   "permissions": [
+      "storage",
+      "http://www.steamsocial.com/"
+    ],
+   "options_page": "settings.html",
+   "version": "1.2",
+   "update_url": "https://raw2.github.com/leomoty/SGV2-/dev/Google%20Chrome/updates.xml",
+   "web_accessible_resources": [ "settings.html"],
+   "manifest_version" : 2
+}
