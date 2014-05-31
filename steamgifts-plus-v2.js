@@ -56,8 +56,8 @@ var SGPlusV2 = {
     generateGridview: function (root) {
         if (SGPlusV2.location.indexOf('/user/') >= 0)
             return;
-        if (SGPlusV2.location.indexOf('/giveaways/open') == -1 && SGPlusV2.location.indexOf('/giveaways/closed') == -1
-            && SGPlusV2.location.indexOf('/giveaways/coming-soon') == -1 && SGPlusV2.location.indexOf('/giveaways/today') == -1)
+        if (SGPlusV2.location.indexOf('/giveaways/all/open') == -1 && SGPlusV2.location.indexOf('/giveaways/group/open') == -1
+            && SGPlusV2.location.indexOf('/giveaways/wishlist/open') == -1 && SGPlusV2.location.indexOf('/giveaways/new/open') == -1)
             return;
         var container = document.createElement('div');
         $(container).addClass('gridview_flex');
@@ -204,8 +204,8 @@ var SGPlusV2 = {
     generateEndlessScroll : function () {
         if (SGPlusV2.location.indexOf('/user/') >= 0)
             return;
-        if (SGPlusV2.location.indexOf('/giveaways/open') == -1 && SGPlusV2.location.indexOf('/giveaways/closed') == -1
-            && SGPlusV2.location.indexOf('/giveaways/coming-soon') == -1 && SGPlusV2.location.indexOf('/giveaways/today') == -1)
+        if (SGPlusV2.location.indexOf('/giveaways/all/open') == -1 && SGPlusV2.location.indexOf('/giveaways/group/open') == -1
+            && SGPlusV2.location.indexOf('/giveaways/wishlist/open') == -1 && SGPlusV2.location.indexOf('/giveaways/new/open') == -1)
             return;
         $('.pagination').before($('<div id="loading" class="center_endless_loading is-hidden"><img src="'+ SGPlusV2.images.loader + '"></img>"<span class="giveaway-summary__heading__name">Loading</span></div'));
         $('.pagination').before($('<div id="end" class="center_endless_end is-hidden"><span class="giveaway-summary__heading__name">You\'ve reached the end.</span></div'));
@@ -281,7 +281,7 @@ var SGPlusV2 = {
         }
     },
     hideFeaturedWrapper : function(){
-        if (SGPlusV2.location.indexOf('/giveaways/') == -1 || SGPlusV2.location.indexOf('/user/') >= 0 || SGPlusV2.location.indexOf('/giveaways/new') >= 0)
+        if (SGPlusV2.location.indexOf('/giveaways/') == -1 || SGPlusV2.location.indexOf('/user/') >= 0)
             return;
         $('.featured__outer-wrap').hide();
     },
@@ -348,7 +348,7 @@ var SGPlusV2 = {
         });
     },
     createSettingsPageLink : function(){
-        $('.nav__right-container a[href="/account/sync"]:last').after($('<a target="_blank" class="nav__row" href="chrome-extension://' + chrome.i18n.getMessage("@@extension_id") + '/settings.html"><i class="settings_logo fa fa-cog fa-fw"></i><div class="nav__row__summary"><p class="nav__row__summary__name">Steamgifts Plus V2</p><p class="nav__row__summary__description">Open Steamgifts Plus V2 settings page.</p></div></a>'));
+        $('.nav__right-container a[href="/account/profile/sync"]:last').after($('<a target="_blank" class="nav__row" href="chrome-extension://' + chrome.i18n.getMessage("@@extension_id") + '/settings.html"><i class="settings_logo fa fa-cog fa-fw"></i><div class="nav__row__summary"><p class="nav__row__summary__name">Steamgifts Plus V2</p><p class="nav__row__summary__description">Open Steamgifts Plus V2 settings page.</p></div></a>'));
     },
     addHandlers : function(){
 
@@ -416,8 +416,8 @@ var SGPlusV2 = {
             $($('.page__heading').next()[0]).html(content);
 
             //bug fix, force the div size to be recalculated else it might keep the old height (chrome 34).
-            if (SGPlusV2.location.indexOf('/user/') == -1 && (SGPlusV2.location.indexOf('/giveaways/open') >= 0 || SGPlusV2.location.indexOf('/giveaways/closed') >= 0
-            || SGPlusV2.location.indexOf('/giveaways/coming-soon') >= 0 || SGPlusV2.location.indexOf('/giveaways/today') >= 0)){
+            if (SGPlusV2.location.indexOf('/user/') == -1 && (SGPlusV2.location.indexOf('/giveaways/all/open') >= 0 || SGPlusV2.location.indexOf('/giveaways/group/open') >= 0
+            || SGPlusV2.location.indexOf('/giveaways/wishlist/open') >= 0 || SGPlusV2.location.indexOf('/giveaways/new/open') >= 0)){
 	            var sum = 0;
 	            $('.content').children().each(function(){
 	            	sum += $(this).height();
