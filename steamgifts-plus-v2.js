@@ -56,8 +56,8 @@ var SGPlusV2 = {
     generateGridview: function (root) {
         if (SGPlusV2.location.indexOf('/user/') >= 0)
             return;
-        if (SGPlusV2.location.indexOf('/giveaways/all/open') == -1 && SGPlusV2.location.indexOf('/giveaways/group/open') == -1
-            && SGPlusV2.location.indexOf('/giveaways/wishlist/open') == -1 && SGPlusV2.location.indexOf('/giveaways/new/open') == -1)
+        if (SGPlusV2.location.indexOf('/giveaways/all/') == -1 && SGPlusV2.location.indexOf('/giveaways/group/') == -1
+            && SGPlusV2.location.indexOf('/giveaways/wishlist/') == -1 && SGPlusV2.location.indexOf('/giveaways/new/') == -1)
             return;
         var container = document.createElement('div');
         $(container).addClass('gridview_flex');
@@ -204,8 +204,8 @@ var SGPlusV2 = {
     generateEndlessScroll : function () {
         if (SGPlusV2.location.indexOf('/user/') >= 0)
             return;
-        if (SGPlusV2.location.indexOf('/giveaways/all/open') == -1 && SGPlusV2.location.indexOf('/giveaways/group/open') == -1
-            && SGPlusV2.location.indexOf('/giveaways/wishlist/open') == -1 && SGPlusV2.location.indexOf('/giveaways/new/open') == -1)
+        if (SGPlusV2.location.indexOf('/giveaways/all/') == -1 && SGPlusV2.location.indexOf('/giveaways/group/') == -1
+            && SGPlusV2.location.indexOf('/giveaways/wishlist/') == -1 && SGPlusV2.location.indexOf('/giveaways/new/') == -1)
             return;
         $('.pagination').before($('<div id="loading" class="center_endless_loading is-hidden"><img src="'+ SGPlusV2.images.loader + '"></img>"<span class="giveaway-summary__heading__name">Loading</span></div'));
         $('.pagination').before($('<div id="end" class="center_endless_end is-hidden"><span class="giveaway-summary__heading__name">You\'ve reached the end.</span></div'));
@@ -398,6 +398,50 @@ var SGPlusV2 = {
 		    dataType: "jsonp"
 		});
     },
+    commandAndEnter: function(){
+    	if(SGPlusV2.location.indexOf('/giveaway')  == -1)
+    		return;
+    	$('.comment__action-button.js__submit-form').after('<div class="comment__action-button comment_submit" style="margin-bottom:0px;">Submit Comment and Enter</div>');
+		$('.comment_submit').on("click",function(){
+			var elem = $('.sidebar .sidebar__entry-insert');
+			elem.closest('form').find('.sidebar__entry-insert, .sidebar__entry-delete').addClass('is-hidden');
+			elem.closest('form').find('.sidebar__entry-loading').removeClass('is-hidden');
+			elem.closest('form').find('input[name=do]').val(elem.attr('data-do'));
+			$.ajax({
+				url: '/ajax.php',
+				type: 'POST',
+				dataType: 'json',
+				data: elem.closest('form').serialize(),
+				success: function(data){
+					elem.closest('form').find('.sidebar__entry-loading').addClass('is-hidden');
+					if (data.type == 'success') {
+						if (elem.hasClass('sidebar__entry-insert')) {
+							elem.closest('form').find('.sidebar__entry-delete').removeClass('is-hidden');
+						} else if (elem.hasClass('sidebar__entry-delete')) {
+							elem.closest('form').find('.sidebar__entry-insert').removeClass('is-hidden');
+						}
+
+						if ($('.comment_submit').hasClass('js__edit-giveaway')) {
+							$('.comment_submit').closest('form').find('input[name=next_step]').val(1);
+						}
+						$('.comment_submit').closest('form').submit();	
+						return false;
+
+					} else if (data.type == 'error') {
+						if (typeof data.link !== 'undefined' && data.link !== false) {
+							elem.closest('form').html('<a href="' + data.link + '" class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + data.msg + '</a>');
+						} else {
+							elem.closest('form').html('<div class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + data.msg + '</div>');
+						}
+					}
+					if (typeof data.entry_count !== 'undefined' && data.entry_count !== false) {
+						$('.live__entry-count').text(data.entry_count);
+					}
+					$('.nav__points').text(data.points);
+				}
+			});					
+		});
+    },
     init_nondelayed : function() {
     	SGPlusV2.user = $('.nav__avatar-inner-wrap').attr('href').replace('/user/','');
         SGPlusV2.addHandlers();
@@ -407,6 +451,7 @@ var SGPlusV2 = {
         SGPlusV2.generateMarkdownLivePreview();
         SGPlusV2.highlightComment();
         SGPlusV2.setGiveawayCustomBackground();
+        SGPlusV2.commentAndEnter();
     },
     init_delayed: function(){
         if(SGPlusV2.config.featuredWrapper === true)
@@ -416,8 +461,8 @@ var SGPlusV2 = {
             $($('.page__heading').next()[0]).html(content);
 
             //bug fix, force the div size to be recalculated else it might keep the old height (chrome 34).
-            if (SGPlusV2.location.indexOf('/user/') == -1 && (SGPlusV2.location.indexOf('/giveaways/all/open') >= 0 || SGPlusV2.location.indexOf('/giveaways/group/open') >= 0
-            || SGPlusV2.location.indexOf('/giveaways/wishlist/open') >= 0 || SGPlusV2.location.indexOf('/giveaways/new/open') >= 0)){
+            if (SGPlusV2.location.indexOf('/user/') == -1 && (SGPlusV2.location.indexOf('/giveaways/all/') >= 0 || SGPlusV2.location.indexOf('/giveaways/group/') >= 0
+            || SGPlusV2.location.indexOf('/giveaways/wishlist/') >= 0 || SGPlusV2.location.indexOf('/giveaways/new/') >= 0)){
 	            var sum = 0;
 	            $('.content').children().each(function(){
 	            	sum += $(this).height();
