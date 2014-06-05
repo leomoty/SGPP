@@ -398,7 +398,7 @@ var SGPlusV2 = {
 		    dataType: "jsonp"
 		});
     },
-    commandAndEnter: function(){
+    commentAndEnter: function(){
     	if(SGPlusV2.location.indexOf('/giveaway')  == -1)
     		return;
     	$('.comment__action-button.js__submit-form').after('<div class="comment__action-button comment_submit" style="margin-bottom:0px;">Submit Comment and Enter</div>');
