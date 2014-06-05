@@ -401,7 +401,7 @@ var SGPlusV2 = {
     commentAndEnter: function(){
     	if(SGPlusV2.location.indexOf('/giveaway')  == -1)
     		return;
-    	$('.comment__action-button.js__submit-form').after('<div class="comment__action-button comment_submit" style="margin-bottom:0px;">Submit Comment and Enter</div>');
+    	$('.comment__action-button.js__submit-form').after('<div class="comment__action-button comment_submit" style="margin-bottom:0px;">Comment and Enter</div>');
 		$('.comment_submit').on("click",function(){
 			var elem = $('.sidebar .sidebar__entry-insert');
 			elem.closest('form').find('.sidebar__entry-insert, .sidebar__entry-delete').addClass('is-hidden');
