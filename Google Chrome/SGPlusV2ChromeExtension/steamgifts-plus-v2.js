@@ -224,8 +224,7 @@ var SGPlusV2 = {
                 $('#loading').removeClass('is-hidden');
                 $.ajax({ url: SGPlusV2.location + '/page/' + pos})
                 .done(function (html){
-                    if(SGPlusV2.config.seamlessScroll === true)
-                    {
+                    if(SGPlusV2.config.seamlessScroll === true){
                         if(SGPlusV2.config.gridView === false)
                             $("div .giveaway-summary-outer-wrap:last").after('<div/>');
                     }
