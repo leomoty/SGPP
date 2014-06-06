@@ -18,6 +18,7 @@ var SGPlusV2 = {
         shortenText: false,
         featuredWrapper: false,
         endlessScroll: true,
+		seamlessScroll: false,
         usersTagged: new Object(),
         imagesList: "https://github.com/leomoty/SGv2-Assets/raw/master/images-list.json"
     },
@@ -223,7 +224,12 @@ var SGPlusV2 = {
                 $('#loading').removeClass('is-hidden');
                 $.ajax({ url: SGPlusV2.location + '/page/' + pos})
                 .done(function (html){
-                    $('#loading').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
+                    if(SGPlusV2.config.seamlessScroll === true){
+                        if(SGPlusV2.config.gridView === false)
+                            $("div .giveaway-summary-outer-wrap:last").after('<div/>');
+                    }
+                    else
+                        $('#loading').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
                     if(SGPlusV2.config.gridView)
                         $('#loading').before(SGPlusV2.generateGridview($(html).find('.pagination').prev()));
                     else
@@ -490,6 +496,7 @@ var SGPlusV2 = {
                 if(settings.fixed_navbar === undefined) { settings.fixed_navbar = SGPlusV2.config.fixedNavbar; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
                 if(settings.featured_wrapper === undefined) { settings.featured_wrapper = SGPlusV2.config.featuredWrapper; chrome.storage.sync.set({'featured_wrapper': settings.featured_wrapper}); }
                 if(settings.endless_scroll === undefined) { settings.endless_scroll = SGPlusV2.config.endlessScroll; chrome.storage.sync.set({'endless_scroll': settings.endless_scroll}); }
+                if(settings.seamless_scroll === undefined) { settings.seamless_scroll = SGPlusV2.config.seamless_scroll; chrome.storage.sync.set({'seamless_scroll': settings.seamless_scroll}); }
                 if(settings.users_tagged === undefined) {
                     SGPlusV2.persistUserTagging();
                 } else {
@@ -502,6 +509,7 @@ var SGPlusV2 = {
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
                 SGPlusV2.config.featuredWrapper = settings.featured_wrapper;
                 SGPlusV2.config.endlessScroll = settings.endless_scroll;
+                SGPlusV2.config.seamlessScroll = settings.seamless_scroll;
                 
 
                 SGPlusV2.createSettingsPageLink(); //only for chrome for now
