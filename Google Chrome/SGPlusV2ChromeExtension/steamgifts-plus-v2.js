@@ -225,7 +225,10 @@ var SGPlusV2 = {
                 $.ajax({ url: SGPlusV2.location + '/page/' + pos})
                 .done(function (html){
                     if(SGPlusV2.config.seamlessScroll === true)
-                        $("div .giveaway-summary-outer-wrap:last").after('<div/>');
+                    {
+                        if(SGPlusV2.config.gridView === false)
+                            $("div .giveaway-summary-outer-wrap:last").after('<div/>');
+                    }
                     else
                         $('#loading').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
                     if(SGPlusV2.config.gridView)
