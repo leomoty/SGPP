@@ -39,7 +39,7 @@
                 'fixed_navbar' : fixed_navbar,
                 'featured_wrapper' : featured_wrapper,
                 'endless_scroll' : endless_scroll,
-				'seamless_scroll' : seamless_scroll
+                'seamless_scroll' : seamless_scroll
             });
 
             // Update status to let user know options were saved.
