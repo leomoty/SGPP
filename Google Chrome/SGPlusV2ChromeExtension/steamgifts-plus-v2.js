@@ -509,7 +509,7 @@ var SGPlusV2 = {
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
                 SGPlusV2.config.featuredWrapper = settings.featured_wrapper;
                 SGPlusV2.config.endlessScroll = settings.endless_scroll;
-				SGPlusV2.config.seamlessScroll = settings.seamless_scroll;
+                SGPlusV2.config.seamlessScroll = settings.seamless_scroll;
                 
 
                 SGPlusV2.createSettingsPageLink(); //only for chrome for now
