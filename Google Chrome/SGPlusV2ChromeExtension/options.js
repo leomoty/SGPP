@@ -30,6 +30,7 @@
             var fixed_navbar = $('#fixed_navbar').prop('checked');
             var featured_wrapper = $('#featured_wrapper').prop('checked');
             var endless_scroll = $('#endless_scroll').prop('checked');
+            var seamless_scroll = $('#seamless_scroll').prop('checked');
 
             chrome.storage.sync.set({
                 'gridview': gridview,
@@ -37,7 +38,8 @@
                 'scrolling_sidebar' : scrolling_sidebar,
                 'fixed_navbar' : fixed_navbar,
                 'featured_wrapper' : featured_wrapper,
-                'endless_scroll' : endless_scroll
+                'endless_scroll' : endless_scroll,
+				'seamless_scroll' : seamless_scroll
             });
 
             // Update status to let user know options were saved.
@@ -53,7 +55,7 @@
                 if(settings.fixed_navbar === undefined) { settings.fixed_navbar = true; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
                 if(settings.featured_wrapper === undefined) { settings.featured_wrapper = false; chrome.storage.sync.set({'featured_wrapper': settings.featured_wrapper}); }
                 if(settings.endless_scroll === undefined) { settings.endless_scroll = true; chrome.storage.sync.set({'endless_scroll': settings.endless_scroll}); }
-
+                if(settings.seamless_scroll === undefined) { settings.seamless_scroll = true; chrome.storage.sync.set({'seamless_scroll': settings.seamless_scroll}); }
 
                 $('#gridview').prop('checked', settings.gridview);
                 $('#shorten_comments').prop('checked', settings.shorten_comments);
@@ -61,6 +63,7 @@
                 $('#fixed_navbar').prop('checked', settings.fixed_navbar);
                 $('#featured_wrapper').prop('checked',settings.featured_wrapper);
                 $('#endless_scroll').prop('checked',settings.endless_scroll);
+                $('#seamless_scroll').prop('checked',settings.seamless_scroll);
             });
         }
         document.addEventListener('DOMContentLoaded', restore_options);
