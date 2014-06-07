@@ -31,6 +31,7 @@
             var featured_wrapper = $('#featured_wrapper').prop('checked');
             var endless_scroll = $('#endless_scroll').prop('checked');
             var seamless_scroll = $('#seamless_scroll').prop('checked');
+            var comment_on_top = $('#comment_on_top').prop('checked');
 
             chrome.storage.sync.set({
                 'gridview': gridview,
@@ -39,7 +40,8 @@
                 'fixed_navbar' : fixed_navbar,
                 'featured_wrapper' : featured_wrapper,
                 'endless_scroll' : endless_scroll,
-                'seamless_scroll' : seamless_scroll
+                'seamless_scroll' : seamless_scroll,
+                'comment_on_top' : comment_on_top
             });
 
             // Update status to let user know options were saved.
@@ -55,7 +57,8 @@
                 if(settings.fixed_navbar === undefined) { settings.fixed_navbar = true; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
                 if(settings.featured_wrapper === undefined) { settings.featured_wrapper = false; chrome.storage.sync.set({'featured_wrapper': settings.featured_wrapper}); }
                 if(settings.endless_scroll === undefined) { settings.endless_scroll = true; chrome.storage.sync.set({'endless_scroll': settings.endless_scroll}); }
-                if(settings.seamless_scroll === undefined) { settings.seamless_scroll = true; chrome.storage.sync.set({'seamless_scroll': settings.seamless_scroll}); }
+                if(settings.seamless_scroll === undefined) { settings.seamless_scroll = false; chrome.storage.sync.set({'seamless_scroll': settings.seamless_scroll}); }
+                if(settings.comment_on_top === undefined) { settings.comment_on_top = true; chrome.storage.sync.set({'comment_on_top': settings.comment_on_top}); }
 
                 $('#gridview').prop('checked', settings.gridview);
                 $('#shorten_comments').prop('checked', settings.shorten_comments);
@@ -63,7 +66,8 @@
                 $('#fixed_navbar').prop('checked', settings.fixed_navbar);
                 $('#featured_wrapper').prop('checked',settings.featured_wrapper);
                 $('#endless_scroll').prop('checked',settings.endless_scroll);
-                $('#seamless_scroll').prop('checked',settings.seamless_scroll);
+                $('#seamless_scroll').prop('checked', settings.seamless_scroll);
+                $('#comment_on_top').prop('checked', settings.comment_on_top);
             });
         }
         document.addEventListener('DOMContentLoaded', restore_options);

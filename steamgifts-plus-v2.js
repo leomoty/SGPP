@@ -18,6 +18,8 @@ var SGPlusV2 = {
         shortenText: false,
         featuredWrapper: false,
         endlessScroll: true,
+		seamlessScroll: false,
+		commentOnTop: true,
         usersTagged: new Object(),
         imagesList: "https://github.com/leomoty/SGv2-Assets/raw/master/images-list.json"
     },
@@ -223,7 +225,12 @@ var SGPlusV2 = {
                 $('#loading').removeClass('is-hidden');
                 $.ajax({ url: SGPlusV2.location + '/page/' + pos})
                 .done(function (html){
-                    $('#loading').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
+                    if(SGPlusV2.config.seamlessScroll === true){
+                        if(SGPlusV2.config.gridView === false)
+                            $("div .giveaway-summary-outer-wrap:last").after('<div/>');
+                    }
+                    else
+                        $('#loading').before('<div class="page__heading"><div class="page__heading__breadcrumbs">Page ' + pos + ' of ' + SGPlusV2.lastPage + ' </div></div>');
                     if(SGPlusV2.config.gridView)
                         $('#loading').before(SGPlusV2.generateGridview($(html).find('.pagination').prev()));
                     else
@@ -399,7 +406,7 @@ var SGPlusV2 = {
 		});
     },
     commentAndEnter: function(){
-    	if(SGPlusV2.location.indexOf('/giveaway')  == -1)
+    	if(SGPlusV2.location.indexOf('/giveaway/')  == -1)
     		return;
     	$('.comment__action-button.js__submit-form').after('<div class="sidebar__entry-insert comment_submit" style="margin-bottom:0px;">Comment and Enter</div>');
 		$('.comment_submit').on("click",function(){
@@ -442,6 +449,19 @@ var SGPlusV2 = {
 			});					
 		});
     },
+    moveCommentBoxToTop : function(){
+    	if(SGPlusV2.location.indexOf('/giveaway/')  == -1 || SGPlusV2.location.indexOf('/discussion/')  == -1)
+    		return;
+    	$('.page__heading:last').after($('.comment--submit'));
+
+		$(".js__comment-reply-cancel").off("click");
+
+		$(".js__comment-reply-cancel").on("click",function(){	
+			$(".comment--submit input[name=parent_id]").val('');
+			$(".comment--submit .comment__child").attr('class', 'comment__parent');
+			$('.page__heading:last').after($(".comment--submit"));
+		});
+    },	
     init_nondelayed : function() {
     	SGPlusV2.user = $('.nav__avatar-inner-wrap').attr('href').replace('/user/','');
         SGPlusV2.addHandlers();
@@ -479,6 +499,8 @@ var SGPlusV2 = {
             SGPlusV2.generateShortenedText();
         if(SGPlusV2.config.endlessScroll === true)
             SGPlusV2.generateEndlessScroll();
+        if(SGPlusV2.config.commentOnTop === true)
+        	SGPlusV2.moveCommentBoxToTop();
     },
     init: function () {
         SGPlusV2.init_nondelayed();
@@ -490,6 +512,8 @@ var SGPlusV2 = {
                 if(settings.fixed_navbar === undefined) { settings.fixed_navbar = SGPlusV2.config.fixedNavbar; chrome.storage.sync.set({'fixed_navbar': settings.fixed_navbar}); }
                 if(settings.featured_wrapper === undefined) { settings.featured_wrapper = SGPlusV2.config.featuredWrapper; chrome.storage.sync.set({'featured_wrapper': settings.featured_wrapper}); }
                 if(settings.endless_scroll === undefined) { settings.endless_scroll = SGPlusV2.config.endlessScroll; chrome.storage.sync.set({'endless_scroll': settings.endless_scroll}); }
+                if(settings.seamless_scroll === undefined) { settings.seamless_scroll = SGPlusV2.config.seamlessScroll; chrome.storage.sync.set({'seamless_scroll': settings.seamless_scroll}); }
+                if(settings.comment_on_top === undefined) { settings.comment_on_top = SGPlusV2.config.commentOnTop; chrome.storage.sync.set({'comment_on_top': settings.comment_on_top}); }
                 if(settings.users_tagged === undefined) {
                     SGPlusV2.persistUserTagging();
                 } else {
@@ -502,6 +526,8 @@ var SGPlusV2 = {
                 SGPlusV2.config.fixedNavbar = settings.fixed_navbar;
                 SGPlusV2.config.featuredWrapper = settings.featured_wrapper;
                 SGPlusV2.config.endlessScroll = settings.endless_scroll;
+                SGPlusV2.config.seamlessScroll = settings.seamless_scroll;
+                SGPlusV2.config.commentOnTop = settings.comment_on_top;
                 
 
                 SGPlusV2.createSettingsPageLink(); //only for chrome for now
