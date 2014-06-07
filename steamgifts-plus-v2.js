@@ -450,7 +450,7 @@ var SGPlusV2 = {
 		});
     },
     moveCommentBoxToTop : function(){
-    	if(SGPlusV2.location.indexOf('/giveaway/')  == -1 || SGPlusV2.location.indexOf('/discussion/')  == -1)
+    	if(SGPlusV2.location.indexOf('/giveaway/')  == -1 && SGPlusV2.location.indexOf('/discussion/')  == -1)
     		return;
     	$('.page__heading:last').after($('.comment--submit'));
 
