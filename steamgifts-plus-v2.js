@@ -508,6 +508,7 @@ var SGPlusV2 = {
             SGPlusV2.generateEndlessScroll();
         if(SGPlusV2.config.commentOnTop === true)
         	SGPlusV2.moveCommentBoxToTop();
+        SGPlusV2.highlightOP();
     },
     init: function () {
         SGPlusV2.init_nondelayed();
@@ -546,7 +547,6 @@ var SGPlusV2 = {
         } else {
             SGPlusV2.init_delayed();
         }
-        SGPlusV2.highlightOP();
     }
 };
 if (typeof chrome === 'undefined') {
