@@ -465,9 +465,14 @@ var SGPlusV2 = {
     highlightOP : function(){
     	if(SGPlusV2.location.indexOf('/giveaway/')  == -1 && SGPlusV2.location.indexOf('/discussion/')  == -1)
 			return;
-    	$("a[href='" + $('.comment__parent:first > a').prop('href').replace('http://www.steamsocial.com','') + "']").parent('.comment__username:not(:first)').each(function(k,v){
-     		$(v).append('<a style="margin-left:5px; color:#d00000; font-size:10px; vertical-align: 2px; border-bottom:none;">[OP]</a>');
-		});
+		if(SGPlusV2.location.indexOf('/discussion/') >= 0)
+	    	$("a[href='" + $('.comment__parent:first > a').prop('href').replace('http://www.steamsocial.com','') + "']").parent('.comment__username:not(:first)').each(function(k,v){
+	     		$(v).append('<a style="margin-left:5px; color:#d00000; font-size:10px; vertical-align: 2px; border-bottom:none;">[OP]</a>');
+			});
+	    else
+	    	$("a[href='" + $('.giveaway-summary__column--width-fill > a').prop('href').replace('http://www.steamsocial.com','') + "']").parent('.comment__username').each(function(k,v){
+	     		$(v).append('<a style="margin-left:5px; color:#d00000; font-size:10px; vertical-align: 2px; border-bottom:none;">[OP]</a>');
+			});
     },
     init_nondelayed : function() {
     	SGPlusV2.user = $('.nav__avatar-inner-wrap').attr('href').replace('/user/','');
