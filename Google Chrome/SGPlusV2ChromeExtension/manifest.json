@@ -9,6 +9,9 @@
    } ],
    "description": "Adds various features.",
    "name": "SteamGifts Plus v2",
+   "icons": { "16": "sgplus16.png",
+              "48": "sgplus48.png",
+              "128": "sgplus128.png" },
    "permissions": [
       "storage",
       "http://www.steamsocial.com/"
