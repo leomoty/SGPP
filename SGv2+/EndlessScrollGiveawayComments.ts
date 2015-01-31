@@ -6,6 +6,10 @@ module ModuleDefinition {
     export class EndlessScrollGiveawayComments extends ModuleDefinition.EndlessScroll implements SteamGiftsModule {
 
         canHandle(): boolean {
+            if (/^\/giveaway\/.*\/entries/.test(location.pathname))
+                return false;
+            else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
+                return false;
             if (/^\/giveaway\//.test(location.pathname))
                 return true;
 

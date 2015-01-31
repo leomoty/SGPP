@@ -8,6 +8,7 @@
 /// <reference path="EndlessScrollDiscussionReplies.ts" />
 /// <reference path="EndlessScrollGiveawayComments.ts" />
 /// <reference path="EndlessScrollGiveaways.ts" />
+/// <reference path="EndlessScrollMyGiveaways.ts" />
 
 (function ($) {
 
@@ -17,7 +18,8 @@
 
     var modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
     
-    var modulesNames: Array<string> = new Array<string>("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments");
+    var modulesNames: Array<string> = new Array<string>("EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
+    // "GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview",
 
     for (var pos in modulesNames) {
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
