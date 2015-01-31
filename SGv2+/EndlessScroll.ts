@@ -43,6 +43,18 @@ module ModuleDefinition {
             return el;
         }
 
+        createPageElement(page:number): any {
+
+            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>...</p></div></div>');
+
+            if (this._numberOfPages > 0)
+                $(el).find('p').text('Page ' + page + ' of ' + this._numberOfPages);
+            else
+                $(el).find('p').text('Page ' + page);
+
+            return el;
+        }
+
         addLastPageElement(): void {
         }
 

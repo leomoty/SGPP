@@ -29,8 +29,8 @@ module ModuleDefinition {
                 $(window).scroll(function (event) {
                     var scrollPos = $(window).scrollTop() + $(window).height();
 
-                    if (scrollPos > $('div.pagination').next().position().top) {
-                        m.stopped = true;
+                    if (scrollPos > $('div.pagination').next().position().top + 400) {
+                        //m.stopped = true;
                     }
                 });
 
@@ -50,11 +50,7 @@ module ModuleDefinition {
 
             var giveaways_div = $('.pagination').prev();
 
-            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>Page ' + this.currentPage + ' of ' + this.lastPage + '</p></div></div>');
-
-            this.addStop($(el).find('p'));
-
-            $(giveaways_div).append(el);
+            $(giveaways_div).append(this.createPageElement(this.currentPage));
 
             $(dom).find('.pagination').prev().find('.giveaway__row-outer-wrap').each(function (i, el) {
                     $(giveaways_div).append(el);

@@ -19,6 +19,9 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="EndlessScrollGiveawayComments.ts" />
+    <TypeScriptCompile Include="EndlessScrollDiscussionReplies.ts" />
+    <TypeScriptCompile Include="EndlessScrollDiscussion.ts" />
     <TypeScriptCompile Include="EndlessScrollGiveaways.ts" />
     <TypeScriptCompile Include="EndlessScroll.ts" />
     <TypeScriptCompile Include="ScrollingSidebar.ts" />

@@ -45,12 +45,15 @@ module ModuleDefinition {
         }
 
         removeLoadingElement(): void {
-            $($('.comments')[0]).find('.loading_es').remove();
+            $($('.comments')[0]).remove();
         }
 
         parsePage(dom): void {
 
-            $($('.comments')[0]).append($($(dom).find('.comments')[0]).html());
+            var comments_div = $('.comments')[0];
+
+            $(comments_div).append(this.createPageElement(this.currentPage));
+            $(comments_div).append($($(dom).find('.comments')[0]).html());
 
             super.parsePage(dom);
         }

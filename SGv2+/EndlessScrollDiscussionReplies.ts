@@ -53,7 +53,11 @@ module ModuleDefinition {
 
         parsePage(dom): void {
 
-            $($('.comments')[1]).append($($(dom).find('.comments')[1]).html());
+            var comments_div = $('.comments')[1];
+
+            $(comments_div).append(this.createPageElement(this.currentPage));
+
+            $(comments_div).append($($(dom).find('.comments')[1]).html());
 
             super.parsePage(dom);
         }

@@ -204,6 +204,14 @@ var ModuleDefinition;
             this.addStop($(el).find('.loading_es p'));
             return el;
         };
+        EndlessScroll.prototype.createPageElement = function (page) {
+            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>...</p></div></div>');
+            if (this._numberOfPages > 0)
+                $(el).find('p').text('Page ' + page + ' of ' + this._numberOfPages);
+            else
+                $(el).find('p').text('Page ' + page);
+            return el;
+        };
         EndlessScroll.prototype.addLastPageElement = function () {
         };
         EndlessScroll.prototype.addLoadingElement = function () {
@@ -288,8 +296,7 @@ var ModuleDefinition;
                 var m = this;
                 $(window).scroll(function (event) {
                     var scrollPos = $(window).scrollTop() + $(window).height();
-                    if (scrollPos > $('div.pagination').next().position().top) {
-                        m.stopped = true;
+                    if (scrollPos > $('div.pagination').next().position().top + 400) {
                     }
                 });
                 this.preparePage();
@@ -303,9 +310,7 @@ var ModuleDefinition;
         };
         EndlessScrollGiveaways.prototype.parsePage = function (dom) {
             var giveaways_div = $('.pagination').prev();
-            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>Page ' + this.currentPage + ' of ' + this.lastPage + '</p></div></div>');
-            this.addStop($(el).find('p'));
-            $(giveaways_div).append(el);
+            $(giveaways_div).append(this.createPageElement(this.currentPage));
             $(dom).find('.pagination').prev().find('.giveaway__row-outer-wrap').each(function (i, el) {
                 $(giveaways_div).append(el);
             });
@@ -365,10 +370,12 @@ var ModuleDefinition;
             $($('.comments')[0]).append(this.createLoadingElement());
         };
         EndlessScrollGiveawayComments.prototype.removeLoadingElement = function () {
-            $($('.comments')[0]).find('.loading_es').remove();
+            $($('.comments')[0]).remove();
         };
         EndlessScrollGiveawayComments.prototype.parsePage = function (dom) {
-            $($('.comments')[0]).append($($(dom).find('.comments')[0]).html());
+            var comments_div = $('.comments')[0];
+            $(comments_div).append(this.createPageElement(this.currentPage));
+            $(comments_div).append($($(dom).find('.comments')[0]).html());
             _super.prototype.parsePage.call(this, dom);
         };
         EndlessScrollGiveawayComments.prototype.name = function () {
@@ -407,9 +414,7 @@ var ModuleDefinition;
         };
         EndlessScrollDiscussion.prototype.parsePage = function (dom) {
             var tablediv = $('.table__rows').first();
-            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>Page ' + this.currentPage + ' of ' + this.lastPage + '</p></div></div>');
-            this.addStop($(el).find('p'));
-            $(tablediv).append(el);
+            $(tablediv).append(this.createPageElement(this.currentPage));
             $(dom).find('.table__rows').first().find('.table__row-outer-wrap').each(function (i, el) {
                 $(tablediv).append(el);
             });
@@ -464,7 +469,9 @@ var ModuleDefinition;
             $($('.comments')[1]).find('.loading_es').remove();
         };
         EndlessScrollDiscussionReplies.prototype.parsePage = function (dom) {
-            $($('.comments')[1]).append($($(dom).find('.comments')[1]).html());
+            var comments_div = $('.comments')[1];
+            $(comments_div).append(this.createPageElement(this.currentPage));
+            $(comments_div).append($($(dom).find('.comments')[1]).html());
             _super.prototype.parsePage.call(this, dom);
         };
         EndlessScrollDiscussionReplies.prototype.name = function () {

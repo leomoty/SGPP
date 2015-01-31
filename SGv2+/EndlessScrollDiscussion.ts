@@ -35,11 +35,7 @@ module ModuleDefinition {
             
             var tablediv = $('.table__rows').first();
 
-            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>Page ' + this.currentPage + ' of ' + this.lastPage + '</p></div></div>');
-
-            this.addStop($(el).find('p'));
-
-            $(tablediv).append(el);
+            $(tablediv).append(this.createPageElement(this.currentPage));
 
             $(dom).find('.table__rows').first().find('.table__row-outer-wrap').each(function (i, el) {
                 $(tablediv).append(el);
