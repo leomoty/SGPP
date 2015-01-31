@@ -235,7 +235,7 @@ var ModuleDefinition;
             var new_nav = $(dom).find('.pagination__navigation').first();
             $('.pagination__navigation').first().html(new_nav.html());
         };
-        EndlessScroll.prototype.render = function () {
+        EndlessScroll.prototype.preparePage = function () {
             if (!this.canHandle() || $('div.pagination__navigation a.is-selected').length == 0)
                 return;
             var elLastPage = $('.pagination__navigation a').last();
@@ -284,7 +284,7 @@ var ModuleDefinition;
         EndlessScrollGiveaways.prototype.init = function () {
         };
         EndlessScrollGiveaways.prototype.render = function () {
-            if (this.canHandle) {
+            if (this.canHandle()) {
                 var m = this;
                 $(window).scroll(function (event) {
                     var scrollPos = $(window).scrollTop() + $(window).height();
@@ -292,7 +292,7 @@ var ModuleDefinition;
                         m.stopped = true;
                     }
                 });
-                _super.prototype.render.call(this);
+                this.preparePage();
             }
         };
         EndlessScrollGiveaways.prototype.addLoadingElement = function () {
@@ -346,7 +346,20 @@ var ModuleDefinition;
         EndlessScrollGiveawayComments.prototype.init = function () {
         };
         EndlessScrollGiveawayComments.prototype.render = function () {
-            _super.prototype.render.call(this);
+            if (this.canHandle()) {
+                if (true) {
+                    var addReply = $('.comment--submit').first();
+                    var elCommentHeader = $('<div id="esc_reply_header" class="page__heading"><div class="page__heading__breadcrumbs">Reply</div></div>');
+                    $('.comments').prev().before(elCommentHeader);
+                    $('#esc_reply_header').after(addReply);
+                    $('.js__comment-reply-cancel').on('click', function () {
+                        setTimeout(function () {
+                            addReply.insertAfter('#esc_reply_header');
+                        }, 10);
+                    });
+                }
+                this.preparePage();
+            }
         };
         EndlessScrollGiveawayComments.prototype.addLoadingElement = function () {
             $($('.comments')[0]).append(this.createLoadingElement());
@@ -380,10 +393,11 @@ var ModuleDefinition;
             return false;
         };
         EndlessScrollDiscussion.prototype.init = function () {
-            console.log("Test");
         };
         EndlessScrollDiscussion.prototype.render = function () {
-            _super.prototype.render.call(this);
+            if (this.canHandle()) {
+                this.preparePage();
+            }
         };
         EndlessScrollDiscussion.prototype.addLoadingElement = function () {
             $('.table__rows').first().append(this.createLoadingElement());
@@ -425,7 +439,6 @@ var ModuleDefinition;
         EndlessScrollDiscussionReplies.prototype.init = function () {
         };
         EndlessScrollDiscussionReplies.prototype.render = function () {
-            _super.prototype.render.call(this);
             if (this.canHandle()) {
                 if (true) {
                     var addReply = $('.comment--submit').first();
@@ -441,6 +454,7 @@ var ModuleDefinition;
                         }, 10);
                     });
                 }
+                this.preparePage();
             }
         };
         EndlessScrollDiscussionReplies.prototype.addLoadingElement = function () {

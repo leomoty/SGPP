@@ -15,11 +15,12 @@ module ModuleDefinition {
         }
 
         init(): void {
-            console.log("Test");
         }
 
         render(): void {
-            super.render();
+            if (this.canHandle()) {
+                this.preparePage();
+            }          
         }
 
         addLoadingElement(): void {

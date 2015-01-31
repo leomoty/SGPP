@@ -17,7 +17,27 @@ module ModuleDefinition {
         }
 
         render(): void {
-            super.render();
+            if (this.canHandle()) {
+
+                if (true) { // TODO Add setting for this
+                    var addReply = $('.comment--submit').first();
+
+                    var elCommentHeader = $('<div id="esc_reply_header" class="page__heading"><div class="page__heading__breadcrumbs">Reply</div></div>');
+
+                    $('.comments').prev().before(elCommentHeader);
+
+                    $('#esc_reply_header').after(addReply);
+
+                    // Move back to correct location after clicking cancel
+                    $('.js__comment-reply-cancel').on('click', function () {
+                        setTimeout(function () {
+                            addReply.insertAfter('#esc_reply_header');
+                        }, 10);
+                    });
+                }
+
+                this.preparePage();
+            }
         }
 
         addLoadingElement(): void {

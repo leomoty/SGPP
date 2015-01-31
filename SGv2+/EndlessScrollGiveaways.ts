@@ -22,7 +22,7 @@ module ModuleDefinition {
         }
 
         render(): void {
-            if (this.canHandle)
+            if (this.canHandle())
             {
                 var m = this;
 
@@ -33,7 +33,8 @@ module ModuleDefinition {
                         m.stopped = true;
                     }
                 });
-                super.render();
+
+                this.preparePage();
             }
         }
 

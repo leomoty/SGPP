@@ -91,7 +91,7 @@ module ModuleDefinition {
 
         }
 
-        render(): void {
+        preparePage(): void {
             // Check that current page can be handled and navigation exists in page 
             if (!this.canHandle() || $('div.pagination__navigation a.is-selected').length == 0)
                 return;

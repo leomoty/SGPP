@@ -18,8 +18,6 @@ module ModuleDefinition {
         }
 
         render(): void {
-            super.render();
-
             if (this.canHandle()) {
                 if (true) { // TODO Add setting for this
                     var addReply = $('.comment--submit').first();
@@ -40,6 +38,8 @@ module ModuleDefinition {
                         }, 10);
                     });
                 }
+
+                this.preparePage();
             }
         }
 
