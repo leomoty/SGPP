@@ -22,7 +22,19 @@ module ModuleDefinition {
         }
 
         render(): void {
-            super.render();
+            if (this.canHandle)
+            {
+                var m = this;
+
+                $(window).scroll(function (event) {
+                    var scrollPos = $(window).scrollTop() + $(window).height();
+
+                    if (scrollPos > $('div.pagination').next().position().top) {
+                        m.stopped = true;
+                    }
+                });
+                super.render();
+            }
         }
 
         addLoadingElement(): void {

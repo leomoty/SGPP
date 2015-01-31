@@ -167,6 +167,16 @@ var ModuleDefinition;
             this._isLoading = false;
             this._stopped = false;
         }
+        Object.defineProperty(EndlessScroll.prototype, "stopped", {
+            get: function () {
+                return this._stopped;
+            },
+            set: function (v) {
+                this._stopped = v;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(EndlessScroll.prototype, "currentPage", {
             get: function () {
                 return this._currentPage;
@@ -231,7 +241,7 @@ var ModuleDefinition;
             var elLastPage = $('.pagination__navigation a').last();
             this._currentPage = parseInt($('div.pagination__navigation a.is-selected').data('page-number'));
             this._lastPage = parseInt(elLastPage.data('page-number'));
-            if (elLastPage.text() == "Last ") {
+            if (elLastPage.text().trim() == "Last") {
                 this._numberOfPages = this._lastPage;
             }
             if (this._currentPage != 1) {
@@ -240,7 +250,7 @@ var ModuleDefinition;
             var m = this;
             $(window).scroll(function (event) {
                 var scrollPos = $(window).scrollTop() + $(window).height();
-                if (scrollPos > $('div.pagination').position().top) {
+                if (scrollPos > $('div.pagination').position().top - 200) {
                     m.loadNextPage();
                 }
             });
@@ -274,7 +284,16 @@ var ModuleDefinition;
         EndlessScrollGiveaways.prototype.init = function () {
         };
         EndlessScrollGiveaways.prototype.render = function () {
-            _super.prototype.render.call(this);
+            if (this.canHandle) {
+                var m = this;
+                $(window).scroll(function (event) {
+                    var scrollPos = $(window).scrollTop() + $(window).height();
+                    if (scrollPos > $('div.pagination').next().position().top) {
+                        m.stopped = true;
+                    }
+                });
+                _super.prototype.render.call(this);
+            }
         };
         EndlessScrollGiveaways.prototype.addLoadingElement = function () {
             $('.pagination').prev().append(this.createLoadingElement());

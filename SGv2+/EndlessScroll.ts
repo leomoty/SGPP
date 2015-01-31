@@ -10,6 +10,12 @@ module ModuleDefinition {
         private _isLoading: boolean = false;
         private _stopped: boolean = false;
 
+        get stopped(): boolean {
+            return this._stopped;
+        }
+        set stopped(v:boolean) {
+            this._stopped = v;
+        }
         get currentPage():number {
             return this._currentPage;
         }
@@ -96,7 +102,7 @@ module ModuleDefinition {
 
             this._lastPage = parseInt(elLastPage.data('page-number'));
 
-            if (elLastPage.text() == "Last ") {
+            if (elLastPage.text().trim() == "Last") {
                 this._numberOfPages = this._lastPage;
             }
 
@@ -109,7 +115,7 @@ module ModuleDefinition {
             $(window).scroll(function (event) {
                 var scrollPos = $(window).scrollTop() + $(window).height();
 
-                if (scrollPos > $('div.pagination').position().top) {
+                if (scrollPos > $('div.pagination').position().top - 200) {
                     m.loadNextPage();
                 }
             });
