@@ -157,6 +157,161 @@ var ModuleDefinition;
     })();
     ModuleDefinition.GridView = GridView;
 })(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScroll = (function () {
+        function EndlessScroll() {
+            this._currentPage = -1;
+            this._lastPage = -1;
+            this._numberOfPages = -1;
+            this._isLoading = false;
+            this._stopped = false;
+        }
+        Object.defineProperty(EndlessScroll.prototype, "currentPage", {
+            get: function () {
+                return this._currentPage;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EndlessScroll.prototype, "lastPage", {
+            get: function () {
+                return this._numberOfPages;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        EndlessScroll.prototype.canHandle = function () {
+            return false;
+        };
+        EndlessScroll.prototype.getTest = function () {
+            return true;
+        };
+        EndlessScroll.prototype.addStop = function (el) {
+        };
+        EndlessScroll.prototype.createLoadingElement = function () {
+            var el = $('<div class="table__heading loading_es"><div class="table__column--width-fill"><p><i class="fa fa-refresh fa-spin"></i> Loading next page...</p></div></div>');
+            this.addStop($(el).find('.loading_es p'));
+            return el;
+        };
+        EndlessScroll.prototype.addLastPageElement = function () {
+        };
+        EndlessScroll.prototype.addLoadingElement = function () {
+        };
+        EndlessScroll.prototype.removeLoadingElement = function () {
+        };
+        EndlessScroll.prototype.loadNextPage = function () {
+            if (this._isLoading || this._stopped) {
+                return;
+            }
+            this._isLoading = true;
+            this._currentPage++;
+            if (this._currentPage > this._lastPage) {
+                this.addLastPageElement();
+                return;
+            }
+            this.addLoadingElement();
+            var url = $('a[data-page-number=' + this._currentPage + ']').first().attr('href');
+            var m = this;
+            $.get(url, function (data) {
+                var dom = $.parseHTML(data);
+                m.parsePage(dom);
+                m._isLoading = false;
+                m._lastPage = Math.max(m._lastPage, parseInt($('.pagination__navigation a').last().data('page-number')));
+                m.removeLoadingElement();
+            });
+        };
+        EndlessScroll.prototype.parsePage = function (dom) {
+        };
+        EndlessScroll.prototype.render = function () {
+            if (!this.canHandle() || $('div.pagination__navigation a.is-selected').length == 0)
+                return;
+            var elLastPage = $('.pagination__navigation a').last();
+            this._currentPage = parseInt($('div.pagination__navigation a.is-selected').data('page-number'));
+            this._lastPage = parseInt(elLastPage.data('page-number'));
+            if (elLastPage.text() == "Last ") {
+                this._numberOfPages = this._lastPage;
+            }
+            if (this._currentPage != 1) {
+                return;
+            }
+            var m = this;
+            $(window).scroll(function (event) {
+                var scrollPos = $(window).scrollTop() + $(window).height();
+                if (scrollPos > $('div.pagination').position().top) {
+                    m.loadNextPage();
+                }
+            });
+        };
+        return EndlessScroll;
+    })();
+    ModuleDefinition.EndlessScroll = EndlessScroll;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScrollGiveaways = (function (_super) {
+        __extends(EndlessScrollGiveaways, _super);
+        function EndlessScrollGiveaways() {
+            _super.apply(this, arguments);
+        }
+        EndlessScrollGiveaways.prototype.canHandle = function () {
+            if (/^\/giveaway\/.*\/entries/.test(location.pathname))
+                return false;
+            else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
+                return false;
+            else if (/\/$/.test(location.pathname) || /^\/giveaways/.test(location.pathname))
+                return true;
+            return false;
+        };
+        EndlessScrollGiveaways.prototype.init = function () {
+        };
+        EndlessScrollGiveaways.prototype.render = function () {
+            _super.prototype.render.call(this);
+        };
+        EndlessScrollGiveaways.prototype.addLoadingElement = function () {
+            $('div.page__heading:nth-child(2)').append(this.createLoadingElement());
+        };
+        EndlessScrollGiveaways.prototype.removeLoadingElement = function () {
+            $('div.page__heading:nth-child(2)').find('.loading_es').remove();
+        };
+        EndlessScrollGiveaways.prototype.parsePage = function (dom) {
+            var giveaways_div = $('div.page__heading:nth-child(2)').next();
+            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>Page ' + this.currentPage + ' of ' + this.lastPage + '</p></div></div>');
+            this.addStop($(el).find('p'));
+            $(giveaways_div).append(el);
+            $(dom).find('div.page__heading:nth-child(2)').next().find('.giveaway__row-outer-wrap').each(function (i, el) {
+                $(giveaways_div).append(el);
+            });
+            var new_nav = $(dom).find('.pagination__navigation').first();
+            $('.pagination__navigation').first().html(new_nav.html());
+            $(".giveaway__hide").click(function () {
+                $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
+                $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text());
+            });
+            $(".trigger-popup").click(function () {
+                var a = $("." + $(this).attr("data-popup"));
+                a.bPopup({
+                    opacity: .85,
+                    fadeSpeed: 200,
+                    followSpeed: 500,
+                    modalColor: "#3c424d"
+                });
+            });
+            _super.prototype.parsePage.call(this, dom);
+        };
+        EndlessScrollGiveaways.prototype.name = function () {
+            return "EndlessScrollGiveaways";
+        };
+        return EndlessScrollGiveaways;
+    })(ModuleDefinition.EndlessScroll);
+    ModuleDefinition.EndlessScrollGiveaways = EndlessScrollGiveaways;
+})(ModuleDefinition || (ModuleDefinition = {}));
 (function ($) {
     var log = function (msg) {
         console.log("[" + new Date() + "] SGV2+ - " + msg);
@@ -168,6 +323,8 @@ var ModuleDefinition;
     modules[gridView.name()] = gridView;
     var scrollingSidebar = new ModuleDefinition.ScrollingSidebar();
     modules[scrollingSidebar.name()] = scrollingSidebar;
+    var endlessScrollGiveaways = new ModuleDefinition.EndlessScrollGiveaways();
+    modules[endlessScrollGiveaways.name()] = endlessScrollGiveaways;
     for (var module in modules) {
         log("Module " + module + " init() call.");
         modules[module].init();

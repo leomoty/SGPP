@@ -3,6 +3,7 @@
 /// <reference path="fixednavbar.ts" />
 /// <reference path="scrollingsidebar.ts" />
 /// <reference path="gridview.ts" />
+/// <reference path="EndlessScrollGiveaways.ts" />
 
 (function ($) {
 
@@ -22,6 +23,10 @@
     var scrollingSidebar = new ModuleDefinition.ScrollingSidebar();
 
     modules[scrollingSidebar.name()] = scrollingSidebar;
+
+    var endlessScrollGiveaways = new ModuleDefinition.EndlessScrollGiveaways();
+
+    modules[endlessScrollGiveaways.name()] = endlessScrollGiveaways;
 
     for (var module in modules) {
         log("Module " + module + " init() call.");
