@@ -10,6 +10,8 @@ module ModuleDefinition {
                 return false;
             else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
                 return false;
+            else if (/^\/giveaway\/.*\/groups$/.test(location.pathname))
+                return false;
             if (/^\/giveaway\//.test(location.pathname))
                 return true;
 

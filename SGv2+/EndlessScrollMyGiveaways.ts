@@ -13,6 +13,12 @@ module ModuleDefinition {
                 return true;
             else if (/^\/giveaways\/won/.test(location.pathname))
                 return true;
+            else if (/^\/giveaway\/.*\/entries/.test(location.pathname))
+                return true;
+            else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
+                return true;
+            else if (/^\/giveaway\/.*\/groups$/.test(location.pathname))
+                return true;
 
             return false;
         }
