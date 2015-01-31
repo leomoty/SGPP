@@ -79,6 +79,10 @@ module ModuleDefinition {
         }
 
         parsePage(dom): void {
+
+            var new_nav = $(dom).find('.pagination__navigation').first();
+            $('.pagination__navigation').first().html(new_nav.html());
+
         }
 
         render(): void {

@@ -26,16 +26,16 @@ module ModuleDefinition {
         }
 
         addLoadingElement(): void {
-            $('div.page__heading:nth-child(2)').append(this.createLoadingElement());
+            $('.pagination').prev().append(this.createLoadingElement());
         }
 
         removeLoadingElement(): void {
-            $('div.page__heading:nth-child(2)').find('.loading_es').remove();
+            $('.pagination').prev().find('.loading_es').remove();
         }
 
         parsePage(dom): void {
 
-            var giveaways_div = $('div.page__heading:nth-child(2)').next();
+            var giveaways_div = $('.pagination').prev();
 
             var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>Page ' + this.currentPage + ' of ' + this.lastPage + '</p></div></div>');
 
@@ -43,14 +43,9 @@ module ModuleDefinition {
 
             $(giveaways_div).append(el);
 
-            $(dom).find('div.page__heading:nth-child(2)').next().find('.giveaway__row-outer-wrap').each(
-                function (i, el) {
+            $(dom).find('.pagination').prev().find('.giveaway__row-outer-wrap').each(function (i, el) {
                     $(giveaways_div).append(el);
-                });
-
-
-            var new_nav = $(dom).find('.pagination__navigation').first();
-            $('.pagination__navigation').first().html(new_nav.html());
+            });
 
             // Fix hide popups
             $(".giveaway__hide").click(function () {
