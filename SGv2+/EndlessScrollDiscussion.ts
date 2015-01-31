@@ -20,7 +20,7 @@ module ModuleDefinition {
         render(): void {
             if (this.canHandle()) {
                 this.preparePage();
-            }          
+            }
         }
 
         addLoadingElement(): void {

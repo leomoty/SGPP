@@ -370,7 +370,7 @@ var ModuleDefinition;
             $($('.comments')[0]).append(this.createLoadingElement());
         };
         EndlessScrollGiveawayComments.prototype.removeLoadingElement = function () {
-            $($('.comments')[0]).remove();
+            $($('.comments')[0]).find('.loading_es').remove();
         };
         EndlessScrollGiveawayComments.prototype.parsePage = function (dom) {
             var comments_div = $('.comments')[0];

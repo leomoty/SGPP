@@ -45,7 +45,7 @@ module ModuleDefinition {
         }
 
         removeLoadingElement(): void {
-            $($('.comments')[0]).remove();
+            $($('.comments')[0]).find('.loading_es').remove();
         }
 
         parsePage(dom): void {
