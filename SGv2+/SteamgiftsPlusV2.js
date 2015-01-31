@@ -1,9 +1,9 @@
 var ModuleDefinition;
 (function (ModuleDefinition) {
-    var FixedNavbarModule = (function () {
-        function FixedNavbarModule() {
+    var FixedNavbar = (function () {
+        function FixedNavbar() {
         }
-        FixedNavbarModule.prototype.init = function () {
+        FixedNavbar.prototype.init = function () {
             $('head').append("<style> \
 			                    .body { margin-top: 39px;} \
 			                    .navbar_fixed { padding: 0 25px;} \
@@ -15,7 +15,7 @@ var ModuleDefinition;
 			                    } \
                             </style>");
         };
-        FixedNavbarModule.prototype.render = function () {
+        FixedNavbar.prototype.render = function () {
             $('header').addClass('header');
             $('body').addClass('body');
             var nav = $('header').html();
@@ -33,12 +33,12 @@ var ModuleDefinition;
                 return false;
             });
         };
-        FixedNavbarModule.prototype.name = function () {
+        FixedNavbar.prototype.name = function () {
             return "FixedNavbar";
         };
-        return FixedNavbarModule;
+        return FixedNavbar;
     })();
-    ModuleDefinition.FixedNavbarModule = FixedNavbarModule;
+    ModuleDefinition.FixedNavbar = FixedNavbar;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -68,6 +68,22 @@ var ModuleDefinition;
         return ScrollingSidebar;
     })();
     ModuleDefinition.ScrollingSidebar = ScrollingSidebar;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var LivePreview = (function () {
+        function LivePreview() {
+        }
+        LivePreview.prototype.init = function () {
+        };
+        LivePreview.prototype.render = function () {
+        };
+        LivePreview.prototype.name = function () {
+            return "LivePreview";
+        };
+        return LivePreview;
+    })();
+    ModuleDefinition.LivePreview = LivePreview;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -162,15 +178,12 @@ var ModuleDefinition;
         console.log("[" + new Date() + "] SGV2+ - " + msg);
     };
     var modules = {};
-    var fixedNavbar = new ModuleDefinition.FixedNavbarModule();
-    modules[fixedNavbar.name()] = fixedNavbar;
-    var gridView = new ModuleDefinition.GridView();
-    modules[gridView.name()] = gridView;
-    var scrollingSidebar = new ModuleDefinition.ScrollingSidebar();
-    modules[scrollingSidebar.name()] = scrollingSidebar;
-    for (var module in modules) {
-        log("Module " + module + " init() call.");
-        modules[module].init();
+    var modulesNames = new Array("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview");
+    for (var pos in modulesNames) {
+        var m = new ModuleDefinition[modulesNames[pos]]();
+        modules[m.name()] = m;
+        log("Module " + m.name() + " init() call.");
+        modules[m.name()].init();
     }
     $(document).ready(function () {
         for (var module in modules) {

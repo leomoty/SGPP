@@ -2,6 +2,7 @@
 /// <reference path="moduledefinition.ts" />
 /// <reference path="fixednavbar.ts" />
 /// <reference path="scrollingsidebar.ts" />
+/// <reference path="livepreview.ts" />
 /// <reference path="gridview.ts" />
 
 (function ($) {
@@ -11,21 +12,15 @@
     }
 
     var modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
+    
+    var modulesNames: Array<string> = new Array<string>("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview");
 
-    var fixedNavbar = new ModuleDefinition.FixedNavbarModule();
-    modules[fixedNavbar.name()] = fixedNavbar;
+    for (var pos in modulesNames) {
+        var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
+        modules[m.name()] = m;
 
-    var gridView = new ModuleDefinition.GridView();
-
-    modules[gridView.name()] = gridView;
-
-    var scrollingSidebar = new ModuleDefinition.ScrollingSidebar();
-
-    modules[scrollingSidebar.name()] = scrollingSidebar;
-
-    for (var module in modules) {
-        log("Module " + module + " init() call.");
-        modules[module].init();
+        log("Module " + m.name() + " init() call.");
+        modules[m.name()].init();
     }
 
     $(document).ready(function () {
