@@ -19,12 +19,14 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="Scripts\pagedown\MarkdownConverter.d.ts" />
     <TypeScriptCompile Include="EndlessScrollGiveawayComments.ts" />
     <TypeScriptCompile Include="EndlessScrollDiscussionReplies.ts" />
     <TypeScriptCompile Include="EndlessScrollDiscussion.ts" />
     <TypeScriptCompile Include="EndlessScrollGiveaways.ts" />
     <TypeScriptCompile Include="EndlessScroll.ts" />
     <TypeScriptCompile Include="ScrollingSidebar.ts" />
+    <TypeScriptCompile Include="LivePreview.ts" />
     <TypeScriptCompile Include="GridView.ts" />
     <TypeScriptCompile Include="FixedNavbar.ts" />
     <TypeScriptCompile Include="ModuleDefinition.ts" />
@@ -32,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="Scripts\pagedown\MarkdownConverter.js" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
@@ -63,6 +66,8 @@
     <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
     <TypeScriptSourceMap>False</TypeScriptSourceMap>
     <TypeScriptOutFile>SteamgiftsPlusV2.js</TypeScriptOutFile>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>

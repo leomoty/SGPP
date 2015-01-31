@@ -1,9 +1,9 @@
 var ModuleDefinition;
 (function (ModuleDefinition) {
-    var FixedNavbarModule = (function () {
-        function FixedNavbarModule() {
+    var FixedNavbar = (function () {
+        function FixedNavbar() {
         }
-        FixedNavbarModule.prototype.init = function () {
+        FixedNavbar.prototype.init = function () {
             $('head').append("<style> \
 			                    .body { margin-top: 39px;} \
 			                    .navbar_fixed { padding: 0 25px;} \
@@ -15,7 +15,7 @@ var ModuleDefinition;
 			                    } \
                             </style>");
         };
-        FixedNavbarModule.prototype.render = function () {
+        FixedNavbar.prototype.render = function () {
             $('header').addClass('header');
             $('body').addClass('body');
             var nav = $('header').html();
@@ -33,12 +33,12 @@ var ModuleDefinition;
                 return false;
             });
         };
-        FixedNavbarModule.prototype.name = function () {
+        FixedNavbar.prototype.name = function () {
             return "FixedNavbar";
         };
-        return FixedNavbarModule;
+        return FixedNavbar;
     })();
-    ModuleDefinition.FixedNavbarModule = FixedNavbarModule;
+    ModuleDefinition.FixedNavbar = FixedNavbar;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -68,6 +68,22 @@ var ModuleDefinition;
         return ScrollingSidebar;
     })();
     ModuleDefinition.ScrollingSidebar = ScrollingSidebar;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var LivePreview = (function () {
+        function LivePreview() {
+        }
+        LivePreview.prototype.init = function () {
+        };
+        LivePreview.prototype.render = function () {
+        };
+        LivePreview.prototype.name = function () {
+            return "LivePreview";
+        };
+        return LivePreview;
+    })();
+    ModuleDefinition.LivePreview = LivePreview;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -275,118 +291,6 @@ var __extends = this.__extends || function (d, b) {
 };
 var ModuleDefinition;
 (function (ModuleDefinition) {
-    var EndlessScrollGiveaways = (function (_super) {
-        __extends(EndlessScrollGiveaways, _super);
-        function EndlessScrollGiveaways() {
-            _super.apply(this, arguments);
-        }
-        EndlessScrollGiveaways.prototype.canHandle = function () {
-            if (/^\/giveaway\/.*\/entries/.test(location.pathname))
-                return false;
-            else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
-                return false;
-            else if (/\/$/.test(location.pathname) || /^\/giveaways/.test(location.pathname))
-                return true;
-            return false;
-        };
-        EndlessScrollGiveaways.prototype.init = function () {
-        };
-        EndlessScrollGiveaways.prototype.render = function () {
-            if (this.canHandle()) {
-                var m = this;
-                $(window).scroll(function (event) {
-                    var scrollPos = $(window).scrollTop() + $(window).height();
-                    if (scrollPos > $('div.pagination').next().position().top + 400) {
-                    }
-                });
-                this.preparePage();
-            }
-        };
-        EndlessScrollGiveaways.prototype.addLoadingElement = function () {
-            $('.pagination').prev().append(this.createLoadingElement());
-        };
-        EndlessScrollGiveaways.prototype.removeLoadingElement = function () {
-            $('.pagination').prev().find('.loading_es').remove();
-        };
-        EndlessScrollGiveaways.prototype.parsePage = function (dom) {
-            var giveaways_div = $('.pagination').prev();
-            $(giveaways_div).append(this.createPageElement(this.currentPage));
-            $(dom).find('.pagination').prev().find('.giveaway__row-outer-wrap').each(function (i, el) {
-                $(giveaways_div).append(el);
-            });
-            $(".giveaway__hide").click(function () {
-                $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
-                $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text());
-            });
-            $(".trigger-popup").click(function () {
-                var a = $("." + $(this).attr("data-popup"));
-                a.bPopup({
-                    opacity: .85,
-                    fadeSpeed: 200,
-                    followSpeed: 500,
-                    modalColor: "#3c424d"
-                });
-            });
-            _super.prototype.parsePage.call(this, dom);
-        };
-        EndlessScrollGiveaways.prototype.name = function () {
-            return "EndlessScrollGiveaways";
-        };
-        return EndlessScrollGiveaways;
-    })(ModuleDefinition.EndlessScroll);
-    ModuleDefinition.EndlessScrollGiveaways = EndlessScrollGiveaways;
-})(ModuleDefinition || (ModuleDefinition = {}));
-var ModuleDefinition;
-(function (ModuleDefinition) {
-    var EndlessScrollGiveawayComments = (function (_super) {
-        __extends(EndlessScrollGiveawayComments, _super);
-        function EndlessScrollGiveawayComments() {
-            _super.apply(this, arguments);
-        }
-        EndlessScrollGiveawayComments.prototype.canHandle = function () {
-            if (/^\/giveaway\//.test(location.pathname))
-                return true;
-            return false;
-        };
-        EndlessScrollGiveawayComments.prototype.init = function () {
-        };
-        EndlessScrollGiveawayComments.prototype.render = function () {
-            if (this.canHandle()) {
-                if (true) {
-                    var addReply = $('.comment--submit').first();
-                    var elCommentHeader = $('<div id="esc_reply_header" class="page__heading"><div class="page__heading__breadcrumbs">Reply</div></div>');
-                    $('.comments').prev().before(elCommentHeader);
-                    $('#esc_reply_header').after(addReply);
-                    $('.js__comment-reply-cancel').on('click', function () {
-                        setTimeout(function () {
-                            addReply.insertAfter('#esc_reply_header');
-                        }, 10);
-                    });
-                }
-                this.preparePage();
-            }
-        };
-        EndlessScrollGiveawayComments.prototype.addLoadingElement = function () {
-            $($('.comments')[0]).append(this.createLoadingElement());
-        };
-        EndlessScrollGiveawayComments.prototype.removeLoadingElement = function () {
-            $($('.comments')[0]).find('.loading_es').remove();
-        };
-        EndlessScrollGiveawayComments.prototype.parsePage = function (dom) {
-            var comments_div = $('.comments')[0];
-            $(comments_div).append(this.createPageElement(this.currentPage));
-            $(comments_div).append($($(dom).find('.comments')[0]).html());
-            _super.prototype.parsePage.call(this, dom);
-        };
-        EndlessScrollGiveawayComments.prototype.name = function () {
-            return "EndlessScrollGiveawayComments";
-        };
-        return EndlessScrollGiveawayComments;
-    })(ModuleDefinition.EndlessScroll);
-    ModuleDefinition.EndlessScrollGiveawayComments = EndlessScrollGiveawayComments;
-})(ModuleDefinition || (ModuleDefinition = {}));
-var ModuleDefinition;
-(function (ModuleDefinition) {
     var EndlessScrollDiscussion = (function (_super) {
         __extends(EndlessScrollDiscussion, _super);
         function EndlessScrollDiscussion() {
@@ -481,25 +385,129 @@ var ModuleDefinition;
     })(ModuleDefinition.EndlessScroll);
     ModuleDefinition.EndlessScrollDiscussionReplies = EndlessScrollDiscussionReplies;
 })(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScrollGiveawayComments = (function (_super) {
+        __extends(EndlessScrollGiveawayComments, _super);
+        function EndlessScrollGiveawayComments() {
+            _super.apply(this, arguments);
+        }
+        EndlessScrollGiveawayComments.prototype.canHandle = function () {
+            if (/^\/giveaway\//.test(location.pathname))
+                return true;
+            return false;
+        };
+        EndlessScrollGiveawayComments.prototype.init = function () {
+        };
+        EndlessScrollGiveawayComments.prototype.render = function () {
+            if (this.canHandle()) {
+                if (true) {
+                    var addReply = $('.comment--submit').first();
+                    var elCommentHeader = $('<div id="esc_reply_header" class="page__heading"><div class="page__heading__breadcrumbs">Reply</div></div>');
+                    $('.comments').prev().before(elCommentHeader);
+                    $('#esc_reply_header').after(addReply);
+                    $('.js__comment-reply-cancel').on('click', function () {
+                        setTimeout(function () {
+                            addReply.insertAfter('#esc_reply_header');
+                        }, 10);
+                    });
+                }
+                this.preparePage();
+            }
+        };
+        EndlessScrollGiveawayComments.prototype.addLoadingElement = function () {
+            $($('.comments')[0]).append(this.createLoadingElement());
+        };
+        EndlessScrollGiveawayComments.prototype.removeLoadingElement = function () {
+            $($('.comments')[0]).find('.loading_es').remove();
+        };
+        EndlessScrollGiveawayComments.prototype.parsePage = function (dom) {
+            var comments_div = $('.comments')[0];
+            $(comments_div).append(this.createPageElement(this.currentPage));
+            $(comments_div).append($($(dom).find('.comments')[0]).html());
+            _super.prototype.parsePage.call(this, dom);
+        };
+        EndlessScrollGiveawayComments.prototype.name = function () {
+            return "EndlessScrollGiveawayComments";
+        };
+        return EndlessScrollGiveawayComments;
+    })(ModuleDefinition.EndlessScroll);
+    ModuleDefinition.EndlessScrollGiveawayComments = EndlessScrollGiveawayComments;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScrollGiveaways = (function (_super) {
+        __extends(EndlessScrollGiveaways, _super);
+        function EndlessScrollGiveaways() {
+            _super.apply(this, arguments);
+        }
+        EndlessScrollGiveaways.prototype.canHandle = function () {
+            if (/^\/giveaway\/.*\/entries/.test(location.pathname))
+                return false;
+            else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
+                return false;
+            else if (/\/$/.test(location.pathname) || /^\/giveaways/.test(location.pathname))
+                return true;
+            return false;
+        };
+        EndlessScrollGiveaways.prototype.init = function () {
+        };
+        EndlessScrollGiveaways.prototype.render = function () {
+            if (this.canHandle()) {
+                var m = this;
+                $(window).scroll(function (event) {
+                    var scrollPos = $(window).scrollTop() + $(window).height();
+                    if (scrollPos > $('div.pagination').next().position().top + 400) {
+                    }
+                });
+                this.preparePage();
+            }
+        };
+        EndlessScrollGiveaways.prototype.addLoadingElement = function () {
+            $('.pagination').prev().append(this.createLoadingElement());
+        };
+        EndlessScrollGiveaways.prototype.removeLoadingElement = function () {
+            $('.pagination').prev().find('.loading_es').remove();
+        };
+        EndlessScrollGiveaways.prototype.parsePage = function (dom) {
+            var giveaways_div = $('.pagination').prev();
+            $(giveaways_div).append(this.createPageElement(this.currentPage));
+            $(dom).find('.pagination').prev().find('.giveaway__row-outer-wrap').each(function (i, el) {
+                $(giveaways_div).append(el);
+            });
+            $(".giveaway__hide").click(function () {
+                $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
+                $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text());
+            });
+            $(".trigger-popup").click(function () {
+                var a = $("." + $(this).attr("data-popup"));
+                a.bPopup({
+                    opacity: .85,
+                    fadeSpeed: 200,
+                    followSpeed: 500,
+                    modalColor: "#3c424d"
+                });
+            });
+            _super.prototype.parsePage.call(this, dom);
+        };
+        EndlessScrollGiveaways.prototype.name = function () {
+            return "EndlessScrollGiveaways";
+        };
+        return EndlessScrollGiveaways;
+    })(ModuleDefinition.EndlessScroll);
+    ModuleDefinition.EndlessScrollGiveaways = EndlessScrollGiveaways;
+})(ModuleDefinition || (ModuleDefinition = {}));
 (function ($) {
     var log = function (msg) {
         console.log("[" + new Date() + "] SGV2+ - " + msg);
     };
     var modules = {};
-    var fixedNavbar = new ModuleDefinition.FixedNavbarModule();
-    var gridView = new ModuleDefinition.GridView();
-    var scrollingSidebar = new ModuleDefinition.ScrollingSidebar();
-    var endlessScrollGiveaways = new ModuleDefinition.EndlessScrollGiveaways();
-    modules[endlessScrollGiveaways.name()] = endlessScrollGiveaways;
-    var endlessScrollDiscussion = new ModuleDefinition.EndlessScrollDiscussion();
-    modules[endlessScrollDiscussion.name()] = endlessScrollDiscussion;
-    var endlessScrollDiscussionReplies = new ModuleDefinition.EndlessScrollDiscussionReplies();
-    modules[endlessScrollDiscussionReplies.name()] = endlessScrollDiscussionReplies;
-    var endlessScrollGiveawayComments = new ModuleDefinition.EndlessScrollGiveawayComments();
-    modules[endlessScrollGiveawayComments.name()] = endlessScrollGiveawayComments;
-    for (var module in modules) {
-        log("Module " + module + " init() call.");
-        modules[module].init();
+    var modulesNames = new Array("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments");
+    for (var pos in modulesNames) {
+        var m = new ModuleDefinition[modulesNames[pos]]();
+        modules[m.name()] = m;
+        log("Module " + m.name() + " init() call.");
+        modules[m.name()].init();
     }
     $(document).ready(function () {
         for (var module in modules) {

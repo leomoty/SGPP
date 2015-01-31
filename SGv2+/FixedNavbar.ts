@@ -2,7 +2,7 @@
 
 module ModuleDefinition{
 
-    export class FixedNavbarModule implements SteamGiftsModule {
+    export class FixedNavbar implements SteamGiftsModule {
 
         init(): void {
             $('head').append("<style> \
