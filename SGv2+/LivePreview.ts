@@ -1,5 +1,5 @@
-﻿/// <reference path="moduledefinition.ts" />
-/// <reference path="scripts/pagedown/markdownconverter.d.ts" />
+﻿/// <reference path="ModuleDefinition.ts" />
+/// <reference path="Scripts/pagedown/MarkdownConverter.d.ts" />
 
 module ModuleDefinition{
 

@@ -1,3 +1,4 @@
+/// <reference path="ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
@@ -40,6 +41,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.FixedNavbar = FixedNavbar;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var ScrollingSidebar = (function () {
@@ -69,12 +71,23 @@ var ModuleDefinition;
     })();
     ModuleDefinition.ScrollingSidebar = ScrollingSidebar;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="ModuleDefinition.ts" />
+/// <reference path="Scripts/pagedown/MarkdownConverter.d.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
+    //var markdownConverter = new Markdown.Converter();
     var LivePreview = (function () {
         function LivePreview() {
         }
         LivePreview.prototype.init = function () {
+            /*      $('.comment__description textarea').on("keyup", function () {
+                      if (!$(this).val().length)
+                          $(this).siblings('.preview').remove();
+                      else if (!$(this).parents('.comment__description').find('.livepreview').length) {
+                          $(this).parents('.comment__description form').append('<div class="preview"><div class="preview_text">Live Preview</div><div class="livepreview markdown"></div></div>');
+                      }
+                      $(this).siblings('.preview').children('.livepreview').html(markdownConverter.makeHtml($(this).val()));
+                  });*/
         };
         LivePreview.prototype.render = function () {
         };
@@ -85,6 +98,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.LivePreview = LivePreview;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     function calculateWinChance(copies, entries) {
@@ -161,7 +175,7 @@ var ModuleDefinition;
                 $(eachDiv).children().first().append(gridview_extra);
                 $(container).append(eachDiv);
             });
-            $(container).append($('<div style="margin-top: 5px; margin-bottom: 20px;width: 0px;height: 69px;"></div>'));
+            $(container).append($('<div style="margin-top: 5px; margin-bottom: 20px;width: 0px;height: 69px;"></div>')); //tricks browser in case of last line only having 1 giveaway
             $(container).find('.global__image-outer-wrap--game-medium').hover(function () {
                 $(this).find('.gridview_extra').removeClass('is-hidden');
             }, function () {
@@ -173,12 +187,79 @@ var ModuleDefinition;
     })();
     ModuleDefinition.GridView = GridView;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="ModuleDefinition.ts" />
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var CommentAndEnter = (function () {
+        function CommentAndEnter() {
+        }
+        CommentAndEnter.prototype.init = function () {
+        };
+        CommentAndEnter.prototype.render = function () {
+            if (window.location.pathname.indexOf('/giveaway/') != -1)
+                return;
+            $('.js__submit-form').after('<div class="sidebar__entry-insert comment_submit" style="margin-bottom:0px;">Comment and Enter</div>');
+            $('.comment_submit').on("click", function () {
+                var elem = $('.sidebar .sidebar__entry-insert');
+                elem.closest('form').find('.sidebar__entry-insert, .sidebar__entry-delete').addClass('is-hidden');
+                elem.closest('form').find('.sidebar__entry-loading').removeClass('is-hidden');
+                elem.closest('form').find('input[name=do]').val(elem.attr('data-do'));
+                $.ajax({
+                    url: '/ajax.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: elem.closest('form').serialize(),
+                    success: function (data) {
+                        elem.closest('form').find('.sidebar__entry-loading').addClass('is-hidden');
+                        if (data.type == 'success') {
+                            if (elem.hasClass('sidebar__entry-insert')) {
+                                elem.closest('form').find('.sidebar__entry-delete').removeClass('is-hidden');
+                            }
+                            else if (elem.hasClass('sidebar__entry-delete')) {
+                                elem.closest('form').find('.sidebar__entry-insert').removeClass('is-hidden');
+                            }
+                            if ($('.comment_submit').hasClass('js__edit-giveaway')) {
+                                $('.comment_submit').closest('form').find('input[name=next_step]').val("1");
+                            }
+                            $('.comment_submit').closest('form').submit();
+                            return false;
+                        }
+                        else if (data.type == 'error') {
+                            if (typeof data.link !== 'undefined' && data.link !== false) {
+                                elem.closest('form').html('<a href="' + data.link + '" class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + data.msg + '</a>');
+                            }
+                            else {
+                                elem.closest('form').html('<div class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + data.msg + '</div>');
+                            }
+                        }
+                        if (typeof data.entry_count !== 'undefined' && data.entry_count !== false) {
+                            $('.live__entry-count').text(data.entry_count);
+                        }
+                        $('.nav__points').text(data.points);
+                    }
+                });
+            });
+        };
+        CommentAndEnter.prototype.name = function () {
+            return "CommentAndEnter";
+        };
+        return CommentAndEnter;
+    })();
+    ModuleDefinition.CommentAndEnter = CommentAndEnter;
+})(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="ModuleDefinition.ts" />
+/// <reference path="FixedNavbar.ts" />
+/// <reference path="ScrollingSidebar.ts" />
+/// <reference path="LivePreview.ts" />
+/// <reference path="GridView.ts" />
+/// <reference path="CommentAndEnter.ts" />
 (function ($) {
     var log = function (msg) {
         console.log("[" + new Date() + "] SGV2+ - " + msg);
     };
     var modules = {};
-    var modulesNames = new Array("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview");
+    var modulesNames = new Array("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter");
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         modules[m.name()] = m;
