@@ -255,9 +255,9 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScroll = (function () {
         function EndlessScroll() {
-            this._currentPage = -1;
-            this._lastPage = -1;
-            this._numberOfPages = -1;
+            this._currentPage = 1;
+            this._lastPage = 1;
+            this._numberOfPages = 1;
             this._isLoading = false;
             this._stopped = false;
         }
@@ -470,10 +470,12 @@ var ModuleDefinition;
         };
         EndlessScrollDiscussionReplies.prototype.init = function () {
             $('head').append("<style> \
-			                    .endless_new {\
-                                    outline: 2px solid rgba(100,100,255, 0.2);\
+			                    .endless_new .comment__parent .comment__summary, .endless_new > .comment__child {\
+                                    background-color: rgba(180,180,222,0.1)\
                                 } \
-                                .endless_not_new {\
+                                .endless_not_new .comment__parent .comment__summary,  .endless_not_new > .comment__child {\
+                                } \
+                                .endless_not_new:hover .comment__parent .comment__summary,  .endless_not_new:hover > .comment__child {\
                                 } \
                             </style>");
         };

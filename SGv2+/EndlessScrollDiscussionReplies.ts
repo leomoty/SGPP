@@ -73,10 +73,12 @@ module ModuleDefinition {
         init(): void {
             
             $('head').append("<style> \
-			                    .endless_new {\
-                                    outline: 2px solid rgba(100,100,255, 0.2);\
+			                    .endless_new .comment__parent .comment__summary, .endless_new > .comment__child {\
+                                    background-color: rgba(180,180,222,0.1)\
                                 } \
-                                .endless_not_new {\
+                                .endless_not_new .comment__parent .comment__summary,  .endless_not_new > .comment__child {\
+                                } \
+                                .endless_not_new:hover .comment__parent .comment__summary,  .endless_not_new:hover > .comment__child {\
                                 } \
                             </style>");
         }

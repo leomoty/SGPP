@@ -4,9 +4,9 @@ module ModuleDefinition {
 
     export class EndlessScroll {
 
-        private _currentPage: number = -1;
-        private _lastPage: number = -1;
-        private _numberOfPages: number = -1;
+        private _currentPage: number = 1;
+        private _lastPage: number = 1;
+        private _numberOfPages: number = 1;
         private _isLoading: boolean = false;
         private _stopped: boolean = false;
 
