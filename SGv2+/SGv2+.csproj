@@ -19,6 +19,8 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="CommentAndEnter.ts" />
+    <TypeScriptCompile Include="Core.ts" />
     <TypeScriptCompile Include="Scripts\pagedown\MarkdownConverter.d.ts" />
     <TypeScriptCompile Include="ScrollingSidebar.ts" />
     <TypeScriptCompile Include="LivePreview.ts" />

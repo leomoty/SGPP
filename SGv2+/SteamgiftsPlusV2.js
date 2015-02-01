@@ -1,4 +1,3 @@
-/// <reference path="ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
@@ -41,7 +40,6 @@ var ModuleDefinition;
     })();
     ModuleDefinition.FixedNavbar = FixedNavbar;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var ScrollingSidebar = (function () {
@@ -71,23 +69,12 @@ var ModuleDefinition;
     })();
     ModuleDefinition.ScrollingSidebar = ScrollingSidebar;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
-/// <reference path="Scripts/pagedown/MarkdownConverter.d.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
-    //var markdownConverter = new Markdown.Converter();
     var LivePreview = (function () {
         function LivePreview() {
         }
         LivePreview.prototype.init = function () {
-            /*      $('.comment__description textarea').on("keyup", function () {
-                      if (!$(this).val().length)
-                          $(this).siblings('.preview').remove();
-                      else if (!$(this).parents('.comment__description').find('.livepreview').length) {
-                          $(this).parents('.comment__description form').append('<div class="preview"><div class="preview_text">Live Preview</div><div class="livepreview markdown"></div></div>');
-                      }
-                      $(this).siblings('.preview').children('.livepreview').html(markdownConverter.makeHtml($(this).val()));
-                  });*/
         };
         LivePreview.prototype.render = function () {
         };
@@ -98,7 +85,6 @@ var ModuleDefinition;
     })();
     ModuleDefinition.LivePreview = LivePreview;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     function calculateWinChance(copies, entries) {
@@ -175,7 +161,7 @@ var ModuleDefinition;
                 $(eachDiv).children().first().append(gridview_extra);
                 $(container).append(eachDiv);
             });
-            $(container).append($('<div style="margin-top: 5px; margin-bottom: 20px;width: 0px;height: 69px;"></div>')); //tricks browser in case of last line only having 1 giveaway
+            $(container).append($('<div style="margin-top: 5px; margin-bottom: 20px;width: 0px;height: 69px;"></div>'));
             $(container).find('.global__image-outer-wrap--game-medium').hover(function () {
                 $(this).find('.gridview_extra').removeClass('is-hidden');
             }, function () {
@@ -187,7 +173,25 @@ var ModuleDefinition;
     })();
     ModuleDefinition.GridView = GridView;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var Core = (function () {
+        function Core() {
+        }
+        Core.prototype.init = function () {
+        };
+        Core.prototype.render = function () {
+        };
+        Core.prototype.name = function () {
+            return "Core";
+        };
+        Core.prototype.log = function (msg) {
+            console.log("[" + new Date() + "] SGV2+ - " + msg);
+        };
+        return Core;
+    })();
+    ModuleDefinition.Core = Core;
+})(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var CommentAndEnter = (function () {
@@ -196,7 +200,7 @@ var ModuleDefinition;
         CommentAndEnter.prototype.init = function () {
         };
         CommentAndEnter.prototype.render = function () {
-            if (window.location.pathname.indexOf('/giveaway/') != -1)
+            if (window.location.pathname.indexOf('/giveaway/') == -1)
                 return;
             $('.js__submit-form').after('<div class="sidebar__entry-insert comment_submit" style="margin-bottom:0px;">Comment and Enter</div>');
             $('.comment_submit').on("click", function () {
@@ -247,28 +251,19 @@ var ModuleDefinition;
     })();
     ModuleDefinition.CommentAndEnter = CommentAndEnter;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
-/// <reference path="ModuleDefinition.ts" />
-/// <reference path="FixedNavbar.ts" />
-/// <reference path="ScrollingSidebar.ts" />
-/// <reference path="LivePreview.ts" />
-/// <reference path="GridView.ts" />
-/// <reference path="CommentAndEnter.ts" />
 (function ($) {
-    var log = function (msg) {
-        console.log("[" + new Date() + "] SGV2+ - " + msg);
-    };
     var modules = {};
+    var SGV2P = new ModuleDefinition.Core();
     var modulesNames = new Array("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter");
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         modules[m.name()] = m;
-        log("Module " + m.name() + " init() call.");
+        SGV2P.log("Module " + m.name() + " init() call.");
         modules[m.name()].init();
     }
     $(document).ready(function () {
         for (var module in modules) {
-            log("Module " + module + " render() call.");
+            SGV2P.log("Module " + module + " render() call.");
             modules[module].render();
         }
     });
