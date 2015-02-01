@@ -6,6 +6,7 @@
 /// <reference path="LivePreview.ts" />
 /// <reference path="GridView.ts" />
 /// <reference path="CommentAndEnter.ts" />
+/// <reference path="EntryCommenters.ts" />
 
 var SGV2P: ModuleDefinition.Core = new ModuleDefinition.Core();
 
@@ -13,7 +14,9 @@ var SGV2P: ModuleDefinition.Core = new ModuleDefinition.Core();
 
     var modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
 
-    var modulesNames: Array<string> = new Array<string>("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter");
+    var modulesNames: Array<string> = new Array<string>("FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter");
+    // modulesNames.push("GridView") // currently conflicts with EntryCommenters
+    modulesNames.push('EntryCommenters')
 
     for (var pos in modulesNames) {
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
