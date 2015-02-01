@@ -19,8 +19,9 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
-    <TypeScriptCompile Include="EndlessScrollMyGiveaways.ts" />
-    <TypeScriptCompile Include="Scripts\pagedown\MarkdownConverter.d.ts" />
+    <TypeScriptCompile Include="CommentAndEnter.ts" />
+    <TypeScriptCompile Include="Core.ts" />
+    <TypeScriptCompile Include="EndlessScrollMyGiveaways.ts" />    <TypeScriptCompile Include="Scripts\pagedown\MarkdownConverter.d.ts" />
     <TypeScriptCompile Include="EndlessScrollGiveawayComments.ts" />
     <TypeScriptCompile Include="EndlessScrollDiscussionReplies.ts" />
     <TypeScriptCompile Include="EndlessScrollDiscussion.ts" />

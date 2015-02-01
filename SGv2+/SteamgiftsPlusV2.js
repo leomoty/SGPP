@@ -1,5 +1,24 @@
 var ModuleDefinition;
 (function (ModuleDefinition) {
+    var Core = (function () {
+        function Core() {
+        }
+        Core.prototype.init = function () {
+        };
+        Core.prototype.render = function () {
+        };
+        Core.prototype.name = function () {
+            return "Core";
+        };
+        Core.prototype.log = function (msg) {
+            console.log("[" + new Date() + "] SGV2+ - " + msg);
+        };
+        return Core;
+    })();
+    ModuleDefinition.Core = Core;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
     var FixedNavbar = (function () {
         function FixedNavbar() {
         }
@@ -172,6 +191,65 @@ var ModuleDefinition;
         return GridView;
     })();
     ModuleDefinition.GridView = GridView;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var CommentAndEnter = (function () {
+        function CommentAndEnter() {
+        }
+        CommentAndEnter.prototype.init = function () {
+        };
+        CommentAndEnter.prototype.render = function () {
+            if (window.location.pathname.indexOf('/giveaway/') == -1)
+                return;
+            $('.js__submit-form').after('<div class="sidebar__entry-insert comment_submit" style="margin-bottom:0px; margin-left: 5px;">Comment and Enter</div>');
+            $('.comment_submit').on("click", function () {
+                var elem = $('.sidebar .sidebar__entry-insert');
+                elem.closest('form').find('.sidebar__entry-insert, .sidebar__entry-delete').addClass('is-hidden');
+                elem.closest('form').find('.sidebar__entry-loading').removeClass('is-hidden');
+                elem.closest('form').find('input[name=do]').val(elem.attr('data-do'));
+                $.ajax({
+                    url: '/ajax.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: elem.closest('form').serialize(),
+                    success: function (data) {
+                        elem.closest('form').find('.sidebar__entry-loading').addClass('is-hidden');
+                        if (data.type == 'success') {
+                            if (elem.hasClass('sidebar__entry-insert')) {
+                                elem.closest('form').find('.sidebar__entry-delete').removeClass('is-hidden');
+                            }
+                            else if (elem.hasClass('sidebar__entry-delete')) {
+                                elem.closest('form').find('.sidebar__entry-insert').removeClass('is-hidden');
+                            }
+                            if ($('.comment_submit').hasClass('js__edit-giveaway')) {
+                                $('.comment_submit').closest('form').find('input[name=next_step]').val("1");
+                            }
+                            $('.comment_submit').closest('form').submit();
+                            return false;
+                        }
+                        else if (data.type == 'error') {
+                            if (typeof data.link !== 'undefined' && data.link !== false) {
+                                elem.closest('form').html('<a href="' + data.link + '" class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + data.msg + '</a>');
+                            }
+                            else {
+                                elem.closest('form').html('<div class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + data.msg + '</div>');
+                            }
+                        }
+                        if (typeof data.entry_count !== 'undefined' && data.entry_count !== false) {
+                            $('.live__entry-count').text(data.entry_count);
+                        }
+                        $('.nav__points').text(data.points);
+                    }
+                });
+            });
+        };
+        CommentAndEnter.prototype.name = function () {
+            return "CommentAndEnter";
+        };
+        return CommentAndEnter;
+    })();
+    ModuleDefinition.CommentAndEnter = CommentAndEnter;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -554,21 +632,20 @@ var ModuleDefinition;
     })(ModuleDefinition.EndlessScroll);
     ModuleDefinition.EndlessScrollMyGiveaways = EndlessScrollMyGiveaways;
 })(ModuleDefinition || (ModuleDefinition = {}));
+var SGV2P = new ModuleDefinition.Core();
 (function ($) {
-    var log = function (msg) {
-        console.log("[" + new Date() + "] SGV2+ - " + msg);
-    };
     var modules = {};
-    var modulesNames = new Array("EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
+    var modulesNames = new Array("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview");
+    var modulesNames = new Array("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         modules[m.name()] = m;
-        log("Module " + m.name() + " init() call.");
+        SGV2P.log("Module " + m.name() + " init() call.");
         modules[m.name()].init();
     }
     $(document).ready(function () {
         for (var module in modules) {
-            log("Module " + module + " render() call.");
+            SGV2P.log("Module " + module + " render() call.");
             modules[module].render();
         }
     });
