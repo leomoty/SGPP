@@ -6,6 +6,8 @@ module ModuleDefinition {
 
     export class EndlessScrollGiveaways extends ModuleDefinition.EndlessScroll implements SteamGiftsModule {
 
+        private _location: string = 'frontpage';
+
         canHandle(): boolean {
             if (/^\/giveaways\/entered/.test(location.pathname))
                 return false;
@@ -15,7 +17,10 @@ module ModuleDefinition {
                 return false;
             if (/\/$/.test(location.pathname) || /^\/giveaways/.test(location.pathname))
                 return true;
-
+            if (/^\/user\/[^\/]+(\/giveaways\/won([^\/]+)?)?$/.test(location.pathname)) {
+                this._location = 'profile';
+                return true;
+            }
             return false;
         }
 
@@ -26,16 +31,6 @@ module ModuleDefinition {
         render(): void {
             if (this.canHandle())
             {
-                var m = this;
-
-                $(window).scroll(function (event) {
-                    var scrollPos = $(window).scrollTop() + $(window).height();
-
-                    if (scrollPos > $('div.pagination').next().position().top + 400) {
-                        //m.stopped = true;
-                    }
-                });
-
                 this.preparePage();
             }
         }

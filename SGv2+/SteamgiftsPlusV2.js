@@ -393,6 +393,12 @@ var ModuleDefinition;
             _super.apply(this, arguments);
         }
         EndlessScrollGiveawayComments.prototype.canHandle = function () {
+            if (/^\/giveaway\/.*\/entries/.test(location.pathname))
+                return false;
+            else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
+                return false;
+            else if (/^\/giveaway\/.*\/groups$/.test(location.pathname))
+                return false;
             if (/^\/giveaway\//.test(location.pathname))
                 return true;
             return false;
@@ -440,26 +446,27 @@ var ModuleDefinition;
         __extends(EndlessScrollGiveaways, _super);
         function EndlessScrollGiveaways() {
             _super.apply(this, arguments);
+            this._location = 'frontpage';
         }
         EndlessScrollGiveaways.prototype.canHandle = function () {
-            if (/^\/giveaway\/.*\/entries/.test(location.pathname))
+            if (/^\/giveaways\/entered/.test(location.pathname))
                 return false;
-            else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
+            else if (/^\/giveaways\/created/.test(location.pathname))
                 return false;
-            else if (/\/$/.test(location.pathname) || /^\/giveaways/.test(location.pathname))
+            else if (/^\/giveaways\/won/.test(location.pathname))
+                return false;
+            if (/\/$/.test(location.pathname) || /^\/giveaways/.test(location.pathname))
                 return true;
+            if (/^\/user\/[^\/]+(\/giveaways\/won([^\/]+)?)?$/.test(location.pathname)) {
+                this._location = 'profile';
+                return true;
+            }
             return false;
         };
         EndlessScrollGiveaways.prototype.init = function () {
         };
         EndlessScrollGiveaways.prototype.render = function () {
             if (this.canHandle()) {
-                var m = this;
-                $(window).scroll(function (event) {
-                    var scrollPos = $(window).scrollTop() + $(window).height();
-                    if (scrollPos > $('div.pagination').next().position().top + 400) {
-                    }
-                });
                 this.preparePage();
             }
         };
@@ -497,12 +504,62 @@ var ModuleDefinition;
     })(ModuleDefinition.EndlessScroll);
     ModuleDefinition.EndlessScrollGiveaways = EndlessScrollGiveaways;
 })(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScrollMyGiveaways = (function (_super) {
+        __extends(EndlessScrollMyGiveaways, _super);
+        function EndlessScrollMyGiveaways() {
+            _super.apply(this, arguments);
+        }
+        EndlessScrollMyGiveaways.prototype.canHandle = function () {
+            if (/^\/giveaways\/entered/.test(location.pathname))
+                return true;
+            else if (/^\/giveaways\/created/.test(location.pathname))
+                return true;
+            else if (/^\/giveaways\/won/.test(location.pathname))
+                return true;
+            else if (/^\/giveaway\/.*\/entries/.test(location.pathname))
+                return true;
+            else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
+                return true;
+            else if (/^\/giveaway\/.*\/groups$/.test(location.pathname))
+                return true;
+            return false;
+        };
+        EndlessScrollMyGiveaways.prototype.init = function () {
+        };
+        EndlessScrollMyGiveaways.prototype.render = function () {
+            if (this.canHandle()) {
+                this.preparePage();
+            }
+        };
+        EndlessScrollMyGiveaways.prototype.addLoadingElement = function () {
+            $('.pagination').prev().append(this.createLoadingElement());
+        };
+        EndlessScrollMyGiveaways.prototype.removeLoadingElement = function () {
+            $('.pagination').prev().find('.loading_es').remove();
+        };
+        EndlessScrollMyGiveaways.prototype.parsePage = function (dom) {
+            var tablediv = $('.table__rows');
+            $(tablediv).append(this.createPageElement(this.currentPage));
+            $(dom).find('.table__rows').find('.table__row-outer-wrap').each(function (i, el) {
+                $(tablediv).append(el);
+            });
+            _super.prototype.parsePage.call(this, dom);
+        };
+        EndlessScrollMyGiveaways.prototype.name = function () {
+            return "EndlessScrollMyGiveaways";
+        };
+        return EndlessScrollMyGiveaways;
+    })(ModuleDefinition.EndlessScroll);
+    ModuleDefinition.EndlessScrollMyGiveaways = EndlessScrollMyGiveaways;
+})(ModuleDefinition || (ModuleDefinition = {}));
 (function ($) {
     var log = function (msg) {
         console.log("[" + new Date() + "] SGV2+ - " + msg);
     };
     var modules = {};
-    var modulesNames = new Array("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments");
+    var modulesNames = new Array("EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         modules[m.name()] = m;
