@@ -7,12 +7,12 @@
 /// <reference path="GridView.ts" />
 /// <reference path="CommentAndEnter.ts" />
 
+var SGV2P: ModuleDefinition.Core = new ModuleDefinition.Core();
+
 (function ($) {
 
     var modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
 
-    var SGV2P: ModuleDefinition.Core = new ModuleDefinition.Core();
-    
     var modulesNames: Array<string> = new Array<string>("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter");
 
     for (var pos in modulesNames) {
