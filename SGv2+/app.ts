@@ -1,9 +1,10 @@
-﻿/// <reference path="scripts/typings/jquery/jquery.d.ts" />
-/// <reference path="moduledefinition.ts" />
-/// <reference path="fixednavbar.ts" />
-/// <reference path="scrollingsidebar.ts" />
-/// <reference path="livepreview.ts" />
-/// <reference path="gridview.ts" />
+﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="ModuleDefinition.ts" />
+/// <reference path="FixedNavbar.ts" />
+/// <reference path="ScrollingSidebar.ts" />
+/// <reference path="LivePreview.ts" />
+/// <reference path="GridView.ts" />
+/// <reference path="CommentAndEnter.ts" />
 
 (function ($) {
 
@@ -13,7 +14,7 @@
 
     var modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
     
-    var modulesNames: Array<string> = new Array<string>("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview");
+    var modulesNames: Array<string> = new Array<string>("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter");
 
     for (var pos in modulesNames) {
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
