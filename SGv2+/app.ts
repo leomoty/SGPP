@@ -17,9 +17,8 @@ var SGV2P: ModuleDefinition.Core = new ModuleDefinition.Core();
 (function ($) {
 
     var modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
-    var modulesNames: Array<string> = new Array<string>("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview");
 
-    var modulesNames: Array<string> = new Array<string>("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
+    var modulesNames: Array<string> = new Array<string>(/*"GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter",*/ "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
 
     for (var pos in modulesNames) {
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
