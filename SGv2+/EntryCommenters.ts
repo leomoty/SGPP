@@ -5,7 +5,7 @@ module ModuleDefinition {
     export class EntryCommenters implements SteamGiftsModule {
         // On the giveaway entries page, add an icon next to the user names 
         // indicating whether the user commented or not on the giveaway.
-        
+
         private url: string;
         private cacheCompleted: boolean = false;
         private isLoading: boolean = false;
@@ -25,13 +25,14 @@ module ModuleDefinition {
             var style = (
                 ".GAComm_button {text-decoration: underline; font-size: 12px}\n" +
                 ".GAComm_pos {vertical-align: super}\n" +
-                ".GAComm_neg {vertical-align: inherit}\n"
+                ".GAComm_neg {vertical-align: inherit}\n" +
+                ".table__column--width-fill > p {display: inline}"
             );
             $('<style>').attr('type', 'text/css').html(style).appendTo('head');
         }
 
         render = () => {
-            if (/.*steamgifts.com\/giveaway\/[a-zA-Z0-9]{5}\/.*?\/entries/.test(document.URL)) {
+            if (/.*steamgifts.com\/giveaway\/[a-zA-Z0-9]{5}\/.*?\/(entries|winners)/.test(document.URL)) {
                 this.elements.button.click(this.main);
                 $('.page__heading__breadcrumbs').append(this.elements.button);
                 $('.page__heading__breadcrumbs').append(this.elements.loader.hide());

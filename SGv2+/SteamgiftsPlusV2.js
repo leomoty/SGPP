@@ -1,24 +1,3 @@
-/// <reference path="ModuleDefinition.ts" />
-var ModuleDefinition;
-(function (ModuleDefinition) {
-    var Core = (function () {
-        function Core() {
-        }
-        Core.prototype.init = function () {
-        };
-        Core.prototype.render = function () {
-        };
-        Core.prototype.name = function () {
-            return "Core";
-        };
-        Core.prototype.log = function (msg) {
-            console.log("[" + new Date() + "] SGV2+ - " + msg);
-        };
-        return Core;
-    })();
-    ModuleDefinition.Core = Core;
-})(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
@@ -61,7 +40,6 @@ var ModuleDefinition;
     })();
     ModuleDefinition.FixedNavbar = FixedNavbar;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var ScrollingSidebar = (function () {
@@ -91,23 +69,12 @@ var ModuleDefinition;
     })();
     ModuleDefinition.ScrollingSidebar = ScrollingSidebar;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
-/// <reference path="Scripts/pagedown/MarkdownConverter.d.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
-    //var markdownConverter = new Markdown.Converter();
     var LivePreview = (function () {
         function LivePreview() {
         }
         LivePreview.prototype.init = function () {
-            /*      $('.comment__description textarea').on("keyup", function () {
-                      if (!$(this).val().length)
-                          $(this).siblings('.preview').remove();
-                      else if (!$(this).parents('.comment__description').find('.livepreview').length) {
-                          $(this).parents('.comment__description form').append('<div class="preview"><div class="preview_text">Live Preview</div><div class="livepreview markdown"></div></div>');
-                      }
-                      $(this).siblings('.preview').children('.livepreview').html(markdownConverter.makeHtml($(this).val()));
-                  });*/
         };
         LivePreview.prototype.render = function () {
         };
@@ -118,7 +85,6 @@ var ModuleDefinition;
     })();
     ModuleDefinition.LivePreview = LivePreview;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     function calculateWinChance(copies, entries) {
@@ -195,7 +161,7 @@ var ModuleDefinition;
                 $(eachDiv).children().first().append(gridview_extra);
                 $(container).append(eachDiv);
             });
-            $(container).append($('<div style="margin-top: 5px; margin-bottom: 20px;width: 0px;height: 69px;"></div>')); //tricks browser in case of last line only having 1 giveaway
+            $(container).append($('<div style="margin-top: 5px; margin-bottom: 20px;width: 0px;height: 69px;"></div>'));
             $(container).find('.global__image-outer-wrap--game-medium').hover(function () {
                 $(this).find('.gridview_extra').removeClass('is-hidden');
             }, function () {
@@ -207,7 +173,25 @@ var ModuleDefinition;
     })();
     ModuleDefinition.GridView = GridView;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var Core = (function () {
+        function Core() {
+        }
+        Core.prototype.init = function () {
+        };
+        Core.prototype.render = function () {
+        };
+        Core.prototype.name = function () {
+            return "Core";
+        };
+        Core.prototype.log = function (msg) {
+            console.log("[" + new Date() + "] SGV2+ - " + msg);
+        };
+        return Core;
+    })();
+    ModuleDefinition.Core = Core;
+})(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var CommentAndEnter = (function () {
@@ -218,7 +202,7 @@ var ModuleDefinition;
         CommentAndEnter.prototype.render = function () {
             if (window.location.pathname.indexOf('/giveaway/') == -1)
                 return;
-            $('.js__submit-form').after('<div class="sidebar__entry-insert comment_submit" style="margin-bottom:0px;">Comment and Enter</div>');
+            $('.js__submit-form').after('<div class="sidebar__entry-insert comment_submit" style="margin-bottom:0px; margin-left: 5px;">Comment and Enter</div>');
             $('.comment_submit').on("click", function () {
                 var elem = $('.sidebar .sidebar__entry-insert');
                 elem.closest('form').find('.sidebar__entry-insert, .sidebar__entry-delete').addClass('is-hidden');
@@ -267,114 +251,10 @@ var ModuleDefinition;
     })();
     ModuleDefinition.CommentAndEnter = CommentAndEnter;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
-var ModuleDefinition;
-(function (ModuleDefinition) {
-    var EntryCommenters = (function () {
-        function EntryCommenters() {
-            var _this = this;
-            this.cacheCompleted = false;
-            this.isLoading = false;
-            this.commenters = [];
-            this.page = 1;
-            this.elements = {
-                pos: $(document.createElement('i')).addClass('GAComm_pos fa fa-comment-o').attr('title', 'Commented'),
-                neg: $(document.createElement('span')).addClass('GAComm_neg fa-stack').attr('title', 'Did not comment').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x')).append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x')),
-                loader: $(document.createElement('i')).addClass('giveaway__icon fa fa-refresh fa-spin').attr('title', 'loading comments').css('cursor', 'auto'),
-                button: $(document.createElement('i')).addClass('giveaway__icon fa fa-comments-o').attr('title', 'Check who commented')
-            };
-            this.render = function () {
-                if (/.*steamgifts.com\/giveaway\/[a-zA-Z0-9]{5}\/.*?\/entries/.test(document.URL)) {
-                    _this.elements.button.click(_this.main);
-                    $('.page__heading__breadcrumbs').append(_this.elements.button);
-                    $('.page__heading__breadcrumbs').append(_this.elements.loader.hide());
-                }
-            };
-            this.main = function () {
-                if (!_this.cacheCompleted) {
-                    if (!_this.isLoading) {
-                        _this.elements.button.hide();
-                        _this.elements.loader.show();
-                        _this.isLoading = true;
-                        _this.getCommenters();
-                    }
-                    setTimeout(_this.main, 1000);
-                    return;
-                }
-                _this.elements.loader.hide();
-                _this.elements.button.show();
-                $('.table__rows .table__column--width-fill').each(function (i, el) {
-                    $('.GAComm_pos, .GAComm_neg', el).remove();
-                    // if ($.trim(el.textContent) in this.commenters) {
-                    if (_this.commenters.indexOf($.trim(el.textContent)) > -1) {
-                        _this.elements.pos.clone().appendTo(el);
-                    }
-                    else {
-                        _this.elements.neg.clone().appendTo(el);
-                    }
-                });
-            };
-            this.getCommenters = function () {
-                _this.url = /.*steamgifts.com\/giveaway\/[a-zA-Z0-9]{5}\/.*?\//.exec(document.URL)[0];
-                _this.url += 'search?page=';
-                _this.page = 1;
-                _this.getCommentPage();
-            };
-            this.getCommentPage = function () {
-                $.ajax({
-                    type: 'GET',
-                    url: _this.url + _this.page,
-                    success: _this.handleCommentPage
-                });
-            };
-            this.handleCommentPage = function (html) {
-                var $html = $(html);
-                $('.comment__username', $html).each(function (i, el) {
-                    _this.commenters.push(el.textContent);
-                });
-                if (_this.maxPage === null) {
-                    var pagination = $('a[data-page-number]', $html);
-                    if (pagination.length === 0) {
-                        _this.maxPage = 1;
-                    }
-                    else {
-                        pagination.each(function (i, el) {
-                            _this.maxPage = Math.max($(el).data().pageNumber, _this.maxPage);
-                        });
-                    }
-                }
-                if (++_this.page <= _this.maxPage)
-                    _this.getCommentPage();
-                else
-                    _this.cacheCompleted = true;
-            };
-        }
-        EntryCommenters.prototype.init = function () {
-            var style = (".GAComm_button {text-decoration: underline; font-size: 12px}\n" + ".GAComm_pos {vertical-align: super}\n" + ".GAComm_neg {vertical-align: inherit}\n");
-            $('<style>').attr('type', 'text/css').html(style).appendTo('head');
-        };
-        EntryCommenters.prototype.name = function () {
-            return "Core";
-        };
-        return EntryCommenters;
-    })();
-    ModuleDefinition.EntryCommenters = EntryCommenters;
-})(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
-/// <reference path="Core.ts" />
-/// <reference path="ModuleDefinition.ts" />
-/// <reference path="FixedNavbar.ts" />
-/// <reference path="ScrollingSidebar.ts" />
-/// <reference path="LivePreview.ts" />
-/// <reference path="GridView.ts" />
-/// <reference path="CommentAndEnter.ts" />
-/// <reference path="EntryCommenters.ts" />
-var SGV2P = new ModuleDefinition.Core();
 (function ($) {
     var modules = {};
-    var modulesNames = new Array("FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter");
-    // modulesNames.push("GridView") // currently conflicts with EntryCommenters
-    modulesNames.push('EntryCommenters');
+    var SGV2P = new ModuleDefinition.Core();
+    var modulesNames = new Array("GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter");
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         modules[m.name()] = m;
