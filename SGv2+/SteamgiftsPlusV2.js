@@ -9,13 +9,14 @@ var ModuleDefinition;
                 var code = "";
                 var description = "";
                 var subpage = "";
-                if (window.location.hash.length > 1)
-                    hash = window.location.hash.substring(1);
-                if (window.location.pathname == '/') {
+                var windowLocation = window.location;
+                if (windowLocation.hash.length > 1)
+                    hash = windowLocation.hash.substring(1);
+                if (windowLocation.pathname == '/') {
                     pageKind = "giveaways";
                 }
                 else {
-                    var split = window.location.pathname.split("/").filter(function (a, b, c) {
+                    var split = windowLocation.pathname.split("/").filter(function (a, b, c) {
                         return Boolean(a);
                     });
                     if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion') {
@@ -42,7 +43,7 @@ var ModuleDefinition;
                 }
                 var match, pl = /\+/g, search = /([^&=]+)=?([^&]*)/g, decode = function (s) {
                     return decodeURIComponent(s.replace(pl, " "));
-                }, query = window.location.search.substring(1);
+                }, query = windowLocation.search.substring(1);
                 var urlParams = {};
                 while (match = search.exec(query)) {
                     urlParams[decode(match[1])] = decode(match[2]);
