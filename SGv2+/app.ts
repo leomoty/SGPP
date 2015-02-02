@@ -11,6 +11,7 @@
 /// <reference path="EndlessScrollGiveawayComments.ts" />
 /// <reference path="EndlessScrollGiveaways.ts" />
 /// <reference path="EndlessScrollMyGiveaways.ts" />
+/// <reference path="EndlessScrollMarkComments.ts" />
 
 var SGV2P: ModuleDefinition.Core = new ModuleDefinition.Core();
 
@@ -18,7 +19,9 @@ var SGV2P: ModuleDefinition.Core = new ModuleDefinition.Core();
 
     var modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
 
-    var modulesNames: Array<string> = new Array<string>(/*"GridView", "FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter",*/ "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
+    var modulesNames: Array<string> = new Array<string>(
+        "EndlessScrollMarkComments", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments"
+    );
 
     for (var pos in modulesNames) {
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();

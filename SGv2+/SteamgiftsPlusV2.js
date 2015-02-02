@@ -257,7 +257,7 @@ var ModuleDefinition;
         function EndlessScroll() {
             this._currentPage = 1;
             this._lastPage = 1;
-            this._numberOfPages = 1;
+            this._numberOfPages = -1;
             this._isLoading = false;
             this._stopped = false;
         }
@@ -411,45 +411,6 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
-    var topicInfo = (function () {
-        function topicInfo(topicID) {
-            this.localStorageKey = "endless_scroll_" + topicID;
-            if (this.localStorageKey in localStorage) {
-                this._obj = JSON.parse(localStorage[this.localStorageKey]);
-            }
-            else {
-                this._obj = {
-                    lastVisit: Date.now(),
-                    lastCommentIDPages: {},
-                };
-            }
-        }
-        Object.defineProperty(topicInfo.prototype, "lastVisit", {
-            get: function () {
-                return this._obj.lastVisit;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        topicInfo.prototype.setLastVisit = function () {
-            this._obj.lastVisit = Date.now();
-            this.save();
-        };
-        topicInfo.prototype.setLastCommentID = function (page, commentID) {
-            this._obj.lastCommentIDPages[page] = commentID;
-            this.save();
-        };
-        topicInfo.prototype.isNewComment = function (page, commentID) {
-            if (page in this._obj.lastCommentIDPages)
-                return (commentID > this._obj.lastCommentIDPages[page]);
-            else
-                return true;
-        };
-        topicInfo.prototype.save = function () {
-            localStorage[this.localStorageKey] = JSON.stringify(this._obj);
-        };
-        return topicInfo;
-    })();
     var EndlessScrollDiscussionReplies = (function (_super) {
         __extends(EndlessScrollDiscussionReplies, _super);
         function EndlessScrollDiscussionReplies() {
@@ -462,31 +423,7 @@ var ModuleDefinition;
                 return true;
             return false;
         };
-        EndlessScrollDiscussionReplies.prototype.getDiscussionId = function () {
-            var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(location.pathname);
-            if (!match)
-                throw 'No Discussion ID';
-            return match[1] + '_' + match[2];
-        };
         EndlessScrollDiscussionReplies.prototype.init = function () {
-            $('head').append("<style> \
-			                    .endless_new .comment__parent .comment__summary, .endless_new > .comment__child {\
-                                    background-color: rgba(180,180,222,0.1)\
-                                } \
-                                .endless_not_new .comment__parent .comment__summary,  .endless_not_new > .comment__child {\
-                                } \
-                                .endless_not_new:hover .comment__parent .comment__summary,  .endless_not_new:hover > .comment__child {\
-                                } \
-                            </style>");
-        };
-        EndlessScrollDiscussionReplies.prototype.getLatestCommentID = function (root) {
-            var id = 0;
-            $(root).find('.comment[data-comment-id]').each(function (i, el) {
-                var n = parseInt($(el).data('comment-id'));
-                if (n > id)
-                    id = n;
-            });
-            return id;
         };
         EndlessScrollDiscussionReplies.prototype.render = function () {
             if (this.canHandle()) {
@@ -507,24 +444,7 @@ var ModuleDefinition;
                     }
                 }
                 this.preparePage();
-                this.topicInfo = new topicInfo(this.getDiscussionId());
-                this.markNewComments(document);
-                this.topicInfo.setLastVisit();
-                this.topicInfo.setLastCommentID(this.currentPage, this.getLatestCommentID(document));
             }
-        };
-        EndlessScrollDiscussionReplies.prototype.markNewComments = function (root) {
-            var _this = this;
-            var page = this.currentPage;
-            $(root).find('.comment[data-comment-id]').each(function (i, el) {
-                var id = parseInt($(el).data('comment-id'));
-                if (_this.topicInfo.isNewComment(page, id)) {
-                    $(el).addClass('endless_new');
-                }
-                else {
-                    $(el).addClass('endless_not_new');
-                }
-            });
         };
         EndlessScrollDiscussionReplies.prototype.addLoadingElement = function () {
             $($('.comments')[1]).append(this.createLoadingElement());
@@ -533,8 +453,7 @@ var ModuleDefinition;
             $($('.comments')[1]).find('.loading_es').remove();
         };
         EndlessScrollDiscussionReplies.prototype.parsePage = function (dom) {
-            this.markNewComments(dom);
-            this.topicInfo.setLastCommentID(this.currentPage, this.getLatestCommentID(dom));
+            window["EndlessScrollMarkComments"].markComments(dom, this.currentPage, true);
             var comments_div = $('.comments')[1];
             $(comments_div).append(this.createPageElement(this.currentPage));
             $(comments_div).append($($(dom).find('.comments')[1]).html());
@@ -716,10 +635,142 @@ var ModuleDefinition;
     })(ModuleDefinition.EndlessScroll);
     ModuleDefinition.EndlessScrollMyGiveaways = EndlessScrollMyGiveaways;
 })(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var topicInfo = (function () {
+        function topicInfo(topicID) {
+            this.localStorageKey = "endless_scroll_" + topicID;
+            if (this.localStorageKey in localStorage) {
+                this._obj = JSON.parse(localStorage[this.localStorageKey]);
+                if (!("numberOfComments" in this._obj)) {
+                    this._obj.numberOfComments = 0;
+                }
+            }
+            else {
+                this._obj = {
+                    lastVisit: Date.now(),
+                    lastCommentIDPages: {},
+                    numberOfComments: 0,
+                };
+            }
+        }
+        Object.defineProperty(topicInfo.prototype, "lastVisit", {
+            get: function () {
+                return this._obj.lastVisit;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        topicInfo.prototype.setLastVisit = function () {
+            this._obj.lastVisit = Date.now();
+            this.save();
+        };
+        topicInfo.prototype.setLastCommentID = function (page, commentID) {
+            this._obj.lastCommentIDPages[page] = commentID;
+            this.save();
+        };
+        topicInfo.prototype.isNewComment = function (page, commentID) {
+            if (page in this._obj.lastCommentIDPages)
+                return (commentID > this._obj.lastCommentIDPages[page]);
+            else
+                return true;
+        };
+        topicInfo.prototype.save = function () {
+            localStorage[this.localStorageKey] = JSON.stringify(this._obj);
+        };
+        return topicInfo;
+    })();
+    var EndlessScrollMarkComments = (function () {
+        function EndlessScrollMarkComments() {
+        }
+        EndlessScrollMarkComments.prototype.getDiscussionId = function () {
+            var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(location.pathname);
+            if (!match)
+                throw 'No Discussion ID';
+            return match[1] + '_' + match[2];
+        };
+        EndlessScrollMarkComments.prototype.getLatestCommentID = function (root) {
+            var id = 0;
+            $(root).find('.comment[data-comment-id]').each(function (i, el) {
+                var n = parseInt($(el).data('comment-id'));
+                if (n > id)
+                    id = n;
+            });
+            return id;
+        };
+        EndlessScrollMarkComments.prototype.init = function () {
+            if (/^\/discussion\//.test(location.pathname)) {
+                this.section = 'discussion';
+                this.pageType = 'comments';
+            }
+            else if (/^\/trade\//.test(location.pathname)) {
+                this.section = 'trades';
+                this.pageType = 'comments';
+            }
+            else if (/^\/discussions/.test(location.pathname)) {
+                this.section = 'discussion';
+                this.pageType = 'topics';
+            }
+            else if (/^\/trades/.test(location.pathname)) {
+                this.section = 'trades';
+                this.pageType = 'topics';
+            }
+            else {
+                return;
+            }
+            $('head').append("<style> \
+			    .endless_new .comment__parent .comment__summary, .endless_new > .comment__child {\
+                    background-color: rgba(180,180,222,0.1)\
+                } \
+                .endless_not_new .comment__parent .comment__summary,  .endless_not_new > .comment__child {\
+                } \
+                .endless_not_new:hover .comment__parent .comment__summary,  .endless_not_new:hover > .comment__child {\
+                } \
+            </style>");
+            window["EndlessScrollMarkComments"] = this;
+        };
+        EndlessScrollMarkComments.prototype.render = function () {
+            if (this.pageType == 'comments') {
+                this.topicInfo = new topicInfo(this.getDiscussionId());
+                var page = 1;
+                var currentPageNavEl = $('div.pagination__navigation a.is-selected');
+                if (currentPageNavEl.length != 0)
+                    currentPageNavEl.first().data('page-number');
+                this.markComments(document, page, true);
+                this.topicInfo.setLastVisit();
+            }
+            else if (this.pageType == 'topics') {
+            }
+        };
+        EndlessScrollMarkComments.prototype.markComments = function (dom, page, markRead) {
+            var _this = this;
+            if (markRead === void 0) { markRead = false; }
+            $(dom).find('.comment[data-comment-id]').each(function (i, el) {
+                var id = parseInt($(el).data('comment-id'));
+                if (_this.topicInfo.isNewComment(page, id)) {
+                    $(el).addClass('endless_new');
+                }
+                else {
+                    $(el).addClass('endless_not_new');
+                }
+            });
+            if (markRead) {
+                this.topicInfo.setLastCommentID(page, this.getLatestCommentID(dom));
+            }
+        };
+        EndlessScrollMarkComments.prototype.markTopics = function (dom) {
+        };
+        EndlessScrollMarkComments.prototype.name = function () {
+            return "EndlessScrollMarkComments";
+        };
+        return EndlessScrollMarkComments;
+    })();
+    ModuleDefinition.EndlessScrollMarkComments = EndlessScrollMarkComments;
+})(ModuleDefinition || (ModuleDefinition = {}));
 var SGV2P = new ModuleDefinition.Core();
 (function ($) {
     var modules = {};
-    var modulesNames = new Array("EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
+    var modulesNames = new Array("EndlessScrollMarkComments", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         modules[m.name()] = m;
