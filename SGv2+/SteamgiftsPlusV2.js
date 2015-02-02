@@ -30,11 +30,11 @@ var ModuleDefinition;
                                 pageKind = split[0];
                         }
                     }
-                    else if (split[0] == 'giveaways' || split[0] == 'trades' || split[0] == 'discussions' || split[0] == 'support') {
+                    else if (split[0] == 'giveaways' || split[0] == 'trades' || split[0] == 'discussions' || split[0] == 'support' || split[0] == 'roles' || split[0] == 'legal' || split[0] == 'about') {
                         pageKind = split[0];
                         subpage = (split[1] == 'search' ? '' : split[1]) || '';
                     }
-                    else {
+                    else if (split[1] == 'sales') {
                         pageKind = split[0];
                         subpage = split[1];
                         description = split[2] || '';
@@ -47,7 +47,7 @@ var ModuleDefinition;
                 while (match = search.exec(query)) {
                     urlParams[decode(match[1])] = decode(match[2]);
                 }
-                _this.sgLocation = {
+                _this._sgLocation = {
                     pageKind: pageKind,
                     code: code,
                     description: description,
@@ -61,9 +61,9 @@ var ModuleDefinition;
             };
             this.init();
         }
-        Object.defineProperty(Core.prototype, "SgLocation", {
+        Object.defineProperty(Core.prototype, "location", {
             get: function () {
-                return this.sgLocation;
+                return this._sgLocation;
             },
             enumerable: true,
             configurable: true

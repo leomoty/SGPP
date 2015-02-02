@@ -13,10 +13,10 @@ module ModuleDefinition{
 
     export class Core implements SteamGiftsModule {
 
-        private sgLocation: SGLocation;
+        private _sgLocation: SGLocation;
 
-        get SgLocation(): SGLocation {
-            return this.sgLocation;
+        get location(): SGLocation {
+            return this._sgLocation;
         }
 
         private resolvePath = () => {
@@ -44,11 +44,11 @@ module ModuleDefinition{
                         case 1:
                             pageKind = split[0];
                     }
-                } else if (split[0] == 'giveaways' || split[0] == 'trades' || split[0] == 'discussions' || split[0] == 'support') {
+                } else if (split[0] == 'giveaways' || split[0] == 'trades' || split[0] == 'discussions' || split[0] == 'support' || split[0] == 'roles'
+                            || split[0] == 'legal' || split[0] == 'about') {
                     pageKind = split[0];
                     subpage = (split[1] == 'search' ? '' : split[1]) || '';
-                } else {
-                    //should only parse sales
+                } else if(split[1] == 'sales'){
                     pageKind = split[0];
                     subpage = split[1];
                     description = split[2] || '';
@@ -65,7 +65,7 @@ module ModuleDefinition{
                 urlParams[decode(match[1])] = decode(match[2]);
             }
 
-            this.sgLocation = {
+            this._sgLocation = {
                 pageKind: pageKind,
                 code: code,
                 description: description,
