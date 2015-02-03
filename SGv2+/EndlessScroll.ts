@@ -10,6 +10,9 @@ module ModuleDefinition {
         private _isLoading: boolean = false;
         private _stopped: boolean = false;
 
+        private _pages: { [i: number]: any; } = {};
+        private _pagesUrl: { [i: number]: string; } = {};
+
         get stopped(): boolean {
             return this._stopped;
         }
@@ -25,43 +28,69 @@ module ModuleDefinition {
         }
 
         canHandle(): boolean {
-            return false;
+            throw 'canHandle() not implemented';
         }
 
-        getTest(): boolean {
-            return true;
+        hasPages(dom): boolean {
+            return $(dom).find('.pagination__navigation').length != 0;
         }
 
-        addStop(el): void {
-            // TODO
+        getNavigationElement(dom): JQuery {
+            return $(dom).find('.pagination__navigation').first();
         }
 
-        createLoadingElement(): any {
+        createPageContainerElement(): JQuery {
+            throw 'createPageContainerElement() not implemented';
+        }
+
+        getItemsElement(dom): JQuery {
+            throw 'getItemsElement() not implemented';
+        }
+
+        getItems(dom): JQuery {
+            throw 'getItems() not implemented';
+        }
+
+        createControlElement(el:JQuery): void {
+            var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
+            var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
+
+            controlStartStop.click(() => {
+                this.stopped != this.stopped;
+
+                $('.endless_control_element a i.fa').toggleClass('fa-pause').toggleClass('fa-play');
+
+                return false;
+            });
+
+            controlContainer.append(controlStartStop);
+
+            el.append(controlContainer);
+        }
+
+        createLoadingElement(): JQuery {
             var el = $('<div class="table__heading loading_es"><div class="table__column--width-fill"><p><i class="fa fa-refresh fa-spin"></i> Loading next page...</p></div></div>');
-            this.addStop(el.find('.loading_es p'));
+            this.createControlElement(el.find('p'));
 
             return el;
         }
 
-        createPageElement(page:number): any {
+        createPageElement(page: number): JQuery {
 
-            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>...</p></div></div>');
+            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p></p></div></div>');
 
-            if (this._numberOfPages > 0)
-               el.find('p').text('Page ' + page + ' of ' + this._numberOfPages);
-            else
-               el.find('p').text('Page ' + page);
+            if (page > 0) {
+                if (this._numberOfPages > 0)
+                    el.find('p').text('Page ' + page + ' of ' + this._numberOfPages);
+                else
+                    el.find('p').text('Page ' + page);
+            } else {
+                el.find('p').text('Last page ends here');
+            }
+
+            this.createControlElement(el.find('p'));
 
             return el;
-        }
-
-        addLastPageElement(): void {
-        }
-
-        addLoadingElement(): void {
-        }
-
-        removeLoadingElement(): void {
         }
 
         loadNextPage(): void {
@@ -73,51 +102,133 @@ module ModuleDefinition {
             this._currentPage++;
             
             if (this._currentPage > this._lastPage) {
-                this.addLastPageElement();
+                //this.addLastPageElement();
                 return;
             }
+
+            this.loadPage(this._currentPage);
+        }
+
+        loadPage(page: number): void {
+
+            if (!(this._currentPage in this._pagesUrl)) {
+                throw 'No URL for page ' + this._currentPage;
+            }
+
+            var url = this._pagesUrl[this._currentPage];
             
-            this.addLoadingElement();
+            var diff = -1;
+            var target = -1;
 
-            var url = $('a[data-page-number=' + this._currentPage + ']').first().attr('href');
-            var m = this;
+            // Get nearest page
+            $.each(this._pages, function (i, el) {
+                var thisDiff = Math.abs(i - page);
 
-            $.get(url, function (data) {
+                if (target == -1 || diff > thisDiff) {
+                    target = i;
+                    diff = thisDiff;
+                }
+            });
+
+            var pageContainer = this.createPageContainerElement();
+            var loadingElement = this.createLoadingElement();
+
+            pageContainer.append(loadingElement);
+
+            this._pages[page] = {
+                element: pageContainer,
+                loaded: false,
+            }
+
+            // Todo: Support reverse order
+            var elPage: JQuery = this._pages[target].element;
+
+            if (target < page) {
+                elPage.after(pageContainer);
+            } else {
+                elPage.before(pageContainer);
+            }
+
+            $.get(url,(data) => {
 
                 var dom = $.parseHTML(data);
 
-                m.parsePage(dom);
+                this.beforeAddItems(dom);
 
-                m._isLoading = false;
+                pageContainer.prepend(this.createPageElement(page));
 
-                m._lastPage = Math.max(m._lastPage, parseInt($('.pagination__navigation a').last().data('page-number')));
+                var itemsContainer = this.getItemsElement(dom);
 
-                m.removeLoadingElement();
+                this.addItems(itemsContainer, pageContainer);
+
+                // Update navigation on page
+                var newPagination = this.getNavigationElement(dom);
+                this.getNavigationElement(document).html(newPagination.html());
+
+                // Cache urls for pages
+                this.parseNavigation(newPagination);
+
+                this._pages[page].loaded = true;
+
+                loadingElement.remove();
+
+                this._isLoading = false;
             });
         }
 
-        parsePage(dom): void {
+        beforeAddItems(dom): void {
+        }
 
-            // Update navigation on page
-            var new_nav = $(dom).find('.pagination__navigation').first();
-            $('.pagination__navigation').first().html(new_nav.html());
+        addItems(dom, pageContainer: JQuery): void {
+            var items = this.getItems(dom);
 
+            items.each(function (i: number, el: Element) {
+                pageContainer.append(el);
+            });
+        }
+
+        parseNavigation(dom: JQuery): void {
+            dom.find('a').each((i: number, el: Element) => {
+                var $el = $(el);
+                var page = parseInt($el.data('page-number'));
+
+                this._pagesUrl[page] = $el.attr('href');
+
+                if (page > this._lastPage)
+                    this._lastPage = page;
+            });
         }
 
         preparePage(): void {
             // Check that current page can be handled and navigation exists in page 
-            if (!this.canHandle() || $('div.pagination__navigation a.is-selected').length == 0)
+            if (!this.canHandle())
                 return;
 
-            var elLastPage = $('.pagination__navigation a').last();
+            if (!this.hasPages(document)) {
+                this._currentPage = 1;
+                this._lastPage = 1;
+            } else {
 
-            this._currentPage = parseInt($('div.pagination__navigation a.is-selected').data('page-number'));
+                var nav = this.getNavigationElement(document);
 
-            this._lastPage = parseInt(elLastPage.data('page-number'));
+                var elLastPage = nav.find('a').last();
 
-            if (elLastPage.text().trim() == "Last") {
-                this._numberOfPages = this._lastPage;
+                this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
+                this._lastPage = parseInt(elLastPage.data('page-number'));
+
+                if (elLastPage.text().trim() == "Last") {
+                    this._numberOfPages = this._lastPage;
+                }
+
+                this.parseNavigation(nav);
             }
+
+            console.log(this._pagesUrl);
+
+            this._pages[this._currentPage] = {
+                element: this.getItemsElement(document),
+                loaded: true,
+            };
 
             if (this._currentPage != 1) {
                 return;

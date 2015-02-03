@@ -147,8 +147,7 @@ module ModuleDefinition {
             });
 
             if (markRead) {
-                // This is ugly
-                var numComments = parseInt($($('.comments')[1]).prev().find('a').text().split(' ')[0]);
+                var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0]);
 
                 this.topicInfo.setLastCommentID(page, this.getLatestCommentID(dom), numComments);
             }

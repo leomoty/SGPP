@@ -28,25 +28,21 @@ module ModuleDefinition {
             }
         }
 
-        addLoadingElement(): void {
-            $('.pagination').prev().append(this.createLoadingElement());
+        createPageContainerElement(): JQuery {
+            return $('<div class="table__rows">');
         }
 
-        removeLoadingElement(): void {
-            $('.pagination').prev().find('.loading_es').remove();
+        getItemsElement(dom): JQuery {
+            return $(dom).find('.table__rows').first();
         }
 
-        parsePage(dom): void {
-
-            var tablediv = $('.table__rows').first();
-
-            tablediv.append(this.createPageElement(this.currentPage));
+        parsePage(dom, pageContainer: JQuery): void {
 
             $(dom).find('.table__rows').find('.table__row-outer-wrap').each(function (i, el) {
-                    tablediv.append(el);
+                pageContainer.append(el);
             });
 
-            super.parsePage(dom);
+            //super.parsePage(dom, pageContainer);
         }
 
         name(): string {

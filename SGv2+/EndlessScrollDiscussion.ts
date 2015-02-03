@@ -18,27 +18,20 @@ module ModuleDefinition {
             }
         }
 
-        addLoadingElement(): void {
-            $('.table__rows').first().append(this.createLoadingElement());
+        createPageContainerElement(): JQuery {
+            return $('<div class="table__rows">');
         }
 
-        removeLoadingElement(): void {
-            $('.table__rows').first().find('.loading_es').remove();
+        getItemsElement(dom): JQuery {
+            return $(dom).find('.table__rows').first();
         }
 
-        parsePage(dom): void {
-            
-            var tablediv = $('.table__rows').first();
+        getItems(dom: JQuery): JQuery {
+            return dom.children('.table__row-outer-wrap');
+        }
 
-            tablediv.append(this.createPageElement(this.currentPage));
-
-            $(dom).find('.table__rows').first().find('.table__row-outer-wrap').each(function (i, el) {
-                tablediv.append(el);
-            });
-
+        beforeAddItems(dom): void {
             window["EndlessScrollMarkComments"].markTopics(dom);
-
-            super.parsePage(dom);
         }
 
         name(): string {

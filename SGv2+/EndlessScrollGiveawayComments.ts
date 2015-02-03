@@ -37,22 +37,17 @@ module ModuleDefinition {
             }
         }
 
-        addLoadingElement(): void {
-            $($('.comments')[0]).append(this.createLoadingElement());
+
+        createPageContainerElement(): JQuery {
+            return $('<div class="comments">');
         }
 
-        removeLoadingElement(): void {
-            $($('.comments')[0]).find('.loading_es').remove();
+        getItemsElement(dom): JQuery {
+            return $(dom).find('.comments').first();
         }
 
-        parsePage(dom): void {
-
-            var comments_div = $('.comments').first();
-
-            comments_div.append(this.createPageElement(this.currentPage));
-            comments_div.append($($(dom).find('.comments')[0]).html());
-
-            super.parsePage(dom);
+        getItems(dom: JQuery): JQuery {
+            return dom.children('.comment');
         }
 
         name(): string {

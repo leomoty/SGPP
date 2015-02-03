@@ -43,25 +43,20 @@ module ModuleDefinition {
             }
         }
 
-        addLoadingElement(): void {
-            $($('.comments')[1]).append(this.createLoadingElement());
+        createPageContainerElement(): JQuery {
+            return $('<div class="comments">');
         }
 
-        removeLoadingElement(): void {
-            $($('.comments')[1]).find('.loading_es').remove();
+        getItemsElement(dom): JQuery {
+            return $(dom).find('.comments:eq(1)');
         }
 
-        parsePage(dom): void {
+        getItems(dom: JQuery): JQuery {
+            return dom.children('.comment');
+        }
 
+        beforeAddItems(dom): void {
             window["EndlessScrollMarkComments"].markComments(dom, this.currentPage, true);
-
-            var comments_div = $($('.comments')[1]);
-
-            comments_div.append(this.createPageElement(this.currentPage));
-
-            comments_div.append($($(dom).find('.comments')[1]).html());
-
-            super.parsePage(dom);
         }
 
         name(): string {

@@ -30,30 +30,30 @@ module ModuleDefinition {
             }
         }
 
-        addLoadingElement(): void {
-            $('.pagination').prev().append(this.createLoadingElement());
+        createPageContainerElement(): JQuery {
+            return $('<div>');
         }
 
-        removeLoadingElement(): void {
-            $('.pagination').prev().find('.loading_es').remove();
+        getItemsElement(dom): JQuery {
+            return $(dom).find('.pagination').prev();
         }
 
-        parsePage(dom): void {
+        getItems(dom: JQuery): JQuery {
+            return dom.children('.giveaway__row-outer-wrap');
+        }
 
-            var giveaways_div = $('.pagination').prev();
-
-            $(giveaways_div).append(this.createPageElement(this.currentPage));
+        parsePage(dom, pageContainer): void {
 
             $(dom).find('.pagination').prev().find('.giveaway__row-outer-wrap').each(function (i, el) {
-                    $(giveaways_div).append(el);
+                pageContainer.append(el);
             });
 
             // Fix hide popups
-            $(".giveaway__hide").click(function () {
+            pageContainer.find(".giveaway__hide").click(function () {
                 $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
                 $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text())
             });
-            $(".trigger-popup").click(function () {
+            pageContainer.find(".trigger-popup").click(function () {
                 var a:any = $("." + $(this).attr("data-popup"));
 
                 a.bPopup({
@@ -64,7 +64,7 @@ module ModuleDefinition {
                 });
             });
 
-            super.parsePage(dom);
+            //super.parsePage(dom, pageContainer);
         }
 
         name(): string {
