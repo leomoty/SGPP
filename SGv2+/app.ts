@@ -6,6 +6,7 @@
 /// <reference path="LivePreview.ts" />
 /// <reference path="GridView.ts" />
 /// <reference path="CommentAndEnter.ts" />
+/// <reference path="EntryCommenters.ts" />
 /// <reference path="EndlessScrollDiscussion.ts" />
 /// <reference path="EndlessScrollDiscussionReplies.ts" />
 /// <reference path="EndlessScrollGiveawayComments.ts" />

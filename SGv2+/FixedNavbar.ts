@@ -6,14 +6,14 @@ module ModuleDefinition{
 
         init(): void {
             $('head').append("<style> \
-			                    .body { margin-top: 39px;} \
-			                    .navbar_fixed { padding: 0 25px;} \
-			                    .header { \
-			                        position: fixed; \
-			                        top: 0; \
-			                        width: 100%; \
-			                        z-index: 100 \
-			                    } \
+                                .body { margin-top: 39px;} \
+                                .navbar_fixed { padding: 0 25px;} \
+                                .header { \
+                                    position: fixed; \
+                                    top: 0; \
+                                    width: 100%; \
+                                    z-index: 100 \
+                                } \
                             </style>");
         }
 
