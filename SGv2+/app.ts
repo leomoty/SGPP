@@ -16,6 +16,8 @@
 
 var SGV2P: ModuleDefinition.Core = new ModuleDefinition.Core();
 
+console.log(SGV2P.location);
+
 (function ($) {
 
     var modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};

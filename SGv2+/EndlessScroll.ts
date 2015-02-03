@@ -38,7 +38,7 @@ module ModuleDefinition {
 
         createLoadingElement(): any {
             var el = $('<div class="table__heading loading_es"><div class="table__column--width-fill"><p><i class="fa fa-refresh fa-spin"></i> Loading next page...</p></div></div>');
-            this.addStop($(el).find('.loading_es p'));
+            this.addStop(el.find('.loading_es p'));
 
             return el;
         }
@@ -48,9 +48,9 @@ module ModuleDefinition {
             var el = $('<div class="table__heading"><div class="table__column--width-fill"><p>...</p></div></div>');
 
             if (this._numberOfPages > 0)
-                $(el).find('p').text('Page ' + page + ' of ' + this._numberOfPages);
+               el.find('p').text('Page ' + page + ' of ' + this._numberOfPages);
             else
-                $(el).find('p').text('Page ' + page);
+               el.find('p').text('Page ' + page);
 
             return el;
         }
@@ -98,6 +98,7 @@ module ModuleDefinition {
 
         parsePage(dom): void {
 
+            // Update navigation on page
             var new_nav = $(dom).find('.pagination__navigation').first();
             $('.pagination__navigation').first().html(new_nav.html());
 

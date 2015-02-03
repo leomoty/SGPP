@@ -74,8 +74,6 @@ module ModuleDefinition {
 
     export class EndlessScrollMarkComments implements SteamGiftsModule {
 
-        private section: string;
-        private pageType: string;
         private topicInfo: topicInfo;
 
         getDiscussionId(url:string): string {
@@ -100,26 +98,6 @@ module ModuleDefinition {
         }
 
         init(): void {
-
-            if (/^\/discussion\//.test(location.pathname)) {
-                this.section = 'discussion';
-                this.pageType = 'comments';
-            }
-            else if (/^\/trade\//.test(location.pathname)) {
-                this.section = 'trades';
-                this.pageType = 'comments';
-            }
-            else if (/^\/discussions/.test(location.pathname)) {
-                this.section = 'discussion';
-                this.pageType = 'topics';
-            }
-            else if (/^\/trades/.test(location.pathname)) {
-                this.section = 'trades';
-                this.pageType = 'topics';
-            } else {
-                return;
-            }
-
             $('head').append("<style> \
 			    .endless_new .comment__parent .comment__summary, .endless_new > .comment__child {\
                     background-color: rgba(180,180,222,0.1)\
@@ -136,8 +114,8 @@ module ModuleDefinition {
             window["EndlessScrollMarkComments"] = this;
         }
 
-        render(): void {
-            if (this.pageType == 'comments') {
+        render(): void {            
+            if (SGV2P.location.pageKind == 'discussion' || SGV2P.location.pageKind == 'trade') {
                 this.topicInfo = new topicInfo(this.getDiscussionId(location.pathname));
 
                 var page = 1;
@@ -150,7 +128,7 @@ module ModuleDefinition {
 
                 this.topicInfo.setLastVisit();
             }
-            else if (this.pageType == 'topics') {
+            else if (SGV2P.location.pageKind == 'discussions' || SGV2P.location.pageKind == 'trades') {
                 this.markTopics(document);
             }
         }

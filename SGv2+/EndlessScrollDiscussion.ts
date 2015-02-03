@@ -6,12 +6,7 @@ module ModuleDefinition {
     export class EndlessScrollDiscussion extends ModuleDefinition.EndlessScroll implements SteamGiftsModule {
 
         canHandle(): boolean {
-            if (/^\/discussions/.test(location.pathname))
-                return true;
-            else if (/^\/trades/.test(location.pathname))
-                return true;
-
-            return false;
+            return SGV2P.location.pageKind == 'discussions' || SGV2P.location.pageKind == 'trades';
         }
 
         init(): void {

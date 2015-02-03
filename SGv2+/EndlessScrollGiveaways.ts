@@ -9,15 +9,10 @@ module ModuleDefinition {
         private _location: string = 'frontpage';
 
         canHandle(): boolean {
-            if (/^\/giveaways\/entered/.test(location.pathname))
-                return false;
-            else if (/^\/giveaways\/created/.test(location.pathname))
-                return false;
-            else if (/^\/giveaways\/won/.test(location.pathname))
-                return false;
-            if (/\/$/.test(location.pathname) || /^\/giveaways/.test(location.pathname))
-                return true;
-            if (/^\/user\/[^\/]+(\/giveaways\/won([^\/]+)?)?$/.test(location.pathname)) {
+            if (SGV2P.location.pageKind == 'giveaways') {
+                return !(SGV2P.location.subpage == 'entered' || SGV2P.location.subpage == 'created' || SGV2P.location.subpage == 'won');
+            }
+            else if (/^\/user\/[^\/]+(\/giveaways\/won([^\/]+)?)?$/.test(location.pathname)) {
                 this._location = 'profile';
                 return true;
             }

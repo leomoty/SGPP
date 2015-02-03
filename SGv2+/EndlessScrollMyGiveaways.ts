@@ -7,18 +7,12 @@ module ModuleDefinition {
     export class EndlessScrollMyGiveaways extends ModuleDefinition.EndlessScroll implements SteamGiftsModule {
 
         canHandle(): boolean {
-            if (/^\/giveaways\/entered/.test(location.pathname))
-                return true;
-            else if (/^\/giveaways\/created/.test(location.pathname))
-                return true;
-            else if (/^\/giveaways\/won/.test(location.pathname))
-                return true;
-            else if (/^\/giveaway\/.*\/entries/.test(location.pathname))
-                return true;
-            else if (/^\/giveaway\/.*\/winners$/.test(location.pathname))
-                return true;
-            else if (/^\/giveaway\/.*\/groups$/.test(location.pathname))
-                return true;
+            if (SGV2P.location.pageKind == 'giveaways') {
+                return SGV2P.location.subpage == 'entered' || SGV2P.location.subpage == 'created' || SGV2P.location.subpage == 'won';
+            }
+            else if (SGV2P.location.pageKind == 'giveaway') {
+                return SGV2P.location.subpage == 'entries' || SGV2P.location.subpage == 'winners' || SGV2P.location.subpage == 'groups';
+            }
 
             return false;
         }
@@ -44,12 +38,12 @@ module ModuleDefinition {
 
         parsePage(dom): void {
 
-            var tablediv = $('.table__rows');
+            var tablediv = $('.table__rows').first();
 
-            $(tablediv).append(this.createPageElement(this.currentPage));
+            tablediv.append(this.createPageElement(this.currentPage));
 
             $(dom).find('.table__rows').find('.table__row-outer-wrap').each(function (i, el) {
-                    $(tablediv).append(el);
+                    tablediv.append(el);
             });
 
             super.parsePage(dom);
