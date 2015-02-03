@@ -122,7 +122,7 @@ module ModuleDefinition {
 
                 var currentPageNavEl = $('div.pagination__navigation a.is-selected');
                 if (currentPageNavEl.length != 0)
-                    currentPageNavEl.first().data('page-number');
+                    page = currentPageNavEl.first().data('page-number');
                 
                 this.markComments(document, page, true);
 

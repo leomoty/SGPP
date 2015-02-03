@@ -123,13 +123,11 @@ module ModuleDefinition {
                 return;
             }
 
-            var m = this;
-
-            $(window).scroll(function (event) {
+            $(window).scroll((event) => {
                 var scrollPos = $(window).scrollTop() + $(window).height();
 
                 if (scrollPos > $('div.pagination').position().top - 200) {
-                    m.loadNextPage();
+                    this.loadNextPage();
                 }
             });
         }
