@@ -35,11 +35,13 @@ module ModuleDefinition {
             
             var tablediv = $('.table__rows').first();
 
-            $(tablediv).append(this.createPageElement(this.currentPage));
+            tablediv.append(this.createPageElement(this.currentPage));
 
             $(dom).find('.table__rows').first().find('.table__row-outer-wrap').each(function (i, el) {
-                $(tablediv).append(el);
+                tablediv.append(el);
             });
+
+            window["EndlessScrollMarkComments"].markTopics(dom);
 
             super.parsePage(dom);
         }

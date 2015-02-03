@@ -56,10 +56,10 @@ module ModuleDefinition {
 
         parsePage(dom): void {
 
-            var comments_div = $('.comments')[0];
+            var comments_div = $('.comments').first();
 
-            $(comments_div).append(this.createPageElement(this.currentPage));
-            $(comments_div).append($($(dom).find('.comments')[0]).html());
+            comments_div.append(this.createPageElement(this.currentPage));
+            comments_div.append($($(dom).find('.comments')[0]).html());
 
             super.parsePage(dom);
         }

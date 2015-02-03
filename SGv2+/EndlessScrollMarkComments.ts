@@ -6,10 +6,7 @@ module ModuleDefinition {
 
         private localStorageKey: string;
         private _obj;
-
-        get lastVisit(): number {
-            return this._obj.lastVisit;
-        }
+        private _isDataStored: boolean = false;
 
         constructor(topicID: string) {
             this.localStorageKey = "endless_scroll_" + topicID;
@@ -21,14 +18,30 @@ module ModuleDefinition {
                     this._obj.numberOfComments = 0;
                 }
 
+                if (!("lastSeenPage" in this._obj)) {
+                    this._obj.lastSeenPage = 0;
+                }
+
+                this._isDataStored = true;
             } else {
                 this._obj = {
                     lastVisit: Date.now(),
                     lastCommentIDPages: {},
                     numberOfComments: 0,
                 };
-                //this.save();
             }
+        }
+
+        get isDataStored(): boolean {
+            return this._isDataStored;
+        }
+
+        get lastVisit(): number {
+            return this._obj.lastVisit;
+        }
+
+        public getNumComments(): number {
+            return this._obj.numberOfComments;
         }
 
         public setLastVisit(): void {
@@ -36,8 +49,14 @@ module ModuleDefinition {
             this.save();
         }
 
-        public setLastCommentID(page: number, commentID: number): void {
+        public setLastSeenPage(page: number): void {
+            this._obj.lastSeenPage = page;
+            this.save();
+        }
+
+        public setLastCommentID(page: number, commentID: number, numComments: number): void {
             this._obj.lastCommentIDPages[page] = commentID;
+            this._obj.numberOfComments = numComments;
             this.save();
         }
 
@@ -59,8 +78,8 @@ module ModuleDefinition {
         private pageType: string;
         private topicInfo: topicInfo;
 
-        getDiscussionId(): string {
-            var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(location.pathname);
+        getDiscussionId(url:string): string {
+            var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
 
             if (!match)
                 throw 'No Discussion ID';
@@ -81,6 +100,7 @@ module ModuleDefinition {
         }
 
         init(): void {
+
             if (/^\/discussion\//.test(location.pathname)) {
                 this.section = 'discussion';
                 this.pageType = 'comments';
@@ -108,6 +128,9 @@ module ModuleDefinition {
                 } \
                 .endless_not_new:hover .comment__parent .comment__summary,  .endless_not_new:hover > .comment__child {\
                 } \
+                .endless_new_comments h3 a {\
+                    color: black;\
+                }\
             </style>");
 
             window["EndlessScrollMarkComments"] = this;
@@ -115,7 +138,7 @@ module ModuleDefinition {
 
         render(): void {
             if (this.pageType == 'comments') {
-                this.topicInfo = new topicInfo(this.getDiscussionId());
+                this.topicInfo = new topicInfo(this.getDiscussionId(location.pathname));
 
                 var page = 1;
 
@@ -128,7 +151,7 @@ module ModuleDefinition {
                 this.topicInfo.setLastVisit();
             }
             else if (this.pageType == 'topics') {
-
+                this.markTopics(document);
             }
         }
 
@@ -146,11 +169,37 @@ module ModuleDefinition {
             });
 
             if (markRead) {
-                this.topicInfo.setLastCommentID(page, this.getLatestCommentID(dom));
+                // This is ugly
+                var numComments = parseInt($($('.comments')[1]).prev().find('a').text().split(' ')[0]);
+
+                this.topicInfo.setLastCommentID(page, this.getLatestCommentID(dom), numComments);
             }
         }
 
         markTopics(dom): void {
+
+            $(dom).find('.table__row-outer-wrap').each((i: number, el: Element) => {
+                var link = $(el).find('h3 a').first();
+                var tInfo = new topicInfo(this.getDiscussionId(link.attr('href')));
+
+                // Only mark new comments for topics we have visited
+                if (tInfo.isDataStored) {
+                    var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text());
+
+                    var lastComments = tInfo.getNumComments();
+                    var newComments = numComments - lastComments;
+
+                    if (newComments > 0) {
+                        $(el).addClass('endless_new_comments');
+                        $(el).find('.table__column--width-fill > p').first().append(' - <strong>' + newComments + ' new comments</strong>');
+                    }
+                    else {
+                        $(el).addClass('endless_no_new_comments');
+                        $(el).find('.table__column--width-fill > p').first().append(' - no new comments</strong>');
+                    }
+                }
+
+            });
         }
 
         name(): string {

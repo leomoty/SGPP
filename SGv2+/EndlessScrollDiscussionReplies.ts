@@ -60,13 +60,11 @@ module ModuleDefinition {
 
             window["EndlessScrollMarkComments"].markComments(dom, this.currentPage, true);
 
-            var comments_div = $('.comments')[1];
+            var comments_div = $($('.comments')[1]);
 
-            $(comments_div).append(this.createPageElement(this.currentPage));
+            comments_div.append(this.createPageElement(this.currentPage));
 
-            $(comments_div).append($($(dom).find('.comments')[1]).html());
-
-            
+            comments_div.append($($(dom).find('.comments')[1]).html());
 
             super.parsePage(dom);
         }
