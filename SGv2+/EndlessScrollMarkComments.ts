@@ -114,7 +114,7 @@ module ModuleDefinition {
             window["EndlessScrollMarkComments"] = this;
         }
 
-        render(): void {            
+        render(): void {
             if (SGV2P.location.pageKind == 'discussion' || SGV2P.location.pageKind == 'trade') {
                 this.topicInfo = new topicInfo(this.getDiscussionId(location.pathname));
 
@@ -123,13 +123,16 @@ module ModuleDefinition {
                 var currentPageNavEl = $('div.pagination__navigation a.is-selected');
                 if (currentPageNavEl.length != 0)
                     page = currentPageNavEl.first().data('page-number');
-                
+
                 this.markComments(document, page, true);
 
                 this.topicInfo.setLastVisit();
             }
             else if (SGV2P.location.pageKind == 'discussions' || SGV2P.location.pageKind == 'trades') {
                 this.markTopics(document);
+            }
+            else if (SGV2P.location.pageKind == 'giveaways' && SGV2P.location.subpage == '') {
+                this.markTopics($('.widget-container').last().prev());
             }
         }
 
@@ -158,6 +161,11 @@ module ModuleDefinition {
             $(dom).find('.table__row-outer-wrap').each((i: number, el: Element) => {
                 var link = $(el).find('h3 a').first();
                 var tInfo = new topicInfo(this.getDiscussionId(link.attr('href')));
+
+                // Make sure links go to last page if using reversed messages
+                if (true) {
+                    link.attr('href', link.attr('href') + '/search?page=31337');
+                }
 
                 // Only mark new comments for topics we have visited
                 if (tInfo.isDataStored) {

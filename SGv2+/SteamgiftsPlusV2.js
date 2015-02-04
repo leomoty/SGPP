@@ -979,6 +979,9 @@ var ModuleDefinition;
             else if (SGV2P.location.pageKind == 'discussions' || SGV2P.location.pageKind == 'trades') {
                 this.markTopics(document);
             }
+            else if (SGV2P.location.pageKind == 'giveaways' && SGV2P.location.subpage == '') {
+                this.markTopics($('.widget-container').last().prev());
+            }
         };
         EndlessScrollMarkComments.prototype.markComments = function (dom, page, markRead) {
             var _this = this;
@@ -1002,6 +1005,9 @@ var ModuleDefinition;
             $(dom).find('.table__row-outer-wrap').each(function (i, el) {
                 var link = $(el).find('h3 a').first();
                 var tInfo = new topicInfo(_this.getDiscussionId(link.attr('href')));
+                if (true) {
+                    link.attr('href', link.attr('href') + '/search?page=31337');
+                }
                 if (tInfo.isDataStored) {
                     var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text());
                     var lastComments = tInfo.getNumComments();
