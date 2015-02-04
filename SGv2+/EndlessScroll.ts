@@ -103,11 +103,19 @@ module ModuleDefinition {
             }
 
             this._isLoading = true;
-            this._currentPage++;
-            
-            if (this._currentPage > this._lastPage) {
-                //this.addLastPageElement();
-                return;
+
+            if (!this.reverseItems) {
+                this._currentPage++;
+
+                if (this._currentPage > this._lastPage) {
+                    return;
+                }
+            } else {
+                this._currentPage--;
+
+                if (this._currentPage < 1) {
+                    return;
+                }
             }
 
             this.loadPage(this._currentPage);
