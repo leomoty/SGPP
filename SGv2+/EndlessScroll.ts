@@ -27,6 +27,10 @@ module ModuleDefinition {
             return this._numberOfPages;
         }
 
+        get reverseItems(): boolean {
+            return false;
+        }
+
         canHandle(): boolean {
             throw 'canHandle() not implemented';
         }
@@ -56,7 +60,7 @@ module ModuleDefinition {
             var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
 
             controlStartStop.click(() => {
-                this.stopped != this.stopped;
+                this.stopped = !this.stopped;
 
                 $('.endless_control_element a i.fa').toggleClass('fa-pause').toggleClass('fa-play');
 
@@ -140,10 +144,9 @@ module ModuleDefinition {
                 loaded: false,
             }
 
-            // Todo: Support reverse order
             var elPage: JQuery = this._pages[target].element;
 
-            if (target < page) {
+            if ((target < page && !this.reverseItems) || (target > page && this.reverseItems)) {
                 elPage.after(pageContainer);
             } else {
                 elPage.before(pageContainer);
@@ -168,6 +171,8 @@ module ModuleDefinition {
                 // Cache urls for pages
                 this.parseNavigation(newPagination);
 
+                this.afterAddItems(pageContainer);
+
                 this._pages[page].loaded = true;
 
                 loadingElement.remove();
@@ -180,11 +185,17 @@ module ModuleDefinition {
         }
 
         addItems(dom, pageContainer: JQuery): void {
-            var items = this.getItems(dom);
-
-            items.each(function (i: number, el: Element) {
-                pageContainer.append(el);
+            this.getItems(dom).each((i: number, el: Element) => {
+                if (this.reverseItems) {
+                    pageContainer.prepend(el);
+                }
+                else {
+                    pageContainer.append(el);
+                }
             });
+        }
+
+        afterAddItems(pageContainer: JQuery): void {
         }
 
         parseNavigation(dom: JQuery): void {
@@ -223,12 +234,18 @@ module ModuleDefinition {
                 this.parseNavigation(nav);
             }
 
-            console.log(this._pagesUrl);
+            var itemsElement = this.getItemsElement(document);
 
             this._pages[this._currentPage] = {
-                element: this.getItemsElement(document),
+                element: itemsElement,
                 loaded: true,
             };
+
+            if (this.reverseItems) {
+                this.getItems(itemsElement).each((i: number, el: Element) => {
+                    itemsElement.prepend(el);
+                });
+            }
 
             if (this._currentPage != 1) {
                 return;

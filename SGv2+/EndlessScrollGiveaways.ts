@@ -42,19 +42,14 @@ module ModuleDefinition {
             return dom.children('.giveaway__row-outer-wrap');
         }
 
-        parsePage(dom, pageContainer): void {
-
-            $(dom).find('.pagination').prev().find('.giveaway__row-outer-wrap').each(function (i, el) {
-                pageContainer.append(el);
-            });
-
+        afterAddItems(pageContainer: JQuery): void {
             // Fix hide popups
             pageContainer.find(".giveaway__hide").click(function () {
                 $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
                 $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text())
             });
             pageContainer.find(".trigger-popup").click(function () {
-                var a:any = $("." + $(this).attr("data-popup"));
+                var a: any = $("." + $(this).attr("data-popup"));
 
                 a.bPopup({
                     opacity: .85,
@@ -63,8 +58,6 @@ module ModuleDefinition {
                     modalColor: "#3c424d"
                 });
             });
-
-            //super.parsePage(dom, pageContainer);
         }
 
         name(): string {

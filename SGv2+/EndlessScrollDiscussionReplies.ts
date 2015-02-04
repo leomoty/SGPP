@@ -43,6 +43,10 @@ module ModuleDefinition {
             }
         }
 
+        get reverseItems(): boolean {
+            return true;
+        }
+
         createPageContainerElement(): JQuery {
             return $('<div class="comments">');
         }
