@@ -166,11 +166,11 @@ module ModuleDefinition {
 
                 this.beforeAddItems(dom);
 
-                pageContainer.prepend(this.createPageElement(page));
-
                 var itemsContainer = this.getItemsElement(dom);
 
                 this.addItems(itemsContainer, pageContainer);
+
+                pageContainer.prepend(this.createPageElement(page));
 
                 // Update navigation on page
                 var newPagination = this.getNavigationElement(dom);
@@ -244,7 +244,7 @@ module ModuleDefinition {
 
             var itemsElement = this.getItemsElement(document);
 
-            this._pages[this._currentPage] = {
+            this._pages[this.currentPage] = {
                 element: itemsElement,
                 loaded: true,
             };
@@ -255,9 +255,7 @@ module ModuleDefinition {
                 });
             }
 
-            if (this._currentPage != 1) {
-                return;
-            }
+            itemsElement.prepend(this.createPageElement(this.currentPage));
 
             $(window).scroll((event) => {
                 var scrollPos = $(window).scrollTop() + $(window).height();

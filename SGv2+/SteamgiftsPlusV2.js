@@ -549,9 +549,9 @@ var ModuleDefinition;
             $.get(url, function (data) {
                 var dom = $.parseHTML(data);
                 _this.beforeAddItems(dom);
-                pageContainer.prepend(_this.createPageElement(page));
                 var itemsContainer = _this.getItemsElement(dom);
                 _this.addItems(itemsContainer, pageContainer);
+                pageContainer.prepend(_this.createPageElement(page));
                 var newPagination = _this.getNavigationElement(dom);
                 _this.getNavigationElement(document).html(newPagination.html());
                 _this.parseNavigation(newPagination);
@@ -605,7 +605,7 @@ var ModuleDefinition;
                 this.parseNavigation(nav);
             }
             var itemsElement = this.getItemsElement(document);
-            this._pages[this._currentPage] = {
+            this._pages[this.currentPage] = {
                 element: itemsElement,
                 loaded: true,
             };
@@ -614,9 +614,7 @@ var ModuleDefinition;
                     itemsElement.prepend(el);
                 });
             }
-            if (this._currentPage != 1) {
-                return;
-            }
+            itemsElement.prepend(this.createPageElement(this.currentPage));
             $(window).scroll(function (event) {
                 var scrollPos = $(window).scrollTop() + $(window).height();
                 if (scrollPos > $('div.pagination').position().top - 200) {
