@@ -1,5 +1,4 @@
-﻿/// <reference path="SGLocation.ts" />
-/// <reference path="ModuleDefinition.ts" />
+﻿/// <reference path="ModuleDefinition.ts" />
 
 module ModuleDefinition{
 
@@ -33,7 +32,7 @@ module ModuleDefinition{
                 description = split[2] || '';
 
                 if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion') {
-                    subpage = split[3] || '';
+                    subpage = (split[3] == 'search' ? '' : split[3]) || '';
                     code = split[1] || '';
                 } else {
                     subpage = split[1] || '';

@@ -36,13 +36,10 @@ module ModuleDefinition {
         init(): void {}
 
         render = () => {
-            // if (/.*steamgifts.com\/giveaway\/[a-zA-Z0-9]{5}\/.*?\/(entries|winners)/.test(document.URL)) {
-            if (SGPV2.location.pageKind == 'giveaway' && ['entries', 'winners'].indexOf(SGPV2.location.subpage) > -1) {
-                this.elements.button.click(this.main);
-                $('.page__heading__breadcrumbs').append(this.elements.button);
-                $('.page__heading__breadcrumbs').append(this.elements.loader.hide());
-            }
-
+            this.elements.button.click(this.main);
+            $('.page__heading__breadcrumbs').append(this.elements.button);
+            $('.page__heading__breadcrumbs').append(this.elements.loader.hide());
+            
         }
 
         name(): string {
@@ -81,7 +78,7 @@ module ModuleDefinition {
             });
         }
         private getCommenters = () => {
-            this.url += SGPV2.location.code + '/' + SGPV2.location.description + '/search?page='
+            this.url += SGPP.location.code + '/' + SGPP.location.description + '/search?page='
             this.page = this.pageStart;
             this.getCommentPage();
         }

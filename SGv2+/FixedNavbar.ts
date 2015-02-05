@@ -4,6 +4,8 @@ module ModuleDefinition{
 
     export class FixedNavbar implements SteamGiftsModule {
 
+        style = "";
+
         init(): void {
             var style = ".body {margin-top: 39px}" +
                 ".header {position: fixed; top: 0; width: 100%; z-index: 100}";
@@ -18,6 +20,8 @@ module ModuleDefinition{
         name(): string {
             return "FixedNavbar";
         }
+
+        shouldRun = (location: SGLocation) => true;
     }
 
 } 

@@ -3,6 +3,7 @@ var ModuleDefinition;
     var Core = (function () {
         function Core() {
             var _this = this;
+            this.style = "";
             this.resolvePath = function () {
                 var hash = "";
                 var pageKind = "";
@@ -19,26 +20,14 @@ var ModuleDefinition;
                     var split = windowLocation.pathname.split("/").filter(function (a, b, c) {
                         return Boolean(a);
                     });
+                    pageKind = split[0] || '';
+                    description = split[2] || '';
                     if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion') {
-                        switch (split.length) {
-                            case 4:
-                                subpage = split[3];
-                            case 3:
-                                description = split[2];
-                            case 2:
-                                code = split[1];
-                            case 1:
-                                pageKind = split[0];
-                        }
+                        subpage = (split[3] == 'search' ? '' : split[3]) || '';
+                        code = split[1] || '';
                     }
-                    else if (split[0] == 'giveaways' || split[0] == 'trades' || split[0] == 'discussions' || split[0] == 'support' || split[0] == 'roles' || split[0] == 'legal' || split[0] == 'about') {
-                        pageKind = split[0];
-                        subpage = (split[1] == 'search' ? '' : split[1]) || '';
-                    }
-                    else if (split[1] == 'sales') {
-                        pageKind = split[0];
-                        subpage = split[1];
-                        description = split[2] || '';
+                    else {
+                        subpage = split[1] || '';
                     }
                 }
                 var match, pl = /\+/g, search = /([^&=]+)=?([^&]*)/g, decode = function (s) {
@@ -74,6 +63,9 @@ var ModuleDefinition;
         Core.prototype.name = function () {
             return "Core";
         };
+        Core.prototype.shouldRun = function (location) {
+            return true;
+        };
         Core.prototype.log = function (msg) {
             console.log("[" + new Date() + "] SGV2+ - " + msg);
         };
@@ -85,36 +77,16 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
         function FixedNavbar() {
+            this.style = "";
+            this.shouldRun = function (location) { return true; };
         }
         FixedNavbar.prototype.init = function () {
-            $('head').append("<style> \
-                                .body { margin-top: 39px;} \
-                                .navbar_fixed { padding: 0 25px;} \
-                                .header { \
-                                    position: fixed; \
-                                    top: 0; \
-                                    width: 100%; \
-                                    z-index: 100 \
-                                } \
-                            </style>");
+            var style = ".body {margin-top: 39px}" + ".header {position: fixed; top: 0; width: 100%; z-index: 100}";
+            $('<style>').attr('type', 'text/css').html(style).appendTo('head');
         };
         FixedNavbar.prototype.render = function () {
-            $('header').addClass('header');
             $('body').addClass('body');
-            var nav = $('header').html();
-            $('nav').remove();
-            $('header').html('<div class="navbar_fixed"></div>');
-            $('.navbar_fixed').html(nav);
-            $('nav .nav__button--is-dropdown-arrow').click(function () {
-                var active = $(this).hasClass('is-selected');
-                $('nav .nav__button').removeClass('is-selected');
-                $('nav .nav__relative-dropdown').addClass('is-hidden');
-                if (!active)
-                    $(this).addClass('is-selected').siblings('.nav__relative-dropdown').removeClass('is-hidden');
-                return false;
-            }).attr('unselectable', 'on').bind('selectstart', function () {
-                return false;
-            });
+            $('header').addClass('header');
         };
         FixedNavbar.prototype.name = function () {
             return "FixedNavbar";
@@ -127,6 +99,8 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var ScrollingSidebar = (function () {
         function ScrollingSidebar() {
+            this.style = "";
+            this.shouldRun = function (location) { return true; };
         }
         ScrollingSidebar.prototype.init = function () {
         };
@@ -156,6 +130,8 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var LivePreview = (function () {
         function LivePreview() {
+            this.style = "";
+            this.shouldRun = function (location) { return false; };
         }
         LivePreview.prototype.init = function () {
         };
@@ -172,10 +148,12 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     function calculateWinChance(copies, entries) {
         var res = (+(parseFloat(copies) / parseFloat(entries)) * 100);
-        return res === Number.POSITIVE_INFINITY ? 100 : res > 100 ? 100 : res.toFixed(2);
+        return Math.min(res, 100).toFixed(2);
     }
     var GridView = (function () {
         function GridView() {
+            this.style = "";
+            this.shouldRun = function (location) { return location.pageKind == 'giveaways'; };
         }
         GridView.prototype.init = function () {
             $('head').append("<style> \
@@ -260,12 +238,12 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var CommentAndEnter = (function () {
         function CommentAndEnter() {
+            this.style = "";
+            this.shouldRun = function (location) { return location.pageKind == 'giveaway' && location.subpage == ''; };
         }
         CommentAndEnter.prototype.init = function () {
         };
         CommentAndEnter.prototype.render = function () {
-            if (window.location.pathname.indexOf('/giveaway/') == -1)
-                return;
             $('.js__submit-form').after('<div class="sidebar__entry-insert comment_submit" style="margin-bottom:0px;">Comment and Enter</div>');
             $('.comment_submit').on("click", function () {
                 var elem = $('.sidebar .sidebar__entry-insert');
@@ -317,25 +295,49 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
+    var Settings = (function () {
+        function Settings() {
+            var _this = this;
+            this.style = "";
+            this.settingsNavIcon = $('<a class="nav__row sgpp_settings" href= "#">\n' + '<i class="icon-red fa fa-fw fa-bars"> </i>\n' + '<div class="nav__row__summary">\n' + '<p class="nav__row__summary__name" > SG++ Settings</p>\n' + '<p class="nav__row__summary__description"> Steamgifts++ settings.</p>\n' + '</div>\n' + '</a>\n');
+            this.init = function () {
+            };
+            this.render = function () {
+                $(".nav__absolute-dropdown a[href='/?logout']").before(_this.settingsNavIcon);
+                $(".sgpp_settings").on("click", _this.handleSettingClick);
+            };
+            this.handleSettingClick = function () {
+            };
+            this.shouldRun = function (location) { return true; };
+        }
+        Settings.prototype.name = function () {
+            return "Settings";
+        };
+        return Settings;
+    })();
+    ModuleDefinition.Settings = Settings;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
     var EntryCommenters = (function () {
         function EntryCommenters() {
             var _this = this;
+            this.url = 'http://www.steamgifts.com/giveaway/';
             this.cacheCompleted = false;
             this.isLoading = false;
-            this.commenters = [];
-            this.page = 1;
+            this.commenters = {};
+            this.pageStart = 1337;
             this.elements = {
-                pos: $(document.createElement('i')).addClass('GAComm_pos fa fa-comment-o').attr('title', 'Commented'),
-                neg: $(document.createElement('span')).addClass('GAComm_neg fa-stack').attr('title', 'Did not comment').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x')).append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x')),
+                button: $(document.createElement('i')).addClass('giveaway__icon fa fa-comments-o').attr('title', 'Check who commented'),
                 loader: $(document.createElement('i')).addClass('giveaway__icon fa fa-refresh fa-spin').attr('title', 'loading comments').css('cursor', 'auto'),
-                button: $(document.createElement('i')).addClass('giveaway__icon fa fa-comments-o').attr('title', 'Check who commented')
+                pos: $(document.createElement('span')).addClass('GAComm_pos fa-stack').attr('title', 'Commented').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x')).append($(document.createElement('i')).addClass('fa fa-check fa-stack-1x')),
+                neg: $(document.createElement('span')).addClass('GAComm_neg fa-stack').attr('title', 'Did not comment').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x')).append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x')),
             };
+            this.style = (".GAComm_pos, .GAComm_neg {margin-left:-3px; vertical-align: inherit}\n" + ".GAComm_pos > i.fa.fa-check {color: #719A47}\n" + ".GAComm_neg > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" + ".GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times {font-size: 0.7em}\n");
             this.render = function () {
-                if (/.*steamgifts.com\/giveaway\/[a-zA-Z0-9]{5}\/.*?\/(entries|winners)/.test(document.URL)) {
-                    _this.elements.button.click(_this.main);
-                    $('.page__heading__breadcrumbs').append(_this.elements.button);
-                    $('.page__heading__breadcrumbs').append(_this.elements.loader.hide());
-                }
+                _this.elements.button.click(_this.main);
+                $('.page__heading__breadcrumbs').append(_this.elements.button);
+                $('.page__heading__breadcrumbs').append(_this.elements.loader.hide());
             };
             this.main = function () {
                 if (!_this.cacheCompleted) {
@@ -352,7 +354,10 @@ var ModuleDefinition;
                 _this.elements.button.show();
                 $('.table__rows .table__column--width-fill').each(function (i, el) {
                     $('.GAComm_pos, .GAComm_neg', el).remove();
-                    if (_this.commenters.indexOf($.trim(el.textContent)) > -1) {
+                    var wrapper = $('p.table__column__heading', el);
+                    if (wrapper.length > 0)
+                        el = wrapper[0];
+                    if (_this.commenters[el.textContent.trim()]) {
                         _this.elements.pos.clone().appendTo(el);
                     }
                     else {
@@ -361,9 +366,8 @@ var ModuleDefinition;
                 });
             };
             this.getCommenters = function () {
-                _this.url = /.*steamgifts.com\/giveaway\/[a-zA-Z0-9]{5}\/.*?\//.exec(document.URL)[0];
-                _this.url += 'search?page=';
-                _this.page = 1;
+                _this.url += SGPP.location.code + '/' + SGPP.location.description + '/search?page=';
+                _this.page = _this.pageStart;
                 _this.getCommentPage();
             };
             this.getCommentPage = function () {
@@ -376,50 +380,45 @@ var ModuleDefinition;
             this.handleCommentPage = function (html) {
                 var $html = $(html);
                 $('.comment__username', $html).each(function (i, el) {
-                    _this.commenters.push(el.textContent);
+                    _this.commenters[el.textContent.trim()] = true;
                 });
-                if (_this.maxPage === null) {
+                if (_this.page == _this.pageStart) {
                     var pagination = $('a[data-page-number]', $html);
-                    if (pagination.length === 0) {
-                        _this.maxPage = 1;
-                    }
-                    else {
-                        pagination.each(function (i, el) {
-                            _this.maxPage = Math.max($(el).data().pageNumber, _this.maxPage);
-                        });
-                    }
+                    _this.page = pagination.length != 0 ? pagination.last().data().pageNumber : 1;
                 }
-                if (++_this.page <= _this.maxPage)
+                if (--_this.page > 0)
                     _this.getCommentPage();
                 else
                     _this.cacheCompleted = true;
             };
         }
         EntryCommenters.prototype.init = function () {
-            var style = (".GAComm_button {text-decoration: underline; font-size: 12px}\n" + ".GAComm_pos {vertical-align: super}\n" + ".GAComm_neg {vertical-align: inherit}\n" + ".table__column--width-fill > p {display: inline}");
-            $('<style>').attr('type', 'text/css').html(style).appendTo('head');
         };
         EntryCommenters.prototype.name = function () {
-            return "Core";
+            return "EntryCommenters";
+        };
+        EntryCommenters.prototype.shouldRun = function (loc) {
+            return loc.pageKind == 'giveaway' && (loc.subpage == 'entries' || loc.subpage == 'winners');
         };
         return EntryCommenters;
     })();
     ModuleDefinition.EntryCommenters = EntryCommenters;
 })(ModuleDefinition || (ModuleDefinition = {}));
-var SGV2P = new ModuleDefinition.Core();
+var SGPP = new ModuleDefinition.Core();
 (function ($) {
     var modules = {};
-    var modulesNames = new Array("FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter");
-    modulesNames.push('EntryCommenters');
+    var modulesNames = new Array("FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter", "GridView", "EntryCommenters");
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
-        modules[m.name()] = m;
-        SGV2P.log("Module " + m.name() + " init() call.");
-        modules[m.name()].init();
+        if (m.shouldRun(SGPP.location)) {
+            modules[m.name()] = m;
+            SGPP.log("Module " + m.name() + " init() call.");
+            modules[m.name()].init();
+        }
     }
     $(document).ready(function () {
         for (var module in modules) {
-            SGV2P.log("Module " + module + " render() call.");
+            SGPP.log("Module " + module + " render() call.");
             modules[module].render();
         }
     });

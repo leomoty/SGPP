@@ -4,13 +4,13 @@ module ModuleDefinition{
 
     export class CommentAndEnter implements SteamGiftsModule {
 
+        style = "";
+
         init(): void {
         
         }
 
         render(): void {
-            if (window.location.pathname.indexOf('/giveaway/') == -1)
-                return;
             $('.js__submit-form').after('<div class="sidebar__entry-insert comment_submit" style="margin-bottom:0px;">Comment and Enter</div>');
             $('.comment_submit').on("click", function() {
                 var elem = $('.sidebar .sidebar__entry-insert');
@@ -51,6 +51,8 @@ module ModuleDefinition{
             });
 
         }
+
+        shouldRun = (location: SGLocation) => location.pageKind == 'giveaway' && location.subpage == '';
 
         name(): string {
             return "CommentAndEnter";

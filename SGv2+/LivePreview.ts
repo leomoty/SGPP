@@ -7,6 +7,8 @@ module ModuleDefinition{
 
     export class LivePreview implements SteamGiftsModule {
 
+        style = "";
+
         init(): void {
       /*      $('.comment__description textarea').on("keyup", function () {
                 if (!$(this).val().length)
@@ -24,6 +26,8 @@ module ModuleDefinition{
         name(): string {
             return "LivePreview";
         }
+
+        shouldRun = (location: SGLocation) => false;
     }
 
 } 
