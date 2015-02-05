@@ -1,4 +1,4 @@
-﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="Core.ts" />
 /// <reference path="ModuleDefinition.ts" />
 /// <reference path="FixedNavbar.ts" />
