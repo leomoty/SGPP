@@ -23,17 +23,17 @@ module ModuleDefinition {
                 .append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x')),
         };
 
-        init(): void {
-            var style = (
-                ".GAComm_pos, .GAComm_neg {margin-left:-3px; vertical-align: inherit}\n" +
-                ".GAComm_pos > i.fa.fa-check {color: #719A47}\n" +                      // only interior
-                ".GAComm_neg > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" +      // only interior
-                // ".GAComm_neg {color: rgba(166, 93, 92, 0.85)}\n" +                      // fully colored
-                // ".GAComm_pos {color: #719A47}\n" +                                      // fully colored
-                ".GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times {font-size: 0.7em}\n"
-            );
-            $('<style>').attr('type', 'text/css').html(style).appendTo('head');
-        }
+        style = (
+            ".GAComm_pos, .GAComm_neg {margin-left:-3px; vertical-align: inherit}\n" +
+            ".GAComm_pos > i.fa.fa-check {color: #719A47}\n" +                      // only interior
+            ".GAComm_neg > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" +      // only interior
+            // ".GAComm_neg {color: rgba(166, 93, 92, 0.85)}\n" +                      // fully colored
+            // ".GAComm_pos {color: #719A47}\n" +                                      // fully colored
+            ".GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times {font-size: 0.7em}\n"
+        );
+
+
+        init(): void {}
 
         render = () => {
             // if (/.*steamgifts.com\/giveaway\/[a-zA-Z0-9]{5}\/.*?\/(entries|winners)/.test(document.URL)) {
@@ -46,8 +46,10 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "Core";
+            return "EntryCommenters";
         }
+
+        shouldRun(loc: SGLocation): boolean {return loc.pageKind == 'giveaway' && (loc.subpage == 'entries' || loc.subpage == 'winners')}
 
         private main = () => {
             if (!this.cacheCompleted) {
@@ -80,8 +82,6 @@ module ModuleDefinition {
         }
         private getCommenters = () => {
             this.url += SGPV2.location.code + '/' + SGPV2.location.description + '/search?page='
-            // this.url = /.*steamgifts.com\/giveaway\/[a-zA-Z0-9]{5}\/.*?\//.exec(document.URL)[0];
-            // this.url += 'search?page=';
             this.page = this.pageStart;
             this.getCommentPage();
         }
