@@ -10,6 +10,9 @@ module ModuleDefinition{
             return this._sgLocation;
         }
 
+        modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
+
+
         style = "";
 
         private resolvePath = () => {
