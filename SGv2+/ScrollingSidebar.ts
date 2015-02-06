@@ -11,19 +11,31 @@ module ModuleDefinition{
         }
 
         render(): void {
-            var $sidebar = $(".sidebar"),
-                $window = $(window),
-                offset = $sidebar.offset(),
-                topPadding = 64;
+            $('.sidebar').wrapInner($(document.createElement('div')).addClass('inner__sidebar').css('min-width', '206px'));
+            var $sidebar = $('.inner__sidebar');
+            var $window = $(window);
+            var $footer = $('.footer__outer-wrap');
 
-            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document,() => {
-                offset = $sidebar.offset();
-            });
-
-            $window.scroll(function () {
-                $sidebar.stop().animate({
-                    marginTop: $window.scrollTop() > offset.top ? $window.scrollTop() - offset.top + topPadding : 0
-                });
+            $(document).scroll(function(){
+                if($window.scrollTop() + $sidebar.height()  >= $footer.position().top){
+                    $sidebar.css('position', 'fixed');
+                    $sidebar.css('top', '');
+                    $sidebar.css('bottom', '69px');
+                    console.log('footer');
+                } else {
+                if($window.scrollTop() <= ($('.featured__container').height() + 39)){
+                    $sidebar.css('position', 'absolute');
+                    $sidebar.css('top', '');
+                    $sidebar.css('bottom', '');
+                    console.log('top');
+                }
+                    else {
+                        $sidebar.css('position', 'fixed');
+                        $sidebar.css('top', '25px');
+                        $sidebar.css('bottom', '');
+                        console.log('moving');
+                    }
+                }
             });
         }
 
