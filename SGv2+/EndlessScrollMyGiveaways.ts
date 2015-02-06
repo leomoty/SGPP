@@ -35,13 +35,30 @@ module ModuleDefinition {
             return $(dom).find('.table__rows').first();
         }
 
-        parsePage(dom, pageContainer: JQuery): void {
+        getItems(dom: JQuery): JQuery {
+            return dom.children('.table__row-outer-wrap');
+        }
 
-            $(dom).find('.table__rows').find('.table__row-outer-wrap').each(function (i, el) {
-                pageContainer.append(el);
+        afterAddItems(dom: JQuery): void {
+            $(dom).find(".table__remove-default").click(function () {
+                var e = $(this);
+                e.addClass("is-hidden");
+                e.siblings(".table__remove-loading").removeClass("is-hidden");
+                $.ajax({
+                    url: "/ajax.php",
+                    type: "POST",
+                    dataType: "json",
+                    data: e.closest("form").serialize(),
+                    success: function (t) {
+                        e.siblings(".table__remove-loading").addClass("is-hidden");
+                        e.siblings(".table__remove-complete").removeClass("is-hidden");
+                        e.closest(".table__row-inner-wrap").addClass("is-faded");
+                        if (typeof t.points !== "undefined" && t.points !== false) {
+                            $(".nav__points").text(t.points)
+                        }
+                    }
+                })
             });
-
-            //super.parsePage(dom, pageContainer);
         }
 
         name(): string {
