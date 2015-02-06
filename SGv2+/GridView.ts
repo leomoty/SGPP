@@ -4,10 +4,12 @@ module ModuleDefinition{
 
     function calculateWinChance(copies, entries) : any {
         var res = (+(parseFloat(copies) / parseFloat(entries)) * 100);
-        return res === Number.POSITIVE_INFINITY ? 100 : res > 100 ? 100 : res.toFixed(2);
+        return Math.min(res, 100).toFixed(2);
     }
     
     export class GridView implements SteamGiftsModule {
+
+        style = "";
 
         init(): void {
             $('head').append("<style> \
@@ -96,6 +98,7 @@ module ModuleDefinition{
             return container;
         }
 
+        shouldRun = (location: SGLocation) => location.pageKind == 'giveaways';
 
     }
 

@@ -2,15 +2,6 @@
 
 module ModuleDefinition{
 
-    interface SGLocation {
-        pageKind: string;
-        code: string;
-        description: string;
-        subpage: string;
-        hash: string;
-        parameters: any;
-    }
-
     export class Core implements SteamGiftsModule {
 
         private _sgLocation: SGLocation;
@@ -18,6 +9,8 @@ module ModuleDefinition{
         get location(): SGLocation {
             return this._sgLocation;
         }
+
+        style = "";
 
         private resolvePath = () => {
             var hash = "";
@@ -35,26 +28,16 @@ module ModuleDefinition{
             } else {
                 var split = windowLocation.pathname.split("/").filter(function (a, b, c) { return Boolean(a) });
 
+                pageKind = split[0] || '';
+                description = split[2] || '';
+
                 if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion') {
-                    switch (split.length) {
-                        case 4:
-                            subpage = split[3];
-                        case 3:
-                            description = split[2];
-                        case 2:
-                            code = split[1];
-                        case 1:
-                            pageKind = split[0];
-                    }
-                } else if (split[0] == 'giveaways' || split[0] == 'trades' || split[0] == 'discussions' || split[0] == 'support' || split[0] == 'roles'
-                            || split[0] == 'legal' || split[0] == 'about') {
-                    pageKind = split[0];
-                    subpage = (split[1] == 'search' ? '' : split[1]) || '';
-                } else if(split[1] == 'sales'){
-                    pageKind = split[0];
-                    subpage = split[1];
-                    description = split[2] || '';
+                    subpage = (split[3] == 'search' ? '' : split[3]) || '';
+                    code = split[1] || '';
+                } else {
+                    subpage = split[1] || '';
                 }
+
             }
 
             var match,
@@ -86,11 +69,15 @@ module ModuleDefinition{
         }
 
         render(): void {
-            
+
         }
 
         name(): string {
             return "Core";
+        }
+
+        shouldRun(location: SGLocation): boolean{
+            return true;
         }
 
         log(msg: string): void {
