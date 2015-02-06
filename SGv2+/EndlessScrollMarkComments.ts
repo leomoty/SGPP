@@ -76,6 +76,8 @@ module ModuleDefinition {
 
         private topicInfo: topicInfo;
 
+        style = "";
+
         getDiscussionId(url:string): string {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
 
@@ -97,6 +99,10 @@ module ModuleDefinition {
             return id;
         }
 
+        shouldRun(): boolean {
+            return true;
+        }
+
         init(): void {
             $('head').append("<style> \
 			    .endless_new .comment__parent .comment__summary, .endless_new > .comment__child {\
@@ -115,7 +121,7 @@ module ModuleDefinition {
         }
 
         render(): void {
-            if (SGV2P.location.pageKind == 'discussion' || SGV2P.location.pageKind == 'trade') {
+            if (SGPP.location.pageKind == 'discussion' || SGPP.location.pageKind == 'trade') {
                 this.topicInfo = new topicInfo(this.getDiscussionId(location.pathname));
 
                 var page = 1;
@@ -128,10 +134,10 @@ module ModuleDefinition {
 
                 this.topicInfo.setLastVisit();
             }
-            else if (SGV2P.location.pageKind == 'discussions' || SGV2P.location.pageKind == 'trades') {
+            else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics(document);
             }
-            else if (SGV2P.location.pageKind == 'giveaways' && SGV2P.location.subpage == '') {
+            else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev());
             }
         }

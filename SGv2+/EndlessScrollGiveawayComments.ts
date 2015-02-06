@@ -5,8 +5,10 @@ module ModuleDefinition {
 
     export class EndlessScrollGiveawayComments extends ModuleDefinition.EndlessScroll implements SteamGiftsModule {
 
-        canHandle(): boolean {
-            return SGV2P.location.pageKind == 'giveaway' && SGV2P.location.subpage == '';
+        style = "";
+
+        shouldRun(): boolean {
+            return SGPP.location.pageKind == 'giveaway' && SGPP.location.subpage == '';
         }
 
         init(): void {
@@ -14,27 +16,24 @@ module ModuleDefinition {
         }
 
         render(): void {
-            if (this.canHandle()) {
+            if (true) { // TODO Add setting for this
+                var addReply = $('.comment--submit').first();
 
-                if (true) { // TODO Add setting for this
-                    var addReply = $('.comment--submit').first();
+                var elCommentHeader = $('<div id="esc_reply_header" class="page__heading"><div class="page__heading__breadcrumbs">Reply</div></div>');
 
-                    var elCommentHeader = $('<div id="esc_reply_header" class="page__heading"><div class="page__heading__breadcrumbs">Reply</div></div>');
+                $('.comments').prev().before(elCommentHeader);
 
-                    $('.comments').prev().before(elCommentHeader);
+                $('#esc_reply_header').after(addReply);
 
-                    $('#esc_reply_header').after(addReply);
-
-                    // Move back to correct location after clicking cancel
-                    $('.js__comment-reply-cancel').on('click', function () {
-                        setTimeout(function () {
-                            addReply.insertAfter('#esc_reply_header');
-                        }, 10);
-                    });
-                }
-
-                this.preparePage();
+                // Move back to correct location after clicking cancel
+                $('.js__comment-reply-cancel').on('click', function () {
+                    setTimeout(function () {
+                        addReply.insertAfter('#esc_reply_header');
+                    }, 10);
+                });
             }
+
+            this.preparePage();
         }
 
 

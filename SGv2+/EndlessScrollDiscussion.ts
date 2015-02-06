@@ -5,17 +5,17 @@ module ModuleDefinition {
 
     export class EndlessScrollDiscussion extends ModuleDefinition.EndlessScroll implements SteamGiftsModule {
 
-        canHandle(): boolean {
-            return SGV2P.location.pageKind == 'discussions' || SGV2P.location.pageKind == 'trades';
+        style = "";
+
+        shouldRun(): boolean {
+            return SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades';
         }
 
         init(): void {
         }
 
         render(): void {
-            if (this.canHandle()) {
-                this.preparePage();
-            }
+            this.preparePage();
         }
 
         createPageContainerElement(): JQuery {

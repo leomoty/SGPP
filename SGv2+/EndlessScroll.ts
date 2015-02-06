@@ -31,10 +31,6 @@ module ModuleDefinition {
             return false;
         }
 
-        canHandle(): boolean {
-            throw 'canHandle() not implemented';
-        }
-
         hasPages(dom): boolean {
             return $(dom).find('.pagination__navigation').length != 0;
         }
@@ -219,10 +215,6 @@ module ModuleDefinition {
         }
 
         preparePage(): void {
-            // Check that current page can be handled and navigation exists in page 
-            if (!this.canHandle())
-                return;
-
             if (!this.hasPages(document)) {
                 this._currentPage = 1;
                 this._lastPage = 1;

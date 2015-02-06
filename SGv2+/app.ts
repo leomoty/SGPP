@@ -8,6 +8,12 @@
 /// <reference path="CommentAndEnter.ts" />
 /// <reference path="Settings.ts" />
 /// <reference path="EntryCommenters.ts" />
+/// <reference path="EndlessScrollMarkComments.ts" />
+/// <reference path="EndlessScrollDiscussion.ts" />
+/// <reference path="EndlessScrollDiscussionReplies.ts" />
+/// <reference path="EndlessScrollGiveawayComments.ts" />
+/// <reference path="EndlessScrollGiveaways.ts" />
+/// <reference path="EndlessScrollMyGiveaways.ts" />
 
 var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 

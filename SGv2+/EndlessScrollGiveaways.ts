@@ -8,9 +8,11 @@ module ModuleDefinition {
 
         private _location: string = 'frontpage';
 
-        canHandle(): boolean {
-            if (SGV2P.location.pageKind == 'giveaways') {
-                return !(SGV2P.location.subpage == 'entered' || SGV2P.location.subpage == 'created' || SGV2P.location.subpage == 'won');
+        style = "";
+
+        shouldRun(): boolean {
+            if (SGPP.location.pageKind == 'giveaways') {
+                return !(SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won');
             }
             else if (/^\/user\/[^\/]+(\/giveaways\/won([^\/]+)?)?$/.test(location.pathname)) {
                 this._location = 'profile';
@@ -24,10 +26,7 @@ module ModuleDefinition {
         }
 
         render(): void {
-            if (this.canHandle())
-            {
-                this.preparePage();
-            }
+            this.preparePage();
         }
 
         createPageContainerElement(): JQuery {
