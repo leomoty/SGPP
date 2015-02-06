@@ -4,6 +4,8 @@ module ModuleDefinition{
 
     export class ScrollingSidebar implements SteamGiftsModule {
 
+        style = "";
+
         init(): void {
            
         }
@@ -29,6 +31,8 @@ module ModuleDefinition{
         name(): string {
             return "ScrollingSidebar";
         }
+
+        shouldRun = (location: SGLocation) => true;
     }
 
 } 

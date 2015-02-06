@@ -6,35 +6,31 @@
 /// <reference path="LivePreview.ts" />
 /// <reference path="GridView.ts" />
 /// <reference path="CommentAndEnter.ts" />
+/// <reference path="Settings.ts" />
 /// <reference path="EntryCommenters.ts" />
-/// <reference path="EndlessScrollDiscussion.ts" />
-/// <reference path="EndlessScrollDiscussionReplies.ts" />
-/// <reference path="EndlessScrollGiveawayComments.ts" />
-/// <reference path="EndlessScrollGiveaways.ts" />
-/// <reference path="EndlessScrollMyGiveaways.ts" />
-/// <reference path="EndlessScrollMarkComments.ts" />
 
-var SGV2P: ModuleDefinition.Core = new ModuleDefinition.Core();
+var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
 (function ($) {
 
     var modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
 
-    var modulesNames: Array<string> = new Array<string>(
-        "EndlessScrollMarkComments", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments"
-    );
+    var modulesNames: Array<string> = new Array<string>("FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter", "GridView", "EntryCommenters", "EndlessScrollMarkComments", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
 
     for (var pos in modulesNames) {
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
-        modules[m.name()] = m;
 
-        SGV2P.log("Module " + m.name() + " init() call.");
-        modules[m.name()].init();
+        if (m.shouldRun(SGPP.location)) {
+            modules[m.name()] = m;
+
+            SGPP.log("Module " + m.name() + " init() call.");
+            modules[m.name()].init();
+        }
     }
 
     $(document).ready(function () {
         for (var module in modules) {
-            SGV2P.log("Module " + module + " render() call.");
+            SGPP.log("Module " + module + " render() call.");
             modules[module].render();
         }
     });
