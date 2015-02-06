@@ -36,7 +36,7 @@ module ModuleDefinition {
         }
 
         getNavigationElement(dom): JQuery {
-            return $(dom).find('.pagination__navigation').first();
+            return $(dom).find('.pagination').first();
         }
 
         createPageContainerElement(): JQuery {
@@ -203,7 +203,7 @@ module ModuleDefinition {
         }
 
         parseNavigation(dom: JQuery): void {
-            dom.find('a').each((i: number, el: Element) => {
+            dom.find('.pagination__navigation a').each((i: number, el: Element) => {
                 var $el = $(el);
                 var page = parseInt($el.data('page-number'));
 
@@ -215,12 +215,16 @@ module ModuleDefinition {
         }
 
         preparePage(): void {
+            var nav = this.getNavigationElement(document);
+
+            // Don't do anything if no results
+            if (nav.hasClass('pagination--no-results'))
+                return;
+
             if (!this.hasPages(document)) {
                 this._currentPage = 1;
                 this._lastPage = 1;
             } else {
-
-                var nav = this.getNavigationElement(document);
 
                 var elLastPage = nav.find('a').last();
 
