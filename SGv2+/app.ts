@@ -2,6 +2,7 @@
 /// <reference path="Core.ts" />
 /// <reference path="ModuleDefinition.ts" />
 /// <reference path="FixedNavbar.ts" />
+/// <reference path="FixedFooter.ts" />
 /// <reference path="ScrollingSidebar.ts" />
 /// <reference path="LivePreview.ts" />
 /// <reference path="GridView.ts" />
@@ -13,7 +14,7 @@ var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
 (function ($) {
 
-    var modulesNames: Array<string> = new Array<string>("Settings", "FixedNavbar", "ScrollingSidebar", "CommentAndEnter", "GridView", "EntryCommenters");
+    var modulesNames: Array<string> = new Array<string>("Settings", "FixedNavbar", "FixedFooter", "ScrollingSidebar", "CommentAndEnter", "GridView", "EntryCommenters");
 
     for (var pos in modulesNames) {
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
