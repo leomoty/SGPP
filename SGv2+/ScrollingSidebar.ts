@@ -15,16 +15,15 @@ module ModuleDefinition{
                 $window = $(window),
                 offset = $sidebar.offset(),
                 topPadding = 64;
+
+            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document,() => {
+                offset = $sidebar.offset();
+            });
+
             $window.scroll(function () {
-                if ($window.scrollTop() > offset.top) {
-                    $sidebar.stop().animate({
-                        marginTop: $window.scrollTop() - offset.top + topPadding
-                    });
-                } else {
-                    $sidebar.stop().animate({
-                        marginTop: 0
-                    });
-                }
+                $sidebar.stop().animate({
+                    marginTop: $window.scrollTop() > offset.top ? $window.scrollTop() - offset.top + topPadding : 0
+                });
             });
         }
 
