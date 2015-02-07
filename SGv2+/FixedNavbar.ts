@@ -22,4 +22,4 @@ module ModuleDefinition{
         shouldRun = (location: SGLocation) => true;
     }
 
-} 
+}
