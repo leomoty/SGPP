@@ -14,6 +14,7 @@ module ModuleDefinition{
         init(): void {
             $('head').append("<style>\
                                 .gridview_flex{display:flex;flex-wrap:wrap;justify-content:center;margin: 0 -5px;}\
+                                .global__image-outer-wrap--missing-image {height: 69px!important}\
                                 .preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,1);border:1px solid #cbcfdb;padding:5px; z-index:10;}\
                                 .tile_view_header{min-height:35px;margin-top:5px;font-size:12px}\
                                 .tile_view_avatar_outer{float: right;display: inline-block; margin-left:5px}\
@@ -39,7 +40,7 @@ module ModuleDefinition{
             $(root).find('.giveaway__row-inner-wrap').each(function () {
                 if ($(this).parents('.pinned-giveaways').length != 0) return;
                 var eachDiv = document.createElement('div');
-                $(this).children('.global__image-outer-wrap--game-medium').removeClass('global__image-outer-wrap--missing-image').children().first().wrapInner(document.createElement('div')).addClass('global__image-outer-wrap--missing-image');
+                $(this).children('.global__image-outer-wrap--game-medium').removeClass('global__image-outer-wrap--missing-image').children().first().wrap(document.createElement('div')).parent().addClass('global__image-outer-wrap--missing-image');
                 $(eachDiv).append($(this).find('.global__image-outer-wrap--game-medium'));
                 $(eachDiv).css('margin', '5px');
 

@@ -8,7 +8,7 @@ module ModuleDefinition{
 
         init(): void {
            $('head').append("<style> \
-                                .sidebar--wide{min-width:329px}\
+                                .sidebar--wide{min-width:329px!important}\
                             </style>");
         }
 
@@ -53,7 +53,7 @@ module ModuleDefinition{
                     });
                     delayedAdSlider(true);
 
-                } else if (winTop <= (featHeight + offset)) {
+                } else if (winTop <= featHeight) {
                     sideInner.css({
                         position: 'static',
                         top: '',
