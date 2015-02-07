@@ -9,12 +9,22 @@
 /// <reference path="CommentAndEnter.ts" />
 /// <reference path="Settings.ts" />
 /// <reference path="EntryCommenters.ts" />
+/// <reference path="EndlessScrollMarkComments.ts" />
+/// <reference path="EndlessScrollDiscussion.ts" />
+/// <reference path="EndlessScrollDiscussionReplies.ts" />
+/// <reference path="EndlessScrollGiveawayComments.ts" />
+/// <reference path="EndlessScrollGiveaways.ts" />
+/// <reference path="EndlessScrollMyGiveaways.ts" />
 
 var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
 (function ($) {
 
-    var modulesNames: Array<string> = new Array<string>("Settings", "FixedNavbar", "FixedFooter", "ScrollingSidebar", "CommentAndEnter", "GridView", "EntryCommenters");
+    var modulesNames: Array<string> = new Array<string>(
+        "Settings", "FixedNavbar", "FixedFooter", "ScrollingSidebar",
+        "CommentAndEnter", "GridView", "EntryCommenters", "EndlessScrollMarkComments",
+        "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways",
+        "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
 
     for (var pos in modulesNames) {
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
