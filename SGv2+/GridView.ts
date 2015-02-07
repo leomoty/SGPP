@@ -27,6 +27,18 @@ module ModuleDefinition{
             var content = this.generateGridview($('.pagination').prev());
 
             $($('.page__heading').next()[0]).html(content);
+
+            $('.pagination').parent().bind("DOMNodeInserted",(event) => {
+                var $target = $(event.target);
+                if ($target.hasClass('pagination__navigation')) {
+                    var giveawayPage = $('.pagination').prev();
+                    var giveaways = $(document.createElement('div')).wrapInner(giveawayPage.children('.giveaway__row-outer-wrap'));
+                    var content = this.generateGridview(giveaways);
+                    giveawayPage.remove('.giveaway__row-outer-wrap');
+                    giveawayPage.append(content);
+                }
+
+            });
         }
 
         name(): string {
