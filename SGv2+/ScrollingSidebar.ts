@@ -15,8 +15,6 @@ module ModuleDefinition{
         render(): void {
 
             //GAds
-            //var side = $('.sidebar');
-            //var sideInner = side.wrapInner(side).children().first().addClass('SGPP__scrollingSidebar');
             var sideInner = $('.sidebar').addClass('SGPP__scrollingSidebar').wrapInner($(document).createElement('div')).addClass('sidebar--wide');
             var sideAds = side.find('.adsbygoogle');
             var delayedAdSlider = (function () {
