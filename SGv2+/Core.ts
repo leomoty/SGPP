@@ -5,6 +5,7 @@ module ModuleDefinition{
     export class Core implements SteamGiftsModule {
 
         private _sgLocation: SGLocation;
+        private _debug = true;
 
         get location(): SGLocation {
             return this._sgLocation;
@@ -83,9 +84,10 @@ module ModuleDefinition{
             return true;
         }
 
-        log(msg: string): void {
-            console.log("[" + new Date() + "] SGV2+ - " + msg);
-        }
+        log = (msg: string) => {
+            if(this._debug)
+                console.log("[" + new Date() + "] SGPP - " + msg);
+        };
     }
 
 } 
