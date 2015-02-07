@@ -11,33 +11,70 @@ module ModuleDefinition{
         }
 
         render(): void {
-            $('.sidebar').wrapInner($(document.createElement('div')).addClass('inner__sidebar').css('min-width', '206px'));
-            var $sidebar = $('.inner__sidebar');
-            var $window = $(window);
-            var $footer = $('.footer__outer-wrap');
+            var side = $('.sidebar');
+            var sideInner = side.wrapInner(side).children().first().addClass('SGPP__scrollingSidebar');
+            var sideAds = side.find('.adsbygoogle');
 
-            $(document).scroll(function(){
-                if($window.scrollTop() + $sidebar.height()  >= $footer.position().top){
-                    $sidebar.css('position', 'fixed');
-                    $sidebar.css('top', '');
-                    $sidebar.css('bottom', '69px');
-                    console.log('footer');
-                } else {
-                if($window.scrollTop() <= ($('.featured__container').height() + 39)){
-                    $sidebar.css('position', 'absolute');
-                    $sidebar.css('top', '');
-                    $sidebar.css('bottom', '');
-                    console.log('top');
-                }
-                    else {
-                        $sidebar.css('position', 'fixed');
-                        $sidebar.css('top', '25px');
-                        $sidebar.css('bottom', '');
-                        console.log('moving');
-                    }
-                }
+            var $win = $(window);
+            var $footer = $('.footer__outer-wrap');
+            var footerHeight = $footer.outerHeight();
+            var $widgetContainer = $('.page__inner-wrap .widget-container');
+            var featHeight = $('.featured__container').height();
+            var navbarOffset = $('header').outerHeight();
+            var offset = 25 + (SGPP.modules['FixedNavbar'].shouldRun(SGPP.location) ? navbarOffset : 0);
+
+
+            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document,() => {
+                featHeight = $('.featured__container').height();
             });
+
+            var delayedAdSlider = (function () {
+                var timeout;
+                return function (up) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        if (up)
+                            sideAds.stop().slideUp()
+                        else
+                            sideAds.stop().slideDown();
+                    }, 500);
+                }
+            })();
+
+            var handleScrolling = function () {
+                var winTop = $win.scrollTop();
+                if (winTop + sideInner.height() >= $widgetContainer.position().top + $widgetContainer.height()) {
+                    sideInner.css({
+                        position: 'fixed',
+                        top: '',
+                        bottom: footerHeight
+                    });
+                    delayedAdSlider(true);
+
+                } else if (winTop <= (featHeight + offset)) {
+                    sideInner.css({
+                        position: 'static',
+                        top: '',
+                        left: ''
+                    });
+                    delayedAdSlider(false);
+
+                } else {
+                    sideInner.css({
+                        position: 'fixed',
+                        top: offset,
+                        bottom: ''
+                    }).show();
+                    delayedAdSlider(true);
+                }
+            };
+
+            handleScrolling();
+
+            $(document).scroll(handleScrolling);
         }
+
+        
 
         name(): string {
             return "ScrollingSidebar";
