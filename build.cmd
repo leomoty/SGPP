@@ -1,0 +1,1 @@
+tsc --target ES5 --removeComments --out SteamgiftsPlusV2.js SGv2+\app.ts
