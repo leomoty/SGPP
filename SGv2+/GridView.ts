@@ -12,10 +12,10 @@ module ModuleDefinition{
         style = "";
 
         init(): void {
-            $('head').append("<style> \
-                                .gridview_flex{display:flex;flex-wrap:wrap;justify-content:center} \
+            $('head').append("<style>\
+                                .gridview_flex{display:flex;flex-wrap:wrap;justify-content:center;margin: 0 -5px;}\
                                 .preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,1);border:1px solid #cbcfdb;padding:5px; z-index:10;}\
-                                .tile_view_header{min-height:35px;margin-top:5px;font-size:12px} \
+                                .tile_view_header{min-height:35px;margin-top:5px;font-size:12px}\
                                 .tile_view_avatar_outer{float: right;display: inline-block; margin-left:5px}\
                                 .tile_view_avatar{height: 24px;width: 24px;padding: 2px}\
                                 .tile_view_faded{width: 184px; height: 69px; margin-top:-69px; background-color:#fff; opacity: .75 }\
@@ -39,6 +39,7 @@ module ModuleDefinition{
             $(root).find('.giveaway__row-inner-wrap').each(function () {
                 if ($(this).parents('.pinned-giveaways').length != 0) return;
                 var eachDiv = document.createElement('div');
+                $(this).children('.global__image-outer-wrap--game-medium').removeClass('global__image-outer-wrap--missing-image').children().first().wrapInner($(document).createElement('div')).addClass('global__image-outer-wrap--missing-image');
                 $(eachDiv).append($(this).find('.global__image-outer-wrap--game-medium'));
                 $(eachDiv).css('margin', '5px');
 
@@ -70,20 +71,20 @@ module ModuleDefinition{
                 if ($(this).hasClass('is-faded'))
                     $(eachDiv).children().first().append('<div class="tile_view_faded"></div>');
 
-                $(gridview_extra).append('<div class="giveaway__heading__name tile_view_header">' + giveawayName + '</div>');
-                $(gridview_extra).append('<div class="tile_view_avatar_outer">' + avatar[0].outerHTML + '</div>');
-                $(gridview_extra).append('<div style="float:left;"><strong>' + copies + '</strong> Copies</div>');
-                $(gridview_extra).append('<div style="float:right;"><strong>' + cost + '</strong></div>');
-                $(gridview_extra).append('<div style="clear:both;"></div>');
+                gridview_extra.append('<div class="giveaway__heading__name tile_view_header">' + giveawayName + '</div>');
+                gridview_extra.append('<div class="tile_view_avatar_outer">' + avatar[0].outerHTML + '</div>');
+                gridview_extra.append('<div style="float:left;"><strong>' + copies + '</strong> Copies</div>');
+                gridview_extra.append('<div style="float:right;"><strong>' + cost + '</strong></div>');
+                gridview_extra.append('<div style="clear:both;"></div>');
                 if (timeSplit[0] === "Ended")
-                    $(gridview_extra).append('<div style="margin-top:-14px;"><strong>' + timeSplit[0] + '</strong></div>');
+                    gridview_extra.append('<div style="margin-top:-14px;"><strong>' + timeSplit[0] + '</strong></div>');
                 else
-                    $(gridview_extra).append('<div style="margin-top:-14px;"><strong>' + timeSplit[0] + '</strong> ' + timeSplit[1] + '</div>');
-                $(gridview_extra).append('<div style="clear:both;"></div>');
-                $(gridview_extra).append('<div style="float:left;"><strong>' + entriesSplit[0] + '</strong> Entries</div>');
-                $(gridview_extra).append('<div style="float:right;"><strong>' + winChance + '</strong>% Chance</div>');
-                $(gridview_extra).append('<div style="clear:both;"></div>');
-                $(gridview_extra).append('<div><strong>' + commentsSplit[0] + '</strong> Comments</div>');
+                    gridview_extra.append('<div style="margin-top:-14px;"><strong>' + timeSplit[0] + '</strong> ' + timeSplit[1] + '</div>');
+                gridview_extra.append('<div style="clear:both;"></div>');
+                gridview_extra.append('<div style="float:left;"><strong>' + entriesSplit[0] + '</strong> Entries</div>');
+                gridview_extra.append('<div style="float:right;"><strong>' + winChance + '</strong>% Chance</div>');
+                gridview_extra.append('<div style="clear:both;"></div>');
+                gridview_extra.append('<div><strong>' + commentsSplit[0] + '</strong> Comments</div>');
                 $(eachDiv).children().first().append(gridview_extra);
                 $(container).append(eachDiv);
             });

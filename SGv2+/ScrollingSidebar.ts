@@ -7,27 +7,16 @@ module ModuleDefinition{
         style = "";
 
         init(): void {
-           
+           $('head').append("<style> \
+                                .sidebar--wide{min-width:329px}\
+                            </style>");
         }
 
         render(): void {
-            var side = $('.sidebar');
-            var sideInner = side.wrapInner(side).children().first().addClass('SGPP__scrollingSidebar');
+
+            //GAds
+            var sideInner = $('.sidebar').addClass('SGPP__scrollingSidebar').wrapInner($(document).createElement('div')).addClass('sidebar--wide');
             var sideAds = side.find('.adsbygoogle');
-
-            var $win = $(window);
-            var $footer = $('.footer__outer-wrap');
-            var footerHeight = $footer.outerHeight();
-            var $widgetContainer = $('.page__inner-wrap .widget-container');
-            var featHeight = $('.featured__container').height();
-            var navbarOffset = $('header').outerHeight();
-            var offset = 25 + (SGPP.modules['FixedNavbar'].shouldRun(SGPP.location) ? navbarOffset : 0);
-
-
-            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document,() => {
-                featHeight = $('.featured__container').height();
-            });
-
             var delayedAdSlider = (function () {
                 var timeout;
                 return function (up) {
@@ -41,7 +30,19 @@ module ModuleDefinition{
                 }
             })();
 
-            var handleScrolling = function () {
+            var $win = $(window);
+            var footerHeight = $('.footer__outer-wrap').outerHeight();
+            var $widgetContainer = $('.page__inner-wrap .widget-container');
+            var featHeight = $('.featured__container').height();
+            var navbarOffset = $('header').outerHeight();
+            var offset = 25 + (SGPP.modules['FixedNavbar'].shouldRun(SGPP.location) ? navbarOffset : 0);
+
+
+            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document,() => {
+                featHeight = $('.featured__container').height();
+            });
+
+            var handleScrolling = funct() {
                 var winTop = $win.scrollTop();
                 if (winTop + sideInner.height() >= $widgetContainer.position().top + $widgetContainer.height()) {
                     sideInner.css({
