@@ -39,7 +39,7 @@ module ModuleDefinition{
             $(root).find('.giveaway__row-inner-wrap').each(function () {
                 if ($(this).parents('.pinned-giveaways').length != 0) return;
                 var eachDiv = document.createElement('div');
-                $(this).children('.global__image-outer-wrap--game-medium').removeClass('global__image-outer-wrap--missing-image').children().first().wrapInner($(document).createElement('div')).addClass('global__image-outer-wrap--missing-image');
+                $(this).children('.global__image-outer-wrap--game-medium').removeClass('global__image-outer-wrap--missing-image').children().first().wrapInner(document.createElement('div')).addClass('global__image-outer-wrap--missing-image');
                 $(eachDiv).append($(this).find('.global__image-outer-wrap--game-medium'));
                 $(eachDiv).css('margin', '5px');
 
