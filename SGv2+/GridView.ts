@@ -98,7 +98,7 @@ module ModuleDefinition{
             return container;
         }
 
-        shouldRun = (location: SGLocation) => location.pageKind == 'giveaways';
+        shouldRun = (location: SGLocation) => location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1;
 
     }
 

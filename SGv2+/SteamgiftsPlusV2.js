@@ -3,6 +3,8 @@ var ModuleDefinition;
     var Core = (function () {
         function Core() {
             var _this = this;
+            this._debug = true;
+            this.modules = {};
             this.style = "";
             this.resolvePath = function () {
                 var hash = "";
@@ -49,6 +51,10 @@ var ModuleDefinition;
             this.init = function () {
                 _this.resolvePath();
             };
+            this.log = function (msg) {
+                if (_this._debug)
+                    console.log("[" + new Date() + "] SGPP - " + msg);
+            };
             this.init();
         }
         Object.defineProperty(Core.prototype, "location", {
@@ -66,9 +72,6 @@ var ModuleDefinition;
         Core.prototype.shouldRun = function (location) {
             return true;
         };
-        Core.prototype.log = function (msg) {
-            console.log("[" + new Date() + "] SGV2+ - " + msg);
-        };
         return Core;
     })();
     ModuleDefinition.Core = Core;
@@ -81,12 +84,10 @@ var ModuleDefinition;
             this.shouldRun = function (location) { return true; };
         }
         FixedNavbar.prototype.init = function () {
-            var style = ".body {margin-top: 39px}" + ".header {position: fixed; top: 0; width: 100%; z-index: 100}";
+            var style = "body {margin-top: 39px !important }" + "header {position: fixed; top: 0; width: 100%; z-index: 100}";
             $('<style>').attr('type', 'text/css').html(style).appendTo('head');
         };
         FixedNavbar.prototype.render = function () {
-            $('body').addClass('body');
-            $('header').addClass('header');
         };
         FixedNavbar.prototype.name = function () {
             return "FixedNavbar";
@@ -94,6 +95,26 @@ var ModuleDefinition;
         return FixedNavbar;
     })();
     ModuleDefinition.FixedNavbar = FixedNavbar;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var FixedFooter = (function () {
+        function FixedFooter() {
+            this.style = "";
+            this.shouldRun = function (location) { return true; };
+        }
+        FixedFooter.prototype.init = function () {
+            var style = "body {margin-bottom: 45px !important}" + ".footer__outer-wrap {position: fixed; bottom: 0; width: 100%; background-color: #95a4c0}";
+            $('<style>').attr('type', 'text/css').html(style).appendTo('head');
+        };
+        FixedFooter.prototype.render = function () {
+        };
+        FixedFooter.prototype.name = function () {
+            return "FixedFooter";
+        };
+        return FixedFooter;
+    })();
+    ModuleDefinition.FixedFooter = FixedFooter;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -105,19 +126,60 @@ var ModuleDefinition;
         ScrollingSidebar.prototype.init = function () {
         };
         ScrollingSidebar.prototype.render = function () {
-            var $sidebar = $(".sidebar"), $window = $(window), offset = $sidebar.offset(), topPadding = 64;
-            $window.scroll(function () {
-                if ($window.scrollTop() > offset.top) {
-                    $sidebar.stop().animate({
-                        marginTop: $window.scrollTop() - offset.top + topPadding
+            var side = $('.sidebar');
+            var sideInner = side.wrapInner(side).children().first().addClass('SGPP__scrollingSidebar');
+            var sideAds = side.find('.adsbygoogle');
+            var $win = $(window);
+            var $footer = $('.footer__outer-wrap');
+            var footerHeight = $footer.outerHeight();
+            var $widgetContainer = $('.page__inner-wrap .widget-container');
+            var featHeight = $('.featured__container').height();
+            var navbarOffset = $('header').outerHeight();
+            var offset = 25 + (SGPP.modules['FixedNavbar'].shouldRun(SGPP.location) ? navbarOffset : 0);
+            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document, function () {
+                featHeight = $('.featured__container').height();
+            });
+            var delayedAdSlider = (function () {
+                var timeout;
+                return function (up) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        if (up)
+                            sideAds.stop().slideUp();
+                        else
+                            sideAds.stop().slideDown();
+                    }, 500);
+                };
+            })();
+            var handleScrolling = function () {
+                var winTop = $win.scrollTop();
+                if (winTop + sideInner.height() >= $widgetContainer.position().top + $widgetContainer.height()) {
+                    sideInner.css({
+                        position: 'fixed',
+                        top: '',
+                        bottom: footerHeight
                     });
+                    delayedAdSlider(true);
+                }
+                else if (winTop <= (featHeight + offset)) {
+                    sideInner.css({
+                        position: 'static',
+                        top: '',
+                        left: ''
+                    });
+                    delayedAdSlider(false);
                 }
                 else {
-                    $sidebar.stop().animate({
-                        marginTop: 0
-                    });
+                    sideInner.css({
+                        position: 'fixed',
+                        top: offset,
+                        bottom: ''
+                    }).show();
+                    delayedAdSlider(true);
                 }
-            });
+            };
+            handleScrolling();
+            $(document).scroll(handleScrolling);
         };
         ScrollingSidebar.prototype.name = function () {
             return "ScrollingSidebar";
@@ -153,7 +215,7 @@ var ModuleDefinition;
     var GridView = (function () {
         function GridView() {
             this.style = "";
-            this.shouldRun = function (location) { return location.pageKind == 'giveaways'; };
+            this.shouldRun = function (location) { return location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1; };
         }
         GridView.prototype.init = function () {
             $('head').append("<style> \
@@ -404,22 +466,660 @@ var ModuleDefinition;
     })();
     ModuleDefinition.EntryCommenters = EntryCommenters;
 })(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var topicInfo = (function () {
+        function topicInfo(topicID) {
+            this._isDataStored = false;
+            this.localStorageKey = "endless_scroll_" + topicID;
+            if (this.localStorageKey in localStorage) {
+                this._obj = JSON.parse(localStorage[this.localStorageKey]);
+                if (!("numberOfComments" in this._obj)) {
+                    this._obj.numberOfComments = 0;
+                }
+                if (!("lastSeenPage" in this._obj)) {
+                    this._obj.lastSeenPage = 0;
+                }
+                this._isDataStored = true;
+            }
+            else {
+                this._obj = {
+                    lastVisit: Date.now(),
+                    lastCommentIDPages: {},
+                    numberOfComments: 0,
+                };
+            }
+        }
+        Object.defineProperty(topicInfo.prototype, "isDataStored", {
+            get: function () {
+                return this._isDataStored;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(topicInfo.prototype, "lastVisit", {
+            get: function () {
+                return this._obj.lastVisit;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        topicInfo.prototype.getNumComments = function () {
+            return this._obj.numberOfComments;
+        };
+        topicInfo.prototype.setLastVisit = function () {
+            this._obj.lastVisit = Date.now();
+            this.save();
+        };
+        topicInfo.prototype.setLastSeenPage = function (page) {
+            this._obj.lastSeenPage = page;
+            this.save();
+        };
+        topicInfo.prototype.setLastCommentID = function (page, commentID, numComments) {
+            this._obj.lastCommentIDPages[page] = commentID;
+            this._obj.numberOfComments = numComments;
+            this.save();
+        };
+        topicInfo.prototype.isNewComment = function (page, commentID) {
+            if (page in this._obj.lastCommentIDPages)
+                return (commentID > this._obj.lastCommentIDPages[page]);
+            else
+                return true;
+        };
+        topicInfo.prototype.save = function () {
+            localStorage[this.localStorageKey] = JSON.stringify(this._obj);
+        };
+        return topicInfo;
+    })();
+    var EndlessScrollMarkComments = (function () {
+        function EndlessScrollMarkComments() {
+            this.style = "";
+        }
+        EndlessScrollMarkComments.prototype.getDiscussionId = function (url) {
+            var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
+            if (!match)
+                throw 'No Discussion ID';
+            return match[1] + '_' + match[2];
+        };
+        EndlessScrollMarkComments.prototype.getLatestCommentID = function (root) {
+            var id = 0;
+            $(root).find('.comment[data-comment-id]').each(function (i, el) {
+                var n = parseInt($(el).data('comment-id'));
+                if (n > id)
+                    id = n;
+            });
+            return id;
+        };
+        EndlessScrollMarkComments.prototype.shouldRun = function () {
+            return true;
+        };
+        EndlessScrollMarkComments.prototype.init = function () {
+            $('head').append("<style> \
+			    .endless_new .comment__parent .comment__summary, .endless_new > .comment__child {\
+                    background-color: rgba(180,180,222,0.1)\
+                } \
+                .endless_not_new .comment__parent .comment__summary,  .endless_not_new > .comment__child {\
+                } \
+                .endless_not_new:hover .comment__parent .comment__summary,  .endless_not_new:hover > .comment__child {\
+                } \
+                .endless_new_comments h3 a {\
+                    color: black;\
+                }\
+            </style>");
+            window["EndlessScrollMarkComments"] = this;
+        };
+        EndlessScrollMarkComments.prototype.render = function () {
+            if (SGPP.location.pageKind == 'discussion' || SGPP.location.pageKind == 'trade') {
+                this.topicInfo = new topicInfo(this.getDiscussionId(location.pathname));
+                var page = 1;
+                var currentPageNavEl = $('div.pagination__navigation a.is-selected');
+                if (currentPageNavEl.length != 0)
+                    page = currentPageNavEl.first().data('page-number');
+                this.markComments(document, page, true);
+                this.topicInfo.setLastVisit();
+            }
+            else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
+                this.markTopics(document);
+            }
+            else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
+                this.markTopics($('.widget-container').last().prev());
+            }
+        };
+        EndlessScrollMarkComments.prototype.markComments = function (dom, page, markRead) {
+            var _this = this;
+            if (markRead === void 0) { markRead = false; }
+            $(dom).find('.comment[data-comment-id]').each(function (i, el) {
+                var id = parseInt($(el).data('comment-id'));
+                if (_this.topicInfo.isNewComment(page, id)) {
+                    $(el).addClass('endless_new');
+                }
+                else {
+                    $(el).addClass('endless_not_new');
+                }
+            });
+            if (markRead) {
+                var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0]);
+                this.topicInfo.setLastCommentID(page, this.getLatestCommentID(dom), numComments);
+            }
+        };
+        EndlessScrollMarkComments.prototype.markTopics = function (dom) {
+            var _this = this;
+            $(dom).find('.table__row-outer-wrap').each(function (i, el) {
+                var link = $(el).find('h3 a').first();
+                var tInfo = new topicInfo(_this.getDiscussionId(link.attr('href')));
+                if (true) {
+                    link.attr('href', link.attr('href') + '/search?page=31337');
+                }
+                if (tInfo.isDataStored) {
+                    var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text());
+                    var lastComments = tInfo.getNumComments();
+                    var newComments = numComments - lastComments;
+                    if (newComments > 0) {
+                        $(el).addClass('endless_new_comments');
+                        $(el).find('.table__column--width-fill > p').first().append(' - <strong>' + newComments + ' new comments</strong>');
+                    }
+                    else {
+                        $(el).addClass('endless_no_new_comments');
+                        $(el).find('.table__column--width-fill > p').first().append(' - no new comments</strong>');
+                    }
+                }
+            });
+        };
+        EndlessScrollMarkComments.prototype.name = function () {
+            return "EndlessScrollMarkComments";
+        };
+        return EndlessScrollMarkComments;
+    })();
+    ModuleDefinition.EndlessScrollMarkComments = EndlessScrollMarkComments;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScroll = (function () {
+        function EndlessScroll() {
+            this._currentPage = 1;
+            this._lastPage = 1;
+            this._numberOfPages = -1;
+            this._isLoading = false;
+            this._stopped = false;
+            this._pages = {};
+            this._pagesUrl = {};
+        }
+        Object.defineProperty(EndlessScroll.prototype, "stopped", {
+            get: function () {
+                return this._stopped;
+            },
+            set: function (v) {
+                this._stopped = v;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EndlessScroll.prototype, "currentPage", {
+            get: function () {
+                return this._currentPage;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EndlessScroll.prototype, "lastPage", {
+            get: function () {
+                return this._numberOfPages;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EndlessScroll.prototype, "reverseItems", {
+            get: function () {
+                return false;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        EndlessScroll.prototype.hasPages = function (dom) {
+            return $(dom).find('.pagination__navigation').length != 0;
+        };
+        EndlessScroll.prototype.getNavigationElement = function (dom) {
+            return $(dom).find('.pagination').first();
+        };
+        EndlessScroll.prototype.createPageContainerElement = function () {
+            throw 'createPageContainerElement() not implemented';
+        };
+        EndlessScroll.prototype.getItemsElement = function (dom) {
+            throw 'getItemsElement() not implemented';
+        };
+        EndlessScroll.prototype.getItems = function (dom) {
+            throw 'getItems() not implemented';
+        };
+        EndlessScroll.prototype.createControlElement = function (el) {
+            var _this = this;
+            var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
+            var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
+            controlStartStop.click(function () {
+                _this.stopped = !_this.stopped;
+                $('.endless_control_element a i.fa').toggleClass('fa-pause').toggleClass('fa-play');
+                return false;
+            });
+            controlContainer.append(controlStartStop);
+            el.append(controlContainer);
+        };
+        EndlessScroll.prototype.createLoadingElement = function () {
+            var el = $('<div class="table__heading loading_es"><div class="table__column--width-fill"><p><i class="fa fa-refresh fa-spin"></i> Loading next page...</p></div></div>');
+            this.createControlElement(el.find('p'));
+            return el;
+        };
+        EndlessScroll.prototype.createPageElement = function (page) {
+            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p></p></div></div>');
+            if (page > 0) {
+                if (this._numberOfPages > 0)
+                    el.find('p').text('Page ' + page + ' of ' + this._numberOfPages);
+                else
+                    el.find('p').text('Page ' + page);
+            }
+            else {
+                el.find('p').text('Last page ends here');
+            }
+            this.createControlElement(el.find('p'));
+            return el;
+        };
+        EndlessScroll.prototype.loadNextPage = function () {
+            if (this._isLoading || this._stopped) {
+                return;
+            }
+            this._isLoading = true;
+            if (!this.reverseItems) {
+                this._currentPage++;
+                if (this._currentPage > this._lastPage) {
+                    return;
+                }
+            }
+            else {
+                this._currentPage--;
+                if (this._currentPage < 1) {
+                    return;
+                }
+            }
+            this.loadPage(this._currentPage);
+        };
+        EndlessScroll.prototype.loadPage = function (page) {
+            var _this = this;
+            if (!(this._currentPage in this._pagesUrl)) {
+                throw 'No URL for page ' + this._currentPage;
+            }
+            var url = this._pagesUrl[this._currentPage];
+            var diff = -1;
+            var target = -1;
+            $.each(this._pages, function (i, el) {
+                var thisDiff = Math.abs(i - page);
+                if (target == -1 || diff > thisDiff) {
+                    target = i;
+                    diff = thisDiff;
+                }
+            });
+            var pageContainer = this.createPageContainerElement();
+            var loadingElement = this.createLoadingElement();
+            pageContainer.append(loadingElement);
+            this._pages[page] = {
+                element: pageContainer,
+                loaded: false,
+            };
+            var elPage = this._pages[target].element;
+            if ((target < page && !this.reverseItems) || (target > page && this.reverseItems)) {
+                elPage.after(pageContainer);
+            }
+            else {
+                elPage.before(pageContainer);
+            }
+            $.get(url, function (data) {
+                var dom = $.parseHTML(data);
+                _this.beforeAddItems(dom);
+                var itemsContainer = _this.getItemsElement(dom);
+                _this.addItems(itemsContainer, pageContainer);
+                pageContainer.prepend(_this.createPageElement(page));
+                var newPagination = _this.getNavigationElement(dom);
+                _this.getNavigationElement(document).html(newPagination.html());
+                _this.parseNavigation(newPagination);
+                _this.afterAddItems(pageContainer);
+                _this._pages[page].loaded = true;
+                loadingElement.remove();
+                _this._isLoading = false;
+            });
+        };
+        EndlessScroll.prototype.beforeAddItems = function (dom) {
+        };
+        EndlessScroll.prototype.addItems = function (dom, pageContainer) {
+            var _this = this;
+            this.getItems(dom).each(function (i, el) {
+                if (_this.reverseItems) {
+                    pageContainer.prepend(el);
+                }
+                else {
+                    pageContainer.append(el);
+                }
+            });
+        };
+        EndlessScroll.prototype.afterAddItems = function (pageContainer) {
+        };
+        EndlessScroll.prototype.parseNavigation = function (dom) {
+            var _this = this;
+            dom.find('.pagination__navigation a').each(function (i, el) {
+                var $el = $(el);
+                var page = parseInt($el.data('page-number'));
+                _this._pagesUrl[page] = $el.attr('href');
+                if (page > _this._lastPage)
+                    _this._lastPage = page;
+            });
+        };
+        EndlessScroll.prototype.preparePage = function () {
+            var _this = this;
+            var nav = this.getNavigationElement(document);
+            if (nav.hasClass('pagination--no-results'))
+                return;
+            if (!this.hasPages(document)) {
+                this._currentPage = 1;
+                this._lastPage = 1;
+            }
+            else {
+                var elLastPage = nav.find('a').last();
+                this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
+                this._lastPage = parseInt(elLastPage.data('page-number'));
+                if (elLastPage.text().trim() == "Last") {
+                    this._numberOfPages = this._lastPage;
+                }
+                this.parseNavigation(nav);
+            }
+            var itemsElement = this.getItemsElement(document);
+            this._pages[this.currentPage] = {
+                element: itemsElement,
+                loaded: true,
+            };
+            if (this.reverseItems) {
+                this.getItems(itemsElement).each(function (i, el) {
+                    itemsElement.prepend(el);
+                });
+            }
+            itemsElement.prepend(this.createPageElement(this.currentPage));
+            $(window).scroll(function (event) {
+                var scrollPos = $(window).scrollTop() + $(window).height();
+                if (scrollPos > $('div.pagination').position().top - 200) {
+                    _this.loadNextPage();
+                }
+            });
+        };
+        return EndlessScroll;
+    })();
+    ModuleDefinition.EndlessScroll = EndlessScroll;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScrollDiscussion = (function (_super) {
+        __extends(EndlessScrollDiscussion, _super);
+        function EndlessScrollDiscussion() {
+            _super.apply(this, arguments);
+            this.style = "";
+        }
+        EndlessScrollDiscussion.prototype.shouldRun = function () {
+            return SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades';
+        };
+        EndlessScrollDiscussion.prototype.init = function () {
+        };
+        EndlessScrollDiscussion.prototype.render = function () {
+            this.preparePage();
+        };
+        EndlessScrollDiscussion.prototype.createPageContainerElement = function () {
+            return $('<div class="table__rows">');
+        };
+        EndlessScrollDiscussion.prototype.getItemsElement = function (dom) {
+            return $(dom).find('.table__rows').first();
+        };
+        EndlessScrollDiscussion.prototype.getItems = function (dom) {
+            return dom.children('.table__row-outer-wrap');
+        };
+        EndlessScrollDiscussion.prototype.beforeAddItems = function (dom) {
+            window["EndlessScrollMarkComments"].markTopics(dom);
+        };
+        EndlessScrollDiscussion.prototype.name = function () {
+            return "EndlessScrollDiscussion";
+        };
+        return EndlessScrollDiscussion;
+    })(ModuleDefinition.EndlessScroll);
+    ModuleDefinition.EndlessScrollDiscussion = EndlessScrollDiscussion;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScrollDiscussionReplies = (function (_super) {
+        __extends(EndlessScrollDiscussionReplies, _super);
+        function EndlessScrollDiscussionReplies() {
+            _super.apply(this, arguments);
+            this.style = "";
+        }
+        EndlessScrollDiscussionReplies.prototype.shouldRun = function () {
+            return SGPP.location.pageKind == 'discussion' || SGPP.location.pageKind == 'trade';
+        };
+        EndlessScrollDiscussionReplies.prototype.init = function () {
+        };
+        EndlessScrollDiscussionReplies.prototype.render = function () {
+            if (true) {
+                var addReply = $('.comment--submit').first();
+                if (addReply.length == 1) {
+                    var elCommentHeader = $('<div id="esc_reply_header" class="page__heading"><div class="page__heading__breadcrumbs">Reply</div></div>');
+                    if ($('.poll').length == 0)
+                        $('.comments').first().after(elCommentHeader);
+                    else
+                        $('.poll').first().after(elCommentHeader);
+                    $('#esc_reply_header').after(addReply);
+                    $('.js__comment-reply-cancel').on('click', function () {
+                        setTimeout(function () {
+                            addReply.insertAfter('#esc_reply_header');
+                        }, 10);
+                    });
+                }
+            }
+            this.preparePage();
+        };
+        Object.defineProperty(EndlessScrollDiscussionReplies.prototype, "reverseItems", {
+            get: function () {
+                return true;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        EndlessScrollDiscussionReplies.prototype.createPageContainerElement = function () {
+            return $('<div class="comments">');
+        };
+        EndlessScrollDiscussionReplies.prototype.getItemsElement = function (dom) {
+            return $(dom).find('.comments:eq(1)');
+        };
+        EndlessScrollDiscussionReplies.prototype.getItems = function (dom) {
+            return dom.children('.comment');
+        };
+        EndlessScrollDiscussionReplies.prototype.beforeAddItems = function (dom) {
+            window["EndlessScrollMarkComments"].markComments(dom, this.currentPage, true);
+        };
+        EndlessScrollDiscussionReplies.prototype.name = function () {
+            return "EndlessScrollDiscussionReplies";
+        };
+        return EndlessScrollDiscussionReplies;
+    })(ModuleDefinition.EndlessScroll);
+    ModuleDefinition.EndlessScrollDiscussionReplies = EndlessScrollDiscussionReplies;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScrollGiveawayComments = (function (_super) {
+        __extends(EndlessScrollGiveawayComments, _super);
+        function EndlessScrollGiveawayComments() {
+            _super.apply(this, arguments);
+            this.style = "";
+        }
+        EndlessScrollGiveawayComments.prototype.shouldRun = function () {
+            return SGPP.location.pageKind == 'giveaway' && SGPP.location.subpage == '';
+        };
+        EndlessScrollGiveawayComments.prototype.init = function () {
+        };
+        EndlessScrollGiveawayComments.prototype.render = function () {
+            if (true) {
+                var addReply = $('.comment--submit').first();
+                var elCommentHeader = $('<div id="esc_reply_header" class="page__heading"><div class="page__heading__breadcrumbs">Reply</div></div>');
+                $('.comments').prev().before(elCommentHeader);
+                $('#esc_reply_header').after(addReply);
+                $('.js__comment-reply-cancel').on('click', function () {
+                    setTimeout(function () {
+                        addReply.insertAfter('#esc_reply_header');
+                    }, 10);
+                });
+            }
+            this.preparePage();
+        };
+        EndlessScrollGiveawayComments.prototype.createPageContainerElement = function () {
+            return $('<div class="comments">');
+        };
+        EndlessScrollGiveawayComments.prototype.getItemsElement = function (dom) {
+            return $(dom).find('.comments').first();
+        };
+        EndlessScrollGiveawayComments.prototype.getItems = function (dom) {
+            return dom.children('.comment');
+        };
+        EndlessScrollGiveawayComments.prototype.name = function () {
+            return "EndlessScrollGiveawayComments";
+        };
+        return EndlessScrollGiveawayComments;
+    })(ModuleDefinition.EndlessScroll);
+    ModuleDefinition.EndlessScrollGiveawayComments = EndlessScrollGiveawayComments;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScrollGiveaways = (function (_super) {
+        __extends(EndlessScrollGiveaways, _super);
+        function EndlessScrollGiveaways() {
+            _super.apply(this, arguments);
+            this._location = 'frontpage';
+            this.style = "";
+        }
+        EndlessScrollGiveaways.prototype.shouldRun = function () {
+            if (SGPP.location.pageKind == 'giveaways') {
+                return !(SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won');
+            }
+            else if (/^\/user\/[^\/]+(\/giveaways\/won([^\/]+)?)?$/.test(location.pathname)) {
+                this._location = 'profile';
+                return true;
+            }
+            return false;
+        };
+        EndlessScrollGiveaways.prototype.init = function () {
+        };
+        EndlessScrollGiveaways.prototype.render = function () {
+            this.preparePage();
+        };
+        EndlessScrollGiveaways.prototype.createPageContainerElement = function () {
+            return $('<div>');
+        };
+        EndlessScrollGiveaways.prototype.getItemsElement = function (dom) {
+            return $(dom).find('.pagination').prev();
+        };
+        EndlessScrollGiveaways.prototype.getItems = function (dom) {
+            return dom.children('.giveaway__row-outer-wrap');
+        };
+        EndlessScrollGiveaways.prototype.afterAddItems = function (pageContainer) {
+            pageContainer.find(".giveaway__hide").click(function () {
+                $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
+                $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text());
+            });
+            pageContainer.find(".trigger-popup").click(function () {
+                var a = $("." + $(this).attr("data-popup"));
+                a.bPopup({
+                    opacity: .85,
+                    fadeSpeed: 200,
+                    followSpeed: 500,
+                    modalColor: "#3c424d"
+                });
+            });
+        };
+        EndlessScrollGiveaways.prototype.name = function () {
+            return "EndlessScrollGiveaways";
+        };
+        return EndlessScrollGiveaways;
+    })(ModuleDefinition.EndlessScroll);
+    ModuleDefinition.EndlessScrollGiveaways = EndlessScrollGiveaways;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var EndlessScrollMyGiveaways = (function (_super) {
+        __extends(EndlessScrollMyGiveaways, _super);
+        function EndlessScrollMyGiveaways() {
+            _super.apply(this, arguments);
+            this.style = "";
+        }
+        EndlessScrollMyGiveaways.prototype.shouldRun = function () {
+            if (SGPP.location.pageKind == 'giveaways') {
+                return SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won';
+            }
+            else if (SGPP.location.pageKind == 'giveaway') {
+                return SGPP.location.subpage == 'entries' || SGPP.location.subpage == 'winners' || SGPP.location.subpage == 'groups';
+            }
+            return false;
+        };
+        EndlessScrollMyGiveaways.prototype.init = function () {
+        };
+        EndlessScrollMyGiveaways.prototype.render = function () {
+            this.preparePage();
+        };
+        EndlessScrollMyGiveaways.prototype.createPageContainerElement = function () {
+            return $('<div class="table__rows">');
+        };
+        EndlessScrollMyGiveaways.prototype.getItemsElement = function (dom) {
+            return $(dom).find('.table__rows').first();
+        };
+        EndlessScrollMyGiveaways.prototype.getItems = function (dom) {
+            return dom.children('.table__row-outer-wrap');
+        };
+        EndlessScrollMyGiveaways.prototype.afterAddItems = function (dom) {
+            $(dom).find(".table__remove-default").click(function () {
+                var e = $(this);
+                e.addClass("is-hidden");
+                e.siblings(".table__remove-loading").removeClass("is-hidden");
+                $.ajax({
+                    url: "/ajax.php",
+                    type: "POST",
+                    dataType: "json",
+                    data: e.closest("form").serialize(),
+                    success: function (t) {
+                        e.siblings(".table__remove-loading").addClass("is-hidden");
+                        e.siblings(".table__remove-complete").removeClass("is-hidden");
+                        e.closest(".table__row-inner-wrap").addClass("is-faded");
+                        if (typeof t.points !== "undefined" && t.points !== false) {
+                            $(".nav__points").text(t.points);
+                        }
+                    }
+                });
+            });
+        };
+        EndlessScrollMyGiveaways.prototype.name = function () {
+            return "EndlessScrollMyGiveaways";
+        };
+        return EndlessScrollMyGiveaways;
+    })(ModuleDefinition.EndlessScroll);
+    ModuleDefinition.EndlessScrollMyGiveaways = EndlessScrollMyGiveaways;
+})(ModuleDefinition || (ModuleDefinition = {}));
 var SGPP = new ModuleDefinition.Core();
 (function ($) {
-    var modules = {};
-    var modulesNames = new Array("FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter", "GridView", "EntryCommenters");
+    var modulesNames = new Array("Settings", "FixedNavbar", "FixedFooter", "ScrollingSidebar", "CommentAndEnter", "GridView", "EntryCommenters", "EndlessScrollMarkComments", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         if (m.shouldRun(SGPP.location)) {
-            modules[m.name()] = m;
+            SGPP.modules[m.name()] = m;
             SGPP.log("Module " + m.name() + " init() call.");
-            modules[m.name()].init();
+            SGPP.modules[m.name()].init();
         }
     }
-    $(document).ready(function () {
-        for (var module in modules) {
+    $(document).on("DOMContentLoaded", function () {
+        for (var module in SGPP.modules) {
             SGPP.log("Module " + module + " render() call.");
-            modules[module].render();
+            SGPP.modules[module].render();
         }
     });
 })(jQuery);

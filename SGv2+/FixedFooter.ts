@@ -2,13 +2,13 @@
 
 module ModuleDefinition{
 
-    export class FixedNavbar implements SteamGiftsModule {
+    export class FixedFooter implements SteamGiftsModule {
 
         style = "";
 
         init(): void {
-            var style = "body {margin-top: 39px !important }" +
-                "header {position: fixed; top: 0; width: 100%; z-index: 100}";
+            var style = "body {margin-bottom: 45px !important}" +
+                ".footer__outer-wrap {position: fixed; bottom: 0; width: 100%; background-color: #95a4c0}";
             $('<style>').attr('type', 'text/css').html(style).appendTo('head');
         }
 
@@ -16,7 +16,7 @@ module ModuleDefinition{
         }
 
         name(): string {
-            return "FixedNavbar";
+            return "FixedFooter";
         }
 
         shouldRun = (location: SGLocation) => true;
