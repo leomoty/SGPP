@@ -124,65 +124,72 @@ module ModuleDefinition {
             }
 
             var url = this._pagesUrl[this._currentPage];
-            
-            var diff = -1;
-            var target = -1;
 
-            // Get nearest page
-            $.each(this._pages, function (i, el) {
-                var thisDiff = Math.abs(i - page);
+            if (!(page in this._pages)) {
 
-                if (target == -1 || diff > thisDiff) {
-                    target = i;
-                    diff = thisDiff;
+                var diff = -1;
+                var target = -1;
+
+                // Get nearest page
+                $.each(this._pages, function (i, el) {
+                    var thisDiff = Math.abs(i - page);
+
+                    if (target == -1 || diff > thisDiff) {
+                        target = i;
+                        diff = thisDiff;
+                    }
+                });
+
+                var pageContainer = this.createPageContainerElement();
+                var loadingElement = this.createLoadingElement();
+
+                pageContainer.append(loadingElement);
+
+                this._pages[page] = {
+                    element: pageContainer,
+                    loaded: false,
                 }
-            });
 
-            var pageContainer = this.createPageContainerElement();
-            var loadingElement = this.createLoadingElement();
+                var elPage: JQuery = this._pages[target].element;
 
-            pageContainer.append(loadingElement);
-
-            this._pages[page] = {
-                element: pageContainer,
-                loaded: false,
+                if ((target < page && !this.reverseItems) || (target > page && this.reverseItems)) {
+                    elPage.after(pageContainer);
+                } else {
+                    elPage.before(pageContainer);
+                }
             }
 
-            var elPage: JQuery = this._pages[target].element;
-
-            if ((target < page && !this.reverseItems) || (target > page && this.reverseItems)) {
-                elPage.after(pageContainer);
+            if (this._pages[page].loaded) {
+                this._pages[page].element.show();
             } else {
-                elPage.before(pageContainer);
+                $.get(url,(data) => {
+
+                    var dom = $.parseHTML(data);
+
+                    this.beforeAddItems(dom);
+
+                    var itemsContainer = this.getItemsElement(dom);
+
+                    this.addItems(itemsContainer, pageContainer);
+
+                    pageContainer.prepend(this.createPageElement(page));
+
+                    // Update navigation on page
+                    var newPagination = this.getNavigationElement(dom);
+                    this.getNavigationElement(document).html(newPagination.html());
+
+                    // Cache urls for pages
+                    this.parseNavigation(newPagination);
+
+                    this.afterAddItems(pageContainer);
+
+                    this._pages[page].loaded = true;
+
+                    loadingElement.remove();
+
+                    this._isLoading = false;
+                });
             }
-
-            $.get(url,(data) => {
-
-                var dom = $.parseHTML(data);
-
-                this.beforeAddItems(dom);
-
-                var itemsContainer = this.getItemsElement(dom);
-
-                this.addItems(itemsContainer, pageContainer);
-
-                pageContainer.prepend(this.createPageElement(page));
-
-                // Update navigation on page
-                var newPagination = this.getNavigationElement(dom);
-                this.getNavigationElement(document).html(newPagination.html());
-
-                // Cache urls for pages
-                this.parseNavigation(newPagination);
-
-                this.afterAddItems(pageContainer);
-
-                this._pages[page].loaded = true;
-
-                loadingElement.remove();
-
-                this._isLoading = false;
-            });
         }
 
         beforeAddItems(dom): void {
@@ -239,6 +246,7 @@ module ModuleDefinition {
             }
 
             var itemsElement = this.getItemsElement(document);
+            var pageHeader = this.createPageElement(this.currentPage);
 
             this._pages[this.currentPage] = {
                 element: itemsElement,
@@ -249,9 +257,15 @@ module ModuleDefinition {
                 this.getItems(itemsElement).each((i: number, el: Element) => {
                     itemsElement.prepend(el);
                 });
+
+                if (this._currentPage != this._lastPage) {
+                    this._currentPage = this._lastPage + 1;
+                    this.loadNextPage();
+                    itemsElement.hide();
+                }
             }
 
-            itemsElement.prepend(this.createPageElement(this.currentPage));
+            itemsElement.prepend(pageHeader);
 
             $(window).scroll((event) => {
                 var scrollPos = $(window).scrollTop() + $(window).height();
