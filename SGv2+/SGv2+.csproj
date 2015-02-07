@@ -22,6 +22,7 @@
     <TypeScriptCompile Include="CommentAndEnter.ts" />
     <TypeScriptCompile Include="Core.ts" />
     <TypeScriptCompile Include="EntryCommenters.ts" />
+    <TypeScriptCompile Include="FixedFooter.ts" />
     <TypeScriptCompile Include="Settings.ts" />
     <TypeScriptCompile Include="Scripts\pagedown\MarkdownConverter.d.ts" />
     <TypeScriptCompile Include="ScrollingSidebar.ts" />

@@ -3,6 +3,8 @@ var ModuleDefinition;
     var Core = (function () {
         function Core() {
             var _this = this;
+            this._debug = true;
+            this.modules = {};
             this.style = "";
             this.resolvePath = function () {
                 var hash = "";
@@ -49,6 +51,10 @@ var ModuleDefinition;
             this.init = function () {
                 _this.resolvePath();
             };
+            this.log = function (msg) {
+                if (_this._debug)
+                    console.log("[" + new Date() + "] SGPP - " + msg);
+            };
             this.init();
         }
         Object.defineProperty(Core.prototype, "location", {
@@ -66,9 +72,6 @@ var ModuleDefinition;
         Core.prototype.shouldRun = function (location) {
             return true;
         };
-        Core.prototype.log = function (msg) {
-            console.log("[" + new Date() + "] SGV2+ - " + msg);
-        };
         return Core;
     })();
     ModuleDefinition.Core = Core;
@@ -81,12 +84,10 @@ var ModuleDefinition;
             this.shouldRun = function (location) { return true; };
         }
         FixedNavbar.prototype.init = function () {
-            var style = ".body {margin-top: 39px}" + ".header {position: fixed; top: 0; width: 100%; z-index: 100}";
+            var style = "body {margin-top: 39px !important }" + "header {position: fixed; top: 0; width: 100%; z-index: 100}";
             $('<style>').attr('type', 'text/css').html(style).appendTo('head');
         };
         FixedNavbar.prototype.render = function () {
-            $('body').addClass('body');
-            $('header').addClass('header');
         };
         FixedNavbar.prototype.name = function () {
             return "FixedNavbar";
@@ -94,6 +95,26 @@ var ModuleDefinition;
         return FixedNavbar;
     })();
     ModuleDefinition.FixedNavbar = FixedNavbar;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var FixedFooter = (function () {
+        function FixedFooter() {
+            this.style = "";
+            this.shouldRun = function (location) { return true; };
+        }
+        FixedFooter.prototype.init = function () {
+            var style = "body {margin-bottom: 45px !important}" + ".footer__outer-wrap {position: fixed; bottom: 0; width: 100%; background-color: #95a4c0}";
+            $('<style>').attr('type', 'text/css').html(style).appendTo('head');
+        };
+        FixedFooter.prototype.render = function () {
+        };
+        FixedFooter.prototype.name = function () {
+            return "FixedFooter";
+        };
+        return FixedFooter;
+    })();
+    ModuleDefinition.FixedFooter = FixedFooter;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -105,19 +126,60 @@ var ModuleDefinition;
         ScrollingSidebar.prototype.init = function () {
         };
         ScrollingSidebar.prototype.render = function () {
-            var $sidebar = $(".sidebar"), $window = $(window), offset = $sidebar.offset(), topPadding = 64;
-            $window.scroll(function () {
-                if ($window.scrollTop() > offset.top) {
-                    $sidebar.stop().animate({
-                        marginTop: $window.scrollTop() - offset.top + topPadding
+            var side = $('.sidebar');
+            var sideInner = side.wrapInner(side).children().first().addClass('SGPP__scrollingSidebar');
+            var sideAds = side.find('.adsbygoogle');
+            var $win = $(window);
+            var $footer = $('.footer__outer-wrap');
+            var footerHeight = $footer.outerHeight();
+            var $widgetContainer = $('.page__inner-wrap .widget-container');
+            var featHeight = $('.featured__container').height();
+            var navbarOffset = $('header').outerHeight();
+            var offset = 25 + (SGPP.modules['FixedNavbar'].shouldRun(SGPP.location) ? navbarOffset : 0);
+            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document, function () {
+                featHeight = $('.featured__container').height();
+            });
+            var delayedAdSlider = (function () {
+                var timeout;
+                return function (up) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        if (up)
+                            sideAds.stop().slideUp();
+                        else
+                            sideAds.stop().slideDown();
+                    }, 500);
+                };
+            })();
+            var handleScrolling = function () {
+                var winTop = $win.scrollTop();
+                if (winTop + sideInner.height() >= $widgetContainer.position().top + $widgetContainer.height()) {
+                    sideInner.css({
+                        position: 'fixed',
+                        top: '',
+                        bottom: footerHeight
                     });
+                    delayedAdSlider(true);
+                }
+                else if (winTop <= (featHeight + offset)) {
+                    sideInner.css({
+                        position: 'static',
+                        top: '',
+                        left: ''
+                    });
+                    delayedAdSlider(false);
                 }
                 else {
-                    $sidebar.stop().animate({
-                        marginTop: 0
-                    });
+                    sideInner.css({
+                        position: 'fixed',
+                        top: offset,
+                        bottom: ''
+                    }).show();
+                    delayedAdSlider(true);
                 }
-            });
+            };
+            handleScrolling();
+            $(document).scroll(handleScrolling);
         };
         ScrollingSidebar.prototype.name = function () {
             return "ScrollingSidebar";
@@ -153,7 +215,7 @@ var ModuleDefinition;
     var GridView = (function () {
         function GridView() {
             this.style = "";
-            this.shouldRun = function (location) { return location.pageKind == 'giveaways'; };
+            this.shouldRun = function (location) { return location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1; };
         }
         GridView.prototype.init = function () {
             $('head').append("<style> \
@@ -406,20 +468,19 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var SGPP = new ModuleDefinition.Core();
 (function ($) {
-    var modules = {};
-    var modulesNames = new Array("FixedNavbar", "ScrollingSidebar", "LivePreview", "CommentAndEnter", "GridView", "EntryCommenters");
+    var modulesNames = new Array("Settings", "FixedNavbar", "FixedFooter", "ScrollingSidebar", "CommentAndEnter", "GridView", "EntryCommenters");
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         if (m.shouldRun(SGPP.location)) {
-            modules[m.name()] = m;
+            SGPP.modules[m.name()] = m;
             SGPP.log("Module " + m.name() + " init() call.");
-            modules[m.name()].init();
+            SGPP.modules[m.name()].init();
         }
     }
-    $(document).ready(function () {
-        for (var module in modules) {
+    $(document).on("DOMContentLoaded", function () {
+        for (var module in SGPP.modules) {
             SGPP.log("Module " + module + " render() call.");
-            modules[module].render();
+            SGPP.modules[module].render();
         }
     });
 })(jQuery);
