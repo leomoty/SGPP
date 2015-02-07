@@ -15,7 +15,8 @@ module ModuleDefinition{
         render(): void {
 
             //GAds
-            var sideInner = $('.sidebar').addClass('SGPP__scrollingSidebar').wrapInner($(document).createElement('div')).addClass('sidebar--wide');
+            var side = $('.sidebar');
+            var sideInner = side.wrapInner(side).children().first().addClass('SGPP__scrollingSidebar');
             var sideAds = side.find('.adsbygoogle');
             var delayedAdSlider = (function () {
                 var timeout;
@@ -42,7 +43,7 @@ module ModuleDefinition{
                 featHeight = $('.featured__container').height();
             });
 
-            var handleScrolling = funct() {
+            var handleScrolling = () => {
                 var winTop = $win.scrollTop();
                 if (winTop + sideInner.height() >= $widgetContainer.position().top + $widgetContainer.height()) {
                     sideInner.css({
