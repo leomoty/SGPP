@@ -58,8 +58,8 @@ module ModuleDefinition {
             return dom.children('.comment');
         }
 
-        beforeAddItems(dom): void {
-            window["EndlessScrollMarkComments"].markComments(dom, this.currentPage, true);
+        beforeAddItems(dom, page:number): void {
+            window["EndlessScrollMarkComments"].markComments(dom, page, true);
         }
 
         name(): string {
