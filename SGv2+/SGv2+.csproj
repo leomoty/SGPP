@@ -23,6 +23,7 @@
     <TypeScriptCompile Include="Core.ts" />
     <TypeScriptCompile Include="EntryCommenters.ts" />
     <TypeScriptCompile Include="FixedFooter.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery_bpopup.d.ts" />
     <TypeScriptCompile Include="Settings.ts" />
     <TypeScriptCompile Include="EndlessScrollMarkComments.ts" />
     <TypeScriptCompile Include="EndlessScrollMyGiveaways.ts" />
