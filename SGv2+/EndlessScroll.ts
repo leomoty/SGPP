@@ -4,10 +4,10 @@ module ModuleDefinition {
 
     export class EndlessScroll {
 
+        private _nextPage: number = -1;
         private _currentPage: number = 1;
         private _lastPage: number = 1;
         private _numberOfPages: number = -1;
-        private _isLoading: boolean = false;
         private _stopped: boolean = false;
 
         private _pages: { [i: number]: any; } = {};
@@ -94,36 +94,29 @@ module ModuleDefinition {
         }
 
         loadNextPage(): void {
-            if (this._isLoading || this._stopped) {
+            if (this._stopped) {
                 return;
             }
 
-            this._isLoading = true;
+            if (this._nextPage > this._lastPage || this._nextPage < 1)
+                return;
 
-            if (!this.reverseItems) {
-                this._currentPage++;
+            this.loadPage(this._nextPage);
+        }
 
-                if (this._currentPage > this._lastPage) {
-                    return;
-                }
+        updateNextPage(page:number): void {
+            if (this.reverseItems) {
+                this._nextPage = page - 1;
             } else {
-                this._currentPage--;
-
-                if (this._currentPage < 1) {
-                    return;
-                }
+                this._nextPage = page + 1;
             }
-
-            this.loadPage(this._currentPage);
         }
 
         loadPage(page: number): void {
 
-            if (!(this._currentPage in this._pagesUrl)) {
+            if (!(page in this._pagesUrl)) {
                 throw 'No URL for page ' + this._currentPage;
             }
-
-            var url = this._pagesUrl[this._currentPage];
 
             if (!(page in this._pages)) {
 
@@ -148,6 +141,8 @@ module ModuleDefinition {
                 this._pages[page] = {
                     element: pageContainer,
                     loaded: false,
+                    loading: false,
+                    visible: true,
                 }
 
                 var elPage: JQuery = this._pages[target].element;
@@ -159,43 +154,69 @@ module ModuleDefinition {
                 }
             }
 
-            if (this._pages[page].loaded) {
-                this._pages[page].element.show();
+            var pg = this._pages[page];
+
+            if (pg.loading) {
+                return;
+            } else if (pg.loaded) {
+                if (!pg.visible) {
+                    pg.element.show();
+                    pg.visible = true;
+                }
+
+                if (this._nextPage == page) {
+                    this.updateNextPage(page);
+                }
             } else {
+                var url = this._pagesUrl[page];
+
+                this._pages[page].loading = true;
+
                 $.get(url,(data) => {
 
                     var dom = $.parseHTML(data);
 
-                    this.beforeAddItems(dom);
+                    this.beforeAddItems(dom, page);
 
                     var itemsContainer = this.getItemsElement(dom);
 
-                    this.addItems(itemsContainer, pageContainer);
-
-                    pageContainer.prepend(this.createPageElement(page));
-
-                    // Update navigation on page
+                    //
                     var newPagination = this.getNavigationElement(dom);
-                    this.getNavigationElement(document).html(newPagination.html());
+                    var actualPage = parseInt(newPagination.find('a.is-selected').data('page-number'));
 
                     // Cache urls for pages
                     this.parseNavigation(newPagination);
 
-                    this.afterAddItems(pageContainer);
+                    this.addItems(itemsContainer, pageContainer, page);
+
+                    pageContainer.prepend(this.createPageElement(actualPage));
+
+                    // Update navigation on page               
+                    this.getNavigationElement(document).html(newPagination.html());
+
+                    this.afterAddItems(pageContainer, page);
 
                     this._pages[page].loaded = true;
 
                     loadingElement.remove();
 
-                    this._isLoading = false;
+                    // Update next page. Done here to prevent falsely loading multiple pages at same time.
+                    if (this._nextPage == page) {
+                        this.updateNextPage(actualPage);
+                    }
+
+                    if (actualPage != page) {
+                        this._pages[actualPage] = this._pages[page];  
+                        delete this._pages[page];
+                    }
                 });
             }
         }
 
-        beforeAddItems(dom): void {
+        beforeAddItems(dom, page:number): void {
         }
 
-        addItems(dom, pageContainer: JQuery): void {
+        addItems(dom, pageContainer: JQuery, page:number): void {
             this.getItems(dom).each((i: number, el: Element) => {
                 if (this.reverseItems) {
                     pageContainer.prepend(el);
@@ -206,10 +227,18 @@ module ModuleDefinition {
             });
         }
 
-        afterAddItems(pageContainer: JQuery): void {
+        afterAddItems(pageContainer: JQuery, page: number): void {
         }
 
         parseNavigation(dom: JQuery): void {
+            var elLastPage = dom.find('a').last();
+
+            this._lastPage = parseInt(elLastPage.data('page-number'));
+
+            if (elLastPage.text().trim() != "Next") {
+                this._numberOfPages = this._lastPage;
+            }
+
             dom.find('.pagination__navigation a').each((i: number, el: Element) => {
                 var $el = $(el);
                 var page = parseInt($el.data('page-number'));
@@ -232,15 +261,7 @@ module ModuleDefinition {
                 this._currentPage = 1;
                 this._lastPage = 1;
             } else {
-
-                var elLastPage = nav.find('a').last();
-
                 this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
-                this._lastPage = parseInt(elLastPage.data('page-number'));
-
-                if (elLastPage.text().trim() == "Last") {
-                    this._numberOfPages = this._lastPage;
-                }
 
                 this.parseNavigation(nav);
             }
@@ -251,6 +272,8 @@ module ModuleDefinition {
             this._pages[this.currentPage] = {
                 element: itemsElement,
                 loaded: true,
+                loading: false,
+                visible: true,
             };
 
             if (this.reverseItems) {
@@ -258,11 +281,25 @@ module ModuleDefinition {
                     itemsElement.prepend(el);
                 });
 
-                if (this._currentPage != this._lastPage) {
-                    this._currentPage = this._lastPage + 1;
+                if (this._currentPage != this._lastPage && this._numberOfPages != -1) {
+                    this._nextPage = this._lastPage;
                     this.loadNextPage();
+
+                    this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
+                } else if (this._currentPage != this._lastPage) {
+                    this._pagesUrl[31337] = window.location + '/search?page=31337';
+                    this._lastPage = 31337;
+                    this._nextPage = 31337;
+                    this.loadNextPage();
+
+                    this._pages[this.currentPage].visible = false;
+                    itemsElement.hide();
+                } else {
+                    this._nextPage = this._lastPage - 1;
                 }
+            } else {
+                this._nextPage = this._currentPage + 1;
             }
 
             itemsElement.prepend(pageHeader);
