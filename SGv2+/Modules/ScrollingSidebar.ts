@@ -14,10 +14,11 @@ module ModuleDefinition{
 
         render(): void {
 
-            //GAds
+            //GoogleAds
             var side = $('.sidebar');
-            var sideInner = side.wrapInner(side).children().first().addClass('SGPP__scrollingSidebar');
-            var sideAds = side.find('.adsbygoogle');
+            var sideOuter = $(document.createElement('div')).addClass(side.attr('class'));
+            var sideInner = side.wrapInner(sideOuter).children().first().addClass('SGPP__scrollingSidebar');
+            var sideAds = sideInner.find('.adsbygoogle');
             var delayedAdSlider = (function () {
                 var timeout;
                 return function (up) {
@@ -38,10 +39,6 @@ module ModuleDefinition{
             var navbarOffset = $('header').outerHeight();
             var offset = 25 + (SGPP.modules['FixedNavbar'].shouldRun(SGPP.location) ? navbarOffset : 0);
 
-
-            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document,() => {
-                featHeight = $('.featured__container').height();
-            });
 
             var handleScrolling = () => {
                 var winTop = $win.scrollTop();
