@@ -22,30 +22,32 @@
 
 var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
+var modulesNames: Array<string> = new Array<string>(
+    "CommentAndEnter",
+    "EntryCommenters",
+    "FixedNavbar",
+    "FixedFooter",
+    "GridView",
+    "ScrollingSidebar",
+    "EndlessScrollMarkComments",
+    "EndlessScrollDiscussion",
+    "EndlessScrollDiscussionReplies",
+    "EndlessScrollGiveaways",
+    "EndlessScrollMyGiveaways",
+    "EndlessScrollGiveawayComments"
+    );
+
 (function ($) {
     
     //List of available modules
-    var modulesNames: Array<string> = new Array<string>(
-        "CommentAndEnter",
-        "EntryCommenters",
-        "FixedNavbar",
-        "FixedFooter",
-        "GridView",
-        "ScrollingSidebar",
-        "EndlessScrollMarkComments",
-        "EndlessScrollDiscussion",
-        "EndlessScrollDiscussionReplies",
-        "EndlessScrollGiveaways",
-        "EndlessScrollMyGiveaways",
-        "EndlessScrollGiveawayComments"
-    );
 
     for (var pos in modulesNames) {
         //Load next module
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
 
-        //Locationcheck
-        if (m.shouldRun(SGPP.location)) {
+        //Checks if the module is enabled in LocalStorage, rule of thumb, if it doesn't exist before, it isn't.
+        //Also checks if should run on this page
+        if (SGPP.settings.isModuleEnabled(modulesNames[pos]) && m.shouldRun(SGPP.location)) {
             //Put module into module list
             SGPP.modules[m.name()] = m;
 
