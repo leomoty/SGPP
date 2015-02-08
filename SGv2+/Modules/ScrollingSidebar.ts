@@ -37,7 +37,7 @@ module ModuleDefinition{
             var $widgetContainer = $('.page__inner-wrap .widget-container');
             var featHeight = $('.featured__container').height();
             var navbarOffset = $('header').outerHeight();
-            var offset = 25 + (SGPP.modules['FixedNavbar'].shouldRun(SGPP.location) ? navbarOffset : 0);
+            var offset = 25 + (SGPP.modules['FixedNavbar'] != undefined ? navbarOffset : 0);
 
 
             var handleScrolling = () => {
