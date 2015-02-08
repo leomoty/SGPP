@@ -1,46 +1,46 @@
 ﻿//Typing for http://dinbror.dk/bpopup/ jQuery.bPopup.js
 
-declare class bPopup {
+interface bPopupSettings {
+    amsl?: number
+    appending?: boolean
+    appendTo?: string
+    autoClose?: boolean
+    closeClass?: string
+    content?: string
+    contentContainer?: boolean
+    easing?: string
+    escClose?: boolean
+    follow?: [boolean, boolean]
+    followEasing?: string
+    followSpeed?: number
+    iframeAttr?: string
+    loadCallback?: boolean
+    loadData?: boolean
+    loadUrl?: boolean
+    modal?: boolean
+    modalClose?: boolean
+    modalColor?: string
+    onClose? (): void
+    onOpen? (): void
+    opacity?: number
+    position?: [string, string]
+    positionStyle?: string
+    scrollBar?: boolean
+    speed?: boolean
+    transition?: string
+    transitionClose?: boolean
+    zIndex?: number
+}
+
+interface JQueryBPopup {
     close(): void;
     reposition(animateSpeed: Number): void;
 }
 
-interface bPopupSettings {
-    amsl?: Number
-    appending?: Boolean
-    appendTo?: String
-    autoClose?: Boolean
-    closeClass?: String
-    content?: String
-    contentContainer?: Boolean
-    easing?: String
-    escClose?: Boolean
-    follow?: [Boolean, Boolean]
-    followEasing?: String
-    followSpeed?: Number
-    iframeAttr?: String
-    loadCallback?: Boolean
-    loadData?: Boolean
-    loadUrl?: Boolean
-    modal?: Boolean
-    modalClose?: Boolean
-    modalColor?: String
-    onClose?: Boolean
-    onOpen?: Boolean
-    opacity?: Number
-    position?: [String, String]
-    positionStyle?: String
-    scrollBar?: Boolean
-    speed?: Boolean
-    transition?: String
-    transitionClose?: Boolean
-    zIndex?: Number
-}
-
 interface JQuery {
 
-    bPopup(params: bPopupSettings);
+    bPopup(params: bPopupSettings, callback?: () => void): JQueryBPopup;
 
-    bPopup(): bPopup;
+    bPopup(): JQueryBPopup;
    
 }
