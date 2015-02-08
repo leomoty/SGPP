@@ -294,13 +294,10 @@ module ModuleDefinition {
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
                 } else if (this._currentPage != this._lastPage) {
-                    this._pagesUrl[31337] = this.BaseUrl + '/search?page=31337';
-                    this._lastPage = 31337;
-                    this._nextPage = 31337;
-                    this.loadNextPage();
-
+                    this._pagesUrl[this._maxPage] = this.BaseUrl + '/search?page=' + this._maxPage;
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
+                    this.loadPage(this._maxPage);
                 } else {
                     this._nextPage = this._lastPage - 1;
                 }
