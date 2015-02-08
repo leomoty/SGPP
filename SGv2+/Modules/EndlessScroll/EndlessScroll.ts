@@ -207,7 +207,7 @@ module ModuleDefinition {
                     loadingElement.remove();
 
                     // Update next page. Done here to prevent falsely loading multiple pages at same time.
-                    if (this._nextPage == page) {
+                    if (this._nextPage == page || this._nextPage == -1) {
                         this.updateNextPage(actualPage);
                     }
 
