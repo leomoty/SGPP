@@ -4,6 +4,8 @@ module ModuleDefinition {
 
     export class EndlessScroll {
 
+        private _maxPage:number = 31337;
+
         private _nextPage: number = -1;
         private _currentPage: number = 1;
         private _lastPage: number = 1;
@@ -29,6 +31,10 @@ module ModuleDefinition {
 
         get reverseItems(): boolean {
             return false;
+        }
+
+        get BaseUrl(): string {
+            throw 'BaseUrl() not implmented';
         }
 
         hasPages(dom): boolean {
@@ -288,7 +294,7 @@ module ModuleDefinition {
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
                 } else if (this._currentPage != this._lastPage) {
-                    this._pagesUrl[31337] = window.location + '/search?page=31337';
+                    this._pagesUrl[31337] = this.BaseUrl + '/search?page=31337';
                     this._lastPage = 31337;
                     this._nextPage = 31337;
                     this.loadNextPage();
