@@ -42,6 +42,10 @@ module ModuleDefinition {
             this.preparePage();
         }
 
+        get BaseUrl(): string {
+            return '/' + SGPP.location.pageKind + '/' + SGPP.location.code + '/' + SGPP.location.description;
+        }
+
         get reverseItems(): boolean {
             return true;
         }
