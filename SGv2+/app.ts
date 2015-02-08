@@ -32,7 +32,6 @@ var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
         "FixedFooter",
         "GridView",
         "ScrollingSidebar",
-        "Settings",
         "EndlessScrollMarkComments",
         "EndlessScrollDiscussion",
         "EndlessScrollDiscussionReplies",
@@ -57,6 +56,7 @@ var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
     }
 
     $(document).on("DOMContentLoaded", function () {
+        SGPP.render();
         //Render each module once the DOM is loaded
         for (var module in SGPP.modules) {
             SGPP.log("Module " + module + " render() call.");

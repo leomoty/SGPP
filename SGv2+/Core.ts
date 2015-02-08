@@ -6,7 +6,12 @@ module ModuleDefinition{
 
         private _sgLocation: SGLocation;
         private _debug = true;
+        private _settings: ModuleDefinition.Settings = new ModuleDefinition.Settings();
 
+        get settings(): Settings {
+            return this._settings;
+        }
+        
         get location(): SGLocation {
             return this._sgLocation;
         }
@@ -66,6 +71,7 @@ module ModuleDefinition{
 
         constructor() {
             this.init();
+            this._settings.init();
         }
 
         init = () => {
@@ -73,7 +79,7 @@ module ModuleDefinition{
         }
 
         render(): void {
-
+            this._settings.render();
         }
 
         name(): string {
