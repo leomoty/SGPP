@@ -19,23 +19,24 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
-    <TypeScriptCompile Include="CommentAndEnter.ts" />
     <TypeScriptCompile Include="Core.ts" />
-    <TypeScriptCompile Include="EntryCommenters.ts" />
-    <TypeScriptCompile Include="FixedFooter.ts" />
-    <TypeScriptCompile Include="Settings.ts" />
-    <TypeScriptCompile Include="EndlessScrollMarkComments.ts" />
-    <TypeScriptCompile Include="EndlessScrollMyGiveaways.ts" />
+    <TypeScriptCompile Include="Modules\CommentAndEnter.ts" />
+    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScroll.ts" />
+    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollDiscussion.ts" />
+    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollDiscussionReplies.ts" />
+    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollGiveawayComments.ts" />
+    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollGiveaways.ts" />
+    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollMarkComments.ts" />
+    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollMyGiveaways.ts" />
+    <TypeScriptCompile Include="Modules\EntryCommenters.ts" />
+    <TypeScriptCompile Include="Modules\FixedFooter.ts" />
+    <TypeScriptCompile Include="Modules\FixedNavbar.ts" />
+    <TypeScriptCompile Include="Modules\GridView.ts" />
+    <TypeScriptCompile Include="Modules\LivePreview.ts" />
+    <TypeScriptCompile Include="Modules\ScrollingSidebar.ts" />
+    <TypeScriptCompile Include="Modules\Settings.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery_bpopup.d.ts" />
     <TypeScriptCompile Include="Scripts\pagedown\MarkdownConverter.d.ts" />
-    <TypeScriptCompile Include="EndlessScrollGiveawayComments.ts" />
-    <TypeScriptCompile Include="EndlessScrollDiscussionReplies.ts" />
-    <TypeScriptCompile Include="EndlessScrollDiscussion.ts" />
-    <TypeScriptCompile Include="EndlessScrollGiveaways.ts" />
-    <TypeScriptCompile Include="EndlessScroll.ts" />
-    <TypeScriptCompile Include="ScrollingSidebar.ts" />
-    <TypeScriptCompile Include="LivePreview.ts" />
-    <TypeScriptCompile Include="GridView.ts" />
-    <TypeScriptCompile Include="FixedNavbar.ts" />
     <TypeScriptCompile Include="ModuleDefinition.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
   </ItemGroup>
