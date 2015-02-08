@@ -35,7 +35,8 @@ module ModuleDefinition{
         }
 
         private handleSettingClick = () => {
-            $(".sgpp-settings-popup").bPopup({ opacity: .85, fadeSpeed: 200, followSpeed: 500, modalColor: "#3c424d"});
+            var popup: bPopup = $(".sgpp-settings-popup").bPopup({ opacity: .85, fadeSpeed: 200, followSpeed: 500, modalColor: "#3c424d" });
+            popup.reposition(500);
         };
 
         name(): string {

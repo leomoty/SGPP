@@ -1,5 +1,10 @@
 ﻿//Typing for http://dinbror.dk/bpopup/ jQuery.bPopup.js
 
+declare class bPopup {
+    close(): void;
+    reposition(animateSpeed: Number): void;
+}
+
 interface bPopupSettings {
     amsl?: Number
     appending?: Boolean
@@ -35,5 +40,7 @@ interface bPopupSettings {
 interface JQuery {
 
     bPopup(params: bPopupSettings);
+
+    bPopup(): bPopup;
    
 }
