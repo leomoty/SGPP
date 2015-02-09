@@ -7,9 +7,7 @@ module ModuleDefinition{
         style = "";
 
         init(): void {
-           $('head').append("<style> \
-                                .sidebar--wide{min-width:329px!important}\
-                            </style>");
+            
         }
 
         render(): void {

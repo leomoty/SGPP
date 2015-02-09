@@ -1,17 +1,18 @@
 ﻿/// <reference path="../ModuleDefinition.ts" />
 
-module ModuleDefinition{
+module ModuleDefinition {
 
-    function calculateWinChance(copies, entries) : any {
-        var res = (+(parseFloat(copies) / parseFloat(entries)) * 100);
-        return Math.min(res, 100).toFixed(2);
-    }
-    
     export class GridView implements SteamGiftsModule {
+
+        name(): string {
+            return "GridView";
+        }
+
+        shouldRun = (location: SGLocation) => location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1;
 
         style = "";
 
-        init(): void {
+        init = () => {
             $('head').append("<style>\
                                 .gridview_flex{display:flex;flex-wrap:wrap;justify-content:center;margin: 0 -5px;}\
                                 .global__image-outer-wrap--missing-image {height: 69px!important}\
@@ -20,35 +21,37 @@ module ModuleDefinition{
                                 .tile_view_avatar_outer{float: right;display: inline-block; margin-left:5px}\
                                 .tile_view_avatar{height: 24px;width: 24px;padding: 2px}\
                                 .tile_view_faded{width: 184px; height: 69px; margin-top:-69px; background-color:#fff; opacity: .75 }\
+                                .sidebar--wide{min-width:329px!important}\
+                                .giveaway__row-outer-wrap{display:none}\
                             </style>");
         }
 
-        render(): void {
-            var content = this.generateGridview($('.pagination').prev());
-
-            $($('.page__heading').next()[0]).html(content);
-
-            $('.pagination').parent().bind("DOMNodeInserted",(event) => {
-                var $target = $(event.target);
-                if ($target.hasClass('pagination__navigation')) {
-                    var giveawayPage = $('.pagination').prev();
-                    var giveaways = $(document.createElement('div')).wrapInner(giveawayPage.children('.giveaway__row-outer-wrap'));
-                    var content = this.generateGridview(giveaways);
-                    giveawayPage.remove('.giveaway__row-outer-wrap');
-                    giveawayPage.append(content);
-                }
-
+        render = () => {
+            var esg = $('.pagination').prev();
+            esg.parent().on("DOMNodeInserted",(event) => {
+                if($(event.target).hasClass('pagination__navigation')) 
+                    this.updateGridview($('.pagination').prev());
             });
+
+            this.updateGridview(esg);
         }
 
-        name(): string {
-            return "GridView";
+        updateGridview = (esg) => {
+            var giveaways = $(document.createElement('div')).wrapInner(esg.children('.giveaway__row-outer-wrap'));
+            var gridview = this.generateGridview(giveaways);
+            esg.remove('.giveaway__row-outer-wrap').addClass('SGPP__Gridview').append(gridview);
         }
 
-        generateGridview(root: any): any {
+        generateGridview = (root) => {
+            //win chance displayed in giveaway description
+            function calculateWinChance(copies, entries) : any {
+                var res = (+(parseFloat(copies) / parseFloat(entries)) * 100);
+                return Math.min(res, 100).toFixed(2);
+            }
+
+            //create gridcontainer
             var container = document.createElement('div');
             $(container).addClass('gridview_flex');
-            $(root).find('.giveaway__row-outer-wrap').css('margin', '5px');
             $(root).find('.giveaway__row-inner-wrap').each(function () {
                 if ($(this).parents('.pinned-giveaways').length != 0) return;
                 var eachDiv = document.createElement('div');
@@ -79,7 +82,7 @@ module ModuleDefinition{
                 var comments = $(this).find('.fa-comment').next().text();
                 var commentsSplit = comments.split(" ");
 
-                var winChance = calculateWinChance(copies, entries.replace(",",""));
+                var winChance = calculateWinChance(copies, entries.replace(",", ""));
                 
                 if ($(this).hasClass('is-faded'))
                     $(eachDiv).children().first().append('<div class="tile_view_faded"></div>');
@@ -111,8 +114,6 @@ module ModuleDefinition{
                 });
             return container;
         }
-
-        shouldRun = (location: SGLocation) => location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1;
 
     }
 
