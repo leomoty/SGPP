@@ -4,7 +4,7 @@ module ModuleDefinition{
 
     export class ScrollingSidebar implements SteamGiftsModule {
 
-        style = "";
+        style = ".featured__container{height:287px}"; //fixes no-featured-image bug
 
         init(): void {
             
@@ -33,7 +33,7 @@ module ModuleDefinition{
             var $win = $(window);
             var footerHeight = $('.footer__outer-wrap').outerHeight();
             var $widgetContainer = $('.page__inner-wrap .widget-container');
-            var featHeight = $('.featured__container').height();
+            var featHeight = 287; //$('.featured__container').height();
             var navbarOffset = $('header').outerHeight();
             var offset = 25 + (SGPP.modules['FixedNavbar'] != undefined ? navbarOffset : 0);
 

@@ -16,9 +16,8 @@ module ModuleDefinition {
                 .tile_view_header{min-height:35px;margin-top:5px;font-size:12px}\
                 .tile_view_avatar_outer{float:right;display:inline-block;margin-left:5px}\
                 .tile_view_avatar{height:24px;width:24px;padding: 2px}\
-                .tile_view_faded{width:184px;height:69px;margin-top:-69px;background-color:#fff;opacity:.75}\
-                .sidebar--wide{min-width:329px!important}\
-                .giveaway__row-outer-wrap{display:none}";
+                .tile_view_faded{opacity:.65}\
+                .sidebar--wide{min-width:329px!important}";
 
         init = () => {
 
@@ -83,7 +82,7 @@ module ModuleDefinition {
                 var winChance = calculateWinChance(copies, entries.replace(",", ""));
                 
                 if ($(this).hasClass('is-faded'))
-                    $(eachDiv).children().first().append('<div class="tile_view_faded"></div>');
+                    $(eachDiv).find('.global__image-outer-wrap--missing-image').addClass('tile_view_faded');
 
                 gridview_extra.append('<div class="giveaway__heading__name tile_view_header">' + giveawayName + '</div>');
                 gridview_extra.append('<div class="tile_view_avatar_outer">' + avatar[0].outerHTML + '</div>');
