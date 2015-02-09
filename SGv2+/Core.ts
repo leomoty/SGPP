@@ -4,9 +4,17 @@ module ModuleDefinition{
 
     export class Core implements SteamGiftsModule {
 
+        //SGPP section
+
         private _sgLocation: SGLocation;
         private _debug = true;
         private _settings: ModuleDefinition.Settings = new ModuleDefinition.Settings();
+
+        modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
+
+        constructor() {
+            this.init();
+        }
 
         get settings(): Settings {
             return this._settings;
@@ -16,10 +24,46 @@ module ModuleDefinition{
             return this._sgLocation;
         }
 
-        modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
+        log = (msg: string) => {
+            if(this._debug)
+                console.log("[" + new Date() + "] SGPP - " + msg);
+        };
 
+        appendCSS = (css: string) => {
+            $('style').append(css);
+        }
+
+
+
+        //core module section
+
+        name(): string {
+            return "Core";
+        }
+
+        shouldRun(location: SGLocation): boolean{
+            return true;
+        }
 
         style = "";
+
+        init = () => {
+            //init SGLocation
+            this.resolvePath();
+
+            //create SGPP stylesheet section in the page head
+            $('head').append($('<style>'));
+            this.appendCSS('/* SGPP Stylesheet */ ');
+
+            //init settings
+            this.appendCSS(this._settings.style);
+            this._settings.init();
+        }
+
+        render(): void {
+            //render settings
+            this._settings.render();
+        }
 
         private resolvePath = () => {
             var hash = "";
@@ -68,32 +112,7 @@ module ModuleDefinition{
                 parameters: urlParams
             }
         }
-
-        constructor() {
-            this.init();
-        }
-
-        init = () => {
-            this.resolvePath();
-            this._settings.init();
-        }
-
-        render(): void {
-            this._settings.render();
-        }
-
-        name(): string {
-            return "Core";
-        }
-
-        shouldRun(location: SGLocation): boolean{
-            return true;
-        }
-
-        log = (msg: string) => {
-            if(this._debug)
-                console.log("[" + new Date() + "] SGPP - " + msg);
-        };
+    
     }
 
 }

@@ -22,7 +22,7 @@
 
 var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
-//List of available modules
+//list of available modules
 var modulesNames: Array<string> = new Array<string>(
     "CommentAndEnter",
     "EntryCommenters",
@@ -36,29 +36,35 @@ var modulesNames: Array<string> = new Array<string>(
     "EndlessScrollGiveaways",
     "EndlessScrollMyGiveaways",
     "EndlessScrollGiveawayComments"
-    );
+);
 
 (function ($) {
     
+    //load needed modules into module list
     for (var pos in modulesNames) {
         //Load next module
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
 
         //Checks if the module is enabled in LocalStorage, rule of thumb, if it didn't exist before, it isn't.
-        //Also checks if should run on this page
-        if (SGPP.settings.isModuleEnabled(modulesNames[pos]) && m.shouldRun(SGPP.location)) {
-            //Put module into module list
-            SGPP.modules[m.name()] = m;
-
-            //Init module
-            SGPP.log("Module " + m.name() + " init() call.");
-            SGPP.modules[m.name()].init();
-        }
+        //Also checks should run for the current page
+        if (SGPP.settings.isModuleEnabled(modulesNames[pos]) && m.shouldRun(SGPP.location))
+            SGPP.modules[m.name()] = m; //Put module into module list
     }
 
+    //load modules
+    for (var module in SGPP.modules) {
+        //append stylesheet for each module
+        SGPP.log("Module " + m.name() + " append css.");
+        SGPP.appendCSS(SGPP.modules[module].style);
+
+        //init each module
+        SGPP.log("Module " + m.name() + " init() call.");
+        SGPP.modules[module].init();
+    }
+
+    //render each module once the DOM is loaded
     $(document).on("DOMContentLoaded", function () {
-        SGPP.render();
-        //Render each module once the DOM is loaded
+        SGPP.render(); //Render core first
         for (var module in SGPP.modules) {
             SGPP.log("Module " + module + " render() call.");
             SGPP.modules[module].render();
