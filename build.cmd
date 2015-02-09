@@ -1,8 +1,11 @@
 tsc --target ES5 --removeComments --out temp.js SGv2+\App.ts
 
-del Steamgifts++.js
-type Monkeyheader.js >>Steamgifts++.js
-type temp.js >>Steamgifts++.js
+pause
+
+java -jar yuicompressor-2.4.8.jar --type js --nomunge -o temp2.js temp.js
 del temp.js
 
-pause
+del Steamgifts++.js
+type Monkeyheader.js >>Steamgifts++.js
+type temp2.js >>Steamgifts++.js
+del temp2.js
