@@ -10,20 +10,18 @@ module ModuleDefinition {
 
         shouldRun = (location: SGLocation) => location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1;
 
-        style = "";
+        style = ".gridview_flex{display:flex;flex-wrap:wrap;justify-content:center;margin:0 -5px;}\
+                .global__image-outer-wrap--missing-image {height:69px!important}\
+                .preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,1);border:1px solid #cbcfdb;padding:5px; z-index:10;}\
+                .tile_view_header{min-height:35px;margin-top:5px;font-size:12px}\
+                .tile_view_avatar_outer{float:right;display:inline-block;margin-left:5px}\
+                .tile_view_avatar{height:24px;width:24px;padding: 2px}\
+                .tile_view_faded{width:184px;height:69px;margin-top:-69px;background-color:#fff;opacity:.75}\
+                .sidebar--wide{min-width:329px!important}\
+                .giveaway__row-outer-wrap{display:none}";
 
         init = () => {
-            $('head').append("<style>\
-                                .gridview_flex{display:flex;flex-wrap:wrap;justify-content:center;margin: 0 -5px;}\
-                                .global__image-outer-wrap--missing-image {height: 69px!important}\
-                                .preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,1);border:1px solid #cbcfdb;padding:5px; z-index:10;}\
-                                .tile_view_header{min-height:35px;margin-top:5px;font-size:12px}\
-                                .tile_view_avatar_outer{float: right;display: inline-block; margin-left:5px}\
-                                .tile_view_avatar{height: 24px;width: 24px;padding: 2px}\
-                                .tile_view_faded{width: 184px; height: 69px; margin-top:-69px; background-color:#fff; opacity: .75 }\
-                                .sidebar--wide{min-width:329px!important}\
-                                .giveaway__row-outer-wrap{display:none}\
-                            </style>");
+
         }
 
         render = () => {
