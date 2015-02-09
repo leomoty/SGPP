@@ -33,7 +33,7 @@ module ModuleDefinition {
                 '<div>\n' +
                 '<input type="hidden" name="' + name + '" value="' + (current ? "1" : "0") + '">\n' +
                 '<div class= "SGPP__settings-checkbox ' + (current ? 'is-selected' : 'is-disabled') + '">\n' +
-                '<i class= "form__checkbox__default fa fa-circle-o"> </i><i class="form__checkbox__hover fa fa-circle"></i> <i class= "form__checkbox__selected fa fa-check-circle"></i>Enabled\n' +
+                '<i class= "form__checkbox__default fa fa-circle-o"> </i><i class="form__checkbox__hover fa fa-circle"> </i><i class= "form__checkbox__selected fa fa-check-circle"> </i>Enabled\n' +
                 '</div>\n' +
                 '</div>\n' +
                 '</div>\n' +

@@ -22,6 +22,7 @@
 
 var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
+//List of available modules
 var modulesNames: Array<string> = new Array<string>(
     "CommentAndEnter",
     "EntryCommenters",
@@ -39,13 +40,11 @@ var modulesNames: Array<string> = new Array<string>(
 
 (function ($) {
     
-    //List of available modules
-
     for (var pos in modulesNames) {
         //Load next module
         var m: ModuleDefinition.SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
 
-        //Checks if the module is enabled in LocalStorage, rule of thumb, if it doesn't exist before, it isn't.
+        //Checks if the module is enabled in LocalStorage, rule of thumb, if it didn't exist before, it isn't.
         //Also checks if should run on this page
         if (SGPP.settings.isModuleEnabled(modulesNames[pos]) && m.shouldRun(SGPP.location)) {
             //Put module into module list

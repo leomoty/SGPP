@@ -40,7 +40,7 @@ module ModuleDefinition{
                 pageKind = split[0] || '';
                 description = split[2] || '';
 
-                if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion') {
+                if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion' || split[0] == 'user') {
                     subpage = (split[3] == 'search' ? '' : split[3]) || '';
                     code = split[1] || '';
                 } else {
@@ -71,11 +71,11 @@ module ModuleDefinition{
 
         constructor() {
             this.init();
-            this._settings.init();
         }
 
         init = () => {
             this.resolvePath();
+            this._settings.init();
         }
 
         render(): void {
