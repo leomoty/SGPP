@@ -12,8 +12,8 @@
 /// <reference path="Modules/LivePreview.ts" />
 /// <reference path="Modules/ScrollingSidebar.ts" />
 /// <reference path="Modules/Settings.ts" />
+/// <reference path="Modules/MarkComments.ts" />
 
-/// <reference path="Modules/EndlessScroll/EndlessScrollMarkComments.ts" />
 /// <reference path="Modules/EndlessScroll/EndlessScrollDiscussion.ts" />
 /// <reference path="Modules/EndlessScroll/EndlessScrollDiscussionReplies.ts" />
 /// <reference path="Modules/EndlessScroll/EndlessScrollGiveawayComments.ts" />
@@ -30,7 +30,7 @@ var modulesNames: Array<string> = new Array<string>(
     "FixedFooter",
     "GridView",
     "ScrollingSidebar",
-    "EndlessScrollMarkComments",
+    "MarkComments",
     "EndlessScrollDiscussion",
     "EndlessScrollDiscussionReplies",
     "EndlessScrollGiveaways",

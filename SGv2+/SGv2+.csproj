@@ -26,7 +26,7 @@
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollDiscussionReplies.ts" />
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollGiveawayComments.ts" />
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollGiveaways.ts" />
-    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollMarkComments.ts" />
+    <TypeScriptCompile Include="Modules\MarkComments.ts" />
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollMyGiveaways.ts" />
     <TypeScriptCompile Include="Modules\EntryCommenters.ts" />
     <TypeScriptCompile Include="Modules\FixedFooter.ts" />
@@ -82,4 +82,8 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>
