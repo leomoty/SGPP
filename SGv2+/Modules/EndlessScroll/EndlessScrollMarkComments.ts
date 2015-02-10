@@ -138,7 +138,7 @@ module ModuleDefinition {
                 this.markTopics(document);
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
-                this.markTopics($('.widget-container').last().prev());
+                this.markTopics($('.widget-container').last().prev().prev());
             }
         }
 
@@ -165,31 +165,34 @@ module ModuleDefinition {
         markTopics(dom): void {
 
             $(dom).find('.table__row-outer-wrap').each((i: number, el: Element) => {
-                var link = $(el).find('h3 a').first();
-                var tInfo = new topicInfo(this.getDiscussionId(link.attr('href')));
+                try {
+                    var link = $(el).find('h3 a').first();
+                    var tInfo = new topicInfo(this.getDiscussionId(link.attr('href')));
 
-                // Make sure links go to last page if using reversed messages
-                if (true) {
-                    link.attr('href', link.attr('href') + '/search?page=31337');
-                }
-
-                // Only mark new comments for topics we have visited
-                if (tInfo.isDataStored) {
-                    var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text());
-
-                    var lastComments = tInfo.getNumComments();
-                    var newComments = numComments - lastComments;
-
-                    if (newComments > 0) {
-                        $(el).addClass('endless_new_comments');
-                        $(el).find('.table__column--width-fill > p').first().append(' - <strong>' + newComments + ' new comments</strong>');
+                    // Make sure links go to last page if using reversed messages
+                    if (true) {
+                        link.attr('href', link.attr('href') + '/search?page=31337');
                     }
-                    else {
-                        $(el).addClass('endless_no_new_comments');
-                        $(el).find('.table__column--width-fill > p').first().append(' - no new comments</strong>');
+
+                    // Only mark new comments for topics we have visited
+                    if (tInfo.isDataStored) {
+                        var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text());
+
+                        var lastComments = tInfo.getNumComments();
+                        var newComments = numComments - lastComments;
+
+                        if (newComments > 0) {
+                            $(el).addClass('endless_new_comments');
+                            $(el).find('.table__column--width-fill > p').first().append(' - <strong>' + newComments + ' new comments</strong>');
+                        }
+                        else {
+                            $(el).addClass('endless_no_new_comments');
+                            $(el).find('.table__column--width-fill > p').first().append(' - no new comments</strong>');
+                        }
                     }
                 }
-
+                catch(err) {
+                }
             });
         }
 
