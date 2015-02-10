@@ -1,4 +1,4 @@
-﻿/// <reference path="../../ModuleDefinition.ts" /> 
+﻿/// <reference path="../ModuleDefinition.ts" /> 
 
 module ModuleDefinition {
 
@@ -72,7 +72,7 @@ module ModuleDefinition {
         }
     }
 
-    export class EndlessScrollMarkComments implements SteamGiftsModule {
+    export class MarkComments implements SteamGiftsModule {
 
         private topicInfo: topicInfo;
 
@@ -107,7 +107,6 @@ module ModuleDefinition {
         }
 
         init(): void {
-            window["EndlessScrollMarkComments"] = this;
         }
 
         render(): void {
@@ -187,7 +186,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "EndlessScrollMarkComments";
+            return "MarkComments";
         }
 
     }

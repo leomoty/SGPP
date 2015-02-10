@@ -62,8 +62,11 @@ module ModuleDefinition {
             return dom.children('.comment');
         }
 
-        beforeAddItems(dom, page:number): void {
-            window["EndlessScrollMarkComments"].markComments(dom, page, true);
+        beforeAddItems(dom, page: number): void {
+            if ("MarkComments" in SGPP.modules) {
+                var MarkComments: any = SGPP.modules["MarkComments"];
+                MarkComments.markComments(dom, page, true);
+            }
         }
 
         name(): string {
