@@ -4,31 +4,34 @@ module ModuleDefinition{
 
     export class ScrollingSidebar implements SteamGiftsModule {
 
-        style = "";
+        style = ".ad{margin:0!important}";
 
         init(): void {
-           $('head').append("<style> \
-                                .sidebar--wide{min-width:329px!important}\
-                            </style>");
+            
         }
 
         render(): void {
 
-            //GoogleAds
             var side = $('.sidebar');
             var sideOuter = $(document.createElement('div')).addClass(side.attr('class'));
             var sideInner = side.wrapInner(sideOuter).children().first().addClass('SGPP__scrollingSidebar');
-            var sideAds = sideInner.find('.adsbygoogle');
-            var delayedAdSlider = (function () {
+
+            //GoogleAds
+            var sideAds = sideInner.children().first().css('text-align','center');
+            $(document).ready(() => {
+                if(sideAds.outerHeight(true) == 15)
+                    $('.sidebar__search-container').prev().addClass('ad');
+            });
+            var delayedAdSlider = (() => {
                 var timeout;
-                return function (up) {
+                return (up) => {
                     clearTimeout(timeout);
-                    timeout = setTimeout(function () {
+                    timeout = setTimeout(() => {
                         if (up)
                             sideAds.stop().slideUp()
                         else
                             sideAds.stop().slideDown();
-                    }, 500);
+                    }, 250);
                 }
             })();
 
@@ -39,6 +42,9 @@ module ModuleDefinition{
             var navbarOffset = $('header').outerHeight();
             var offset = 25 + (SGPP.modules['FixedNavbar'] != undefined ? navbarOffset : 0);
 
+            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document,() => {
+                featHeight = $('.featured__container').height();
+            });
 
             var handleScrolling = () => {
                 var winTop = $win.scrollTop();
