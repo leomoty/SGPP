@@ -1,4 +1,4 @@
-﻿/// <reference path="ModuleDefinition.ts" />
+﻿/// <reference path="../ModuleDefinition.ts" />
 
 module ModuleDefinition{
 
@@ -59,5 +59,4 @@ module ModuleDefinition{
         }
     }
 
-} 
-
+}

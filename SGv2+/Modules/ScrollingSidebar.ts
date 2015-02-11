@@ -1,47 +1,52 @@
-﻿/// <reference path="ModuleDefinition.ts" />
+﻿/// <reference path="../ModuleDefinition.ts" />
 
 module ModuleDefinition{
 
     export class ScrollingSidebar implements SteamGiftsModule {
 
-        style = "";
+        style = ".ad{margin:0!important}";
 
         init(): void {
-           
+            
         }
 
         render(): void {
+
             var side = $('.sidebar');
-            var sideInner = side.wrapInner(side).children().first().addClass('SGPP__scrollingSidebar');
-            var sideAds = side.find('.adsbygoogle');
+            var sideOuter = $(document.createElement('div')).addClass(side.attr('class'));
+            var sideInner = side.wrapInner(sideOuter).children().first().addClass('SGPP__scrollingSidebar');
+
+            //GoogleAds
+            var sideAds = sideInner.children().first().css('text-align','center');
+            $(document).ready(() => {
+                if(sideAds.outerHeight(true) == 15)
+                    $('.sidebar__search-container').prev().addClass('ad');
+            });
+            var delayedAdSlider = (() => {
+                var timeout;
+                return (up) => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        if (up)
+                            sideAds.stop().slideUp()
+                        else
+                            sideAds.stop().slideDown();
+                    }, 250);
+                }
+            })();
 
             var $win = $(window);
-            var $footer = $('.footer__outer-wrap');
-            var footerHeight = $footer.outerHeight();
+            var footerHeight = $('.footer__outer-wrap').outerHeight();
             var $widgetContainer = $('.page__inner-wrap .widget-container');
             var featHeight = $('.featured__container').height();
             var navbarOffset = $('header').outerHeight();
-            var offset = 25 + (SGPP.modules['FixedNavbar'].shouldRun(SGPP.location) ? navbarOffset : 0);
-
+            var offset = 25 + (SGPP.modules['FixedNavbar'] != undefined ? navbarOffset : 0);
 
             $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document,() => {
                 featHeight = $('.featured__container').height();
             });
 
-            var delayedAdSlider = (function () {
-                var timeout;
-                return function (up) {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(function () {
-                        if (up)
-                            sideAds.stop().slideUp()
-                        else
-                            sideAds.stop().slideDown();
-                    }, 500);
-                }
-            })();
-
-            var handleScrolling = function () {
+            var handleScrolling = () => {
                 var winTop = $win.scrollTop();
                 if (winTop + sideInner.height() >= $widgetContainer.position().top + $widgetContainer.height()) {
                     sideInner.css({
@@ -51,7 +56,7 @@ module ModuleDefinition{
                     });
                     delayedAdSlider(true);
 
-                } else if (winTop <= (featHeight + offset)) {
+                } else if (winTop <= featHeight) {
                     sideInner.css({
                         position: 'static',
                         top: '',
@@ -83,4 +88,4 @@ module ModuleDefinition{
         shouldRun = (location: SGLocation) => true;
     }
 
-} 
+}

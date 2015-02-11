@@ -1,4 +1,4 @@
-﻿/// <reference path="ModuleDefinition.ts" /> 
+﻿/// <reference path="../../ModuleDefinition.ts" /> 
 /// <reference path="EndlessScroll.ts" /> 
 
 
@@ -64,4 +64,4 @@ module ModuleDefinition {
         }
 
     }
-} 
+}

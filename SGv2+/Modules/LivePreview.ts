@@ -1,5 +1,5 @@
-﻿/// <reference path="ModuleDefinition.ts" />
-/// <reference path="Scripts/pagedown/MarkdownConverter.d.ts" />
+﻿/// <reference path="../ModuleDefinition.ts" />
+/// <reference path="../Scripts/pagedown/MarkdownConverter.d.ts" />
 
 module ModuleDefinition{
 
@@ -30,4 +30,4 @@ module ModuleDefinition{
         shouldRun = (location: SGLocation) => false;
     }
 
-} 
+}

@@ -1,4 +1,4 @@
-﻿/// <reference path="ModuleDefinition.ts" /> 
+﻿/// <reference path="../../ModuleDefinition.ts" /> 
 /// <reference path="EndlessScroll.ts" /> 
 
 module ModuleDefinition {
@@ -42,6 +42,10 @@ module ModuleDefinition {
             this.preparePage();
         }
 
+        get BaseUrl(): string {
+            return '/' + SGPP.location.pageKind + '/' + SGPP.location.code + '/' + SGPP.location.description;
+        }
+
         get reverseItems(): boolean {
             return true;
         }
@@ -58,8 +62,11 @@ module ModuleDefinition {
             return dom.children('.comment');
         }
 
-        beforeAddItems(dom): void {
-            window["EndlessScrollMarkComments"].markComments(dom, this.currentPage, true);
+        beforeAddItems(dom, page: number): void {
+            if ("MarkComments" in SGPP.modules) {
+                var MarkComments: any = SGPP.modules["MarkComments"];
+                MarkComments.markComments(dom, page, true);
+            }
         }
 
         name(): string {
@@ -67,4 +74,4 @@ module ModuleDefinition {
         }
 
     }
-} 
+}

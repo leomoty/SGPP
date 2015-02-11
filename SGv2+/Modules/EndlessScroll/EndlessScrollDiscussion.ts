@@ -1,4 +1,4 @@
-﻿/// <reference path="ModuleDefinition.ts" /> 
+﻿/// <reference path="../../ModuleDefinition.ts" /> 
 /// <reference path="EndlessScroll.ts" /> 
 
 module ModuleDefinition {
@@ -31,7 +31,10 @@ module ModuleDefinition {
         }
 
         beforeAddItems(dom): void {
-            window["EndlessScrollMarkComments"].markTopics(dom);
+            if ("MarkComments" in SGPP.modules) {
+                var MarkComments:any = SGPP.modules["MarkComments"];
+                MarkComments.markTopics(dom);
+            }
         }
 
         name(): string {
@@ -39,4 +42,4 @@ module ModuleDefinition {
         }
 
     }
-} 
+}
