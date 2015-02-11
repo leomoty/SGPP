@@ -6,7 +6,7 @@ module ModuleDefinition {
 
         style = "";
 
-        private settingsNavIcon: string = '<a class="nav__row SGPP__settings" href= "#">\n' +
+        private settingsNavIcon: string = '<a class="nav__row SGPP__settings">\n' +
             '<i class="icon-red fa fa-fw fa-bars"> </i>\n' +
             '<div class="nav__row__summary">\n' +
             '<p class="nav__row__summary__name" > SG++ Settings</p>\n' +
@@ -81,7 +81,6 @@ module ModuleDefinition {
 
         private handleSettingClick = () => {
             var popup: JQueryBPopup = $(".SGPP__settings_popup").bPopup({ opacity: .85, fadeSpeed: 200, followSpeed: 500, modalColor: "#3c424d" });
-            popup.reposition(500);
             $(".SGPP__settings_popup .SGPP__settings-checkbox").addClass("form__checkbox");
         };
         
