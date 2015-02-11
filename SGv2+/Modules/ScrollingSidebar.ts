@@ -4,7 +4,7 @@ module ModuleDefinition{
 
     export class ScrollingSidebar implements SteamGiftsModule {
 
-        style = ".ad{margin:0!important}";
+        style = "";
 
         init(): void {
             
@@ -15,13 +15,8 @@ module ModuleDefinition{
             var side = $('.sidebar');
             var sideOuter = $(document.createElement('div')).addClass(side.attr('class'));
             var sideInner = side.wrapInner(sideOuter).children().first().addClass('SGPP__scrollingSidebar');
+            var sideAds = sideInner.children('.adsbygoogle'); // GoogleAds
 
-            //GoogleAds
-            var sideAds = sideInner.children().first().css('text-align','center');
-            $(document).ready(() => {
-                if(sideAds.outerHeight(true) == 15)
-                    $('.sidebar__search-container').prev().addClass('ad');
-            });
             var delayedAdSlider = (() => {
                 var timeout;
                 return (up) => {
@@ -39,10 +34,16 @@ module ModuleDefinition{
             var footerHeight = $('.footer__outer-wrap').outerHeight();
             var $widgetContainer = $('.page__inner-wrap .widget-container');
             var featHeight = $('.featured__container').height();
-            var navbarOffset = $('header').outerHeight();
-            var offset = 25 + (SGPP.modules['FixedNavbar'] != undefined ? navbarOffset : 0);
+            var offset = 25; // space between .sidebar and .featured__container
+            var navHeight = 0;
 
-            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document,() => {
+            if (SGPP.modules['FixedNavbar'] !== undefined) {
+                offset += $('header').outerHeight();
+            } else {
+                navHeight += $('header').outerHeight();
+            }
+
+            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document, () => {
                 featHeight = $('.featured__container').height();
             });
 
@@ -56,7 +57,8 @@ module ModuleDefinition{
                     });
                     delayedAdSlider(true);
 
-                } else if (winTop <= featHeight) {
+                // } else if (winTop <= featHeight + navbarOffset) { // in case navbar is NOT fixed
+                } else if (winTop <= featHeight + navHeight) {
                     sideInner.css({
                         position: 'static',
                         top: '',
