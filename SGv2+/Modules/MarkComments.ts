@@ -180,7 +180,8 @@ module ModuleDefinition {
                         }
                     }
                 }
-                catch(err) {
+                catch (err) {
+                    // Not proper discussion link, can be skipped
                 }
             });
         }

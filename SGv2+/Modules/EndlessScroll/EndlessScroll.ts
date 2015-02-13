@@ -57,7 +57,19 @@ module ModuleDefinition {
             throw 'getItems() not implemented';
         }
 
-        createControlElement(el:JQuery): void {
+        createLoadingElement(): JQuery {
+            var el = $('<span class="endless_loading"> - <i class="fa fa-refresh fa-spin"></i> Loading...</span>');
+            return el;
+        }
+
+        createPageElement(page: number): JQuery {
+
+            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p><span class="endless_page"></span></p></div></div>');
+
+            var $p = el.find('p');
+
+            this.updatePageElement(el, page);
+
             var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
             var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
 
@@ -71,32 +83,23 @@ module ModuleDefinition {
 
             controlContainer.append(controlStartStop);
 
-            el.append(controlContainer);
-        }
-
-        createLoadingElement(): JQuery {
-            var el = $('<div class="table__heading loading_es"><div class="table__column--width-fill"><p><i class="fa fa-refresh fa-spin"></i> Loading next page...</p></div></div>');
-            this.createControlElement(el.find('p'));
+            $p.append(controlContainer);
 
             return el;
         }
 
-        createPageElement(page: number): JQuery {
-
-            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p></p></div></div>');
-
+        updatePageElement(el: JQuery, page: number) {
+            var text = '';
             if (page > 0) {
                 if (this._numberOfPages > 0)
-                    el.find('p').text('Page ' + page + ' of ' + this._numberOfPages);
+                    text = 'Page ' + page + ' of ' + this._numberOfPages;
                 else
-                    el.find('p').text('Page ' + page);
+                    text = 'Page ' + page;
             } else {
-                el.find('p').text('Last page ends here');
+                text = 'Last page ends here';
             }
 
-            this.createControlElement(el.find('p'));
-
-            return el;
+            el.find('.endless_page').text(text);
         }
 
         loadNextPage(): void {
@@ -141,8 +144,10 @@ module ModuleDefinition {
 
                 var pageContainer = this.createPageContainerElement();
                 var loadingElement = this.createLoadingElement();
+                var pageHeaderElement = this.createPageElement(page);
 
-                pageContainer.append(loadingElement);
+                pageHeaderElement.find('p').first().append(loadingElement);
+                pageContainer.append(pageHeaderElement);
 
                 this._pages[page] = {
                     element: pageContainer,
@@ -195,7 +200,8 @@ module ModuleDefinition {
 
                     this.addItems(itemsContainer, pageContainer, page);
 
-                    pageContainer.prepend(this.createPageElement(actualPage));
+                    // Ensure correct position for page header
+                    pageContainer.prepend(pageHeaderElement);
 
                     // Update navigation on page               
                     this.getNavigationElement(document).html(newPagination.html());
@@ -212,6 +218,7 @@ module ModuleDefinition {
                     }
 
                     if (actualPage != page) {
+                        this.updatePageElement(pageHeaderElement, actualPage);
                         this._pages[actualPage] = this._pages[page];  
                         delete this._pages[page];
                     }
