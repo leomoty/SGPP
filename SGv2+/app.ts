@@ -1,5 +1,6 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
-/// <reference path="Scripts/typings/jquery/jquery_bPopup.d.ts" />
+/// <reference path="Scripts/typings/jquery/jquery_bpopup.d.ts" />
+                                                    
 
 /// <reference path="Core.ts" />
 /// <reference path="ModuleDefinition.ts" />

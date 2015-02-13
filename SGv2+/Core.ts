@@ -48,6 +48,7 @@ module ModuleDefinition{
         style = "";
 
         init = () => {
+            this.log("Steamgifts++ plugin started.");
             //init SGLocation
             this.resolvePath();
 
