@@ -4,59 +4,52 @@ module ModuleDefinition{
 
     export class CommentAndEnter implements SteamGiftsModule {
 
-        style = "";
-
-        init(): void {
-        
-        }
-
-        render(): void {
-            $('.js__submit-form').after('<div class="sidebar__entry-insert comment_submit" style="margin-bottom:0px;">Comment and Enter</div>');
-            $('.comment_submit').on("click", function() {
-                var elem = $('.sidebar .sidebar__entry-insert');
-                elem.closest('form').find('.sidebar__entry-insert, .sidebar__entry-delete').addClass('is-hidden');
-                elem.closest('form').find('.sidebar__entry-loading').removeClass('is-hidden');
-                elem.closest('form').find('input[name=do]').val(elem.attr('data-do'));
-                $.ajax({
-                    url: '/ajax.php',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: elem.closest('form').serialize(),
-                    success: function(data) {
-                        elem.closest('form').find('.sidebar__entry-loading').addClass('is-hidden');
-                        if (data.type == 'success') {
-                            if (elem.hasClass('sidebar__entry-insert')) {
-                                elem.closest('form').find('.sidebar__entry-delete').removeClass('is-hidden');
-                            } else if (elem.hasClass('sidebar__entry-delete')) {
-                                elem.closest('form').find('.sidebar__entry-insert').removeClass('is-hidden');
-                            }
-                            if ($('.comment_submit').hasClass('js__edit-giveaway')) {
-                                $('.comment_submit').closest('form').find('input[name=next_step]').val("1");
-                            }
-                            $('.comment_submit').closest('form').submit();
-                            return false;
-                        } else if (data.type == 'error') {
-                            if (typeof data.link !== 'undefined' && data.link !== false) {
-                                elem.closest('form').html('<a href="' + data.link + '" class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + data.msg + '</a>');
-                            } else {
-                                elem.closest('form').html('<div class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + data.msg + '</div>');
-                            }
-                        }
-                        if (typeof data.entry_count !== 'undefined' && data.entry_count !== false) {
-                            $('.live__entry-count').text(data.entry_count);
-                        }
-                        $('.nav__points').text(data.points);
-                    }
-                });
-            });
-
+    	name(): string {
+            return "CommentAndEnter";
         }
 
         shouldRun = (location: SGLocation) => location.pageKind == 'giveaway' && location.subpage == '';
 
-        name(): string {
-            return "CommentAndEnter";
+        style = ".comment_submit{margin-bottom:0!important}";
+
+        init = () => {
+        
         }
+
+        render = () => {
+        	var submit = $('.js__submit-form');
+            submit.before('<div class="sidebar__entry-insert comment_submit is-hidden">Comment and Enter</div>');
+            submit.before('<div class="sidebar__entry-loading is-disabled is-hidden comment_submit"><i class="fa fa-refresh fa-spin"></i> Please wait...</div>');
+            var insert = $('.sidebar .sidebar__entry-insert');
+            var remove = $('.sidebar .sidebar__entry-delete');
+            var button = $('.comment_submit.sidebar__entry-insert');
+            var loading = $('.comment_submit.sidebar__entry-loading');
+            if(!insert.hasClass('is-hidden'))
+                button.removeClass('is-hidden');
+            insert.on('click', function() {
+                button.addClass('is-hidden');
+                loading.removeClass('is-hidden');
+            });
+            remove.on('click', function() {
+                loading.addClass('is-hidden');
+                button.removeClass('is-hidden');
+            });
+            button.on('click', function() {
+                insert.click();
+                button.addClass('is-hidden');
+                loading.removeClass('is-hidden');
+
+                var observer = new MutationObserver(function(mutations) {
+				    mutations.forEach(function(mutation) {
+				        if(!$(mutation.target).hasClass('is-hidden'))
+				        	submit.click();
+				    });    
+				});
+
+				observer.observe(remove[0], { attributes : true, attributeFilter : ['class'] });
+            });
+        }
+
     }
 
 }
