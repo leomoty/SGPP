@@ -23,18 +23,12 @@ module ModuleDefinition {
                 .append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x'))
         };
 
-        style = ".GAComm_pos, .GAComm_neg{margin-left:-3px;vertical-align:inherit}"+
-                ".GAComm_pos > i.fa.fa-check{color:#719A47}"+
-                ".GAComm_neg > i.fa.fa-times{color:rgba(166,93,92,0.85)}"+
-                ".GAComm_neg{color:rgba(166,93,92,0.85)}"+
-                ".GAComm_pos{color:#719A47}"+
-                ".GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times{font-size:0.7em}";
-
-        /*ToDo: readd CSS comments
-        // only interior
-        // only interior
-        // fully colored
-        // fully colored*/
+        style = ".GAComm_pos, .GAComm_neg {margin-left:-3px; vertical-align: inherit}\n" +
+            ".GAComm_pos > i.fa.fa-check {color: #719A47}\n" +                  // only interior
+            ".GAComm_neg > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" +  // only interior
+            // ".GAComm_neg {color: rgba(166, 93, 92, 0.85)}\n" +               // fully colored
+            // ".GAComm_pos {color: #719A47}\n" +                               // fully colored
+            ".GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times {font-size: 0.7em}";
 
         init(): void {}
 
