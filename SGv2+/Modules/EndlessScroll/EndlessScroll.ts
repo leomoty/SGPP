@@ -148,7 +148,7 @@ module ModuleDefinition {
                     element: pageContainer,
                     loaded: false,
                     loading: false,
-                    visible: true,
+                    visible: true
                 }
 
                 var elPage: JQuery = this._pages[target].element;
@@ -279,7 +279,7 @@ module ModuleDefinition {
                 element: itemsElement,
                 loaded: true,
                 loading: false,
-                visible: true,
+                visible: true
             };
 
             if (this.reverseItems) {

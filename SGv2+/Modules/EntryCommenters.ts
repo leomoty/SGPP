@@ -20,15 +20,15 @@ module ModuleDefinition {
                 .append($(document.createElement('i')).addClass('fa fa-check fa-stack-1x')),
             neg: $(document.createElement('span')).addClass('GAComm_neg fa-stack').attr('title', 'Did not comment')
                 .append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x'))
-                .append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x')),
+                .append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x'))
         };
 
-        style = ".GAComm_pos, .GAComm_neg{margin-left:-3px;vertical-align:inherit}\
-                .GAComm_pos > i.fa.fa-check{color:#719A47}\
-                .GAComm_neg > i.fa.fa-times{color:rgba(166,93,92,0.85)}\
-                .GAComm_neg{color:rgba(166,93,92,0.85)}\
-                .GAComm_pos{color:#719A47}\
-                .GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times{font-size:0.7em}";
+        style = ".GAComm_pos, .GAComm_neg{margin-left:-3px;vertical-align:inherit}"+
+                ".GAComm_pos > i.fa.fa-check{color:#719A47}"+
+                ".GAComm_neg > i.fa.fa-times{color:rgba(166,93,92,0.85)}"+
+                ".GAComm_neg{color:rgba(166,93,92,0.85)}"+
+                ".GAComm_pos{color:#719A47}"+
+                ".GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times{font-size:0.7em}";
 
         /*ToDo: readd CSS comments
         // only interior
