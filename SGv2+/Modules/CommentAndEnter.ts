@@ -43,7 +43,7 @@ module ModuleDefinition{
                 var observer = new MutationObserver(function (mutations) {
                     mutations.forEach(function (mutation) {
                         if (!$(mutation.target).hasClass('is-hidden'))
-                            $('.js__submit-form').hasClass("js__edit-giveaway") && $('.js__submit-form').closest("form").find("input[name=next_step]").val('1'), $('.js__submit-form').closest("form").submit(), !1
+                            submit.closest("form").submit()
                     });
                 });
 
