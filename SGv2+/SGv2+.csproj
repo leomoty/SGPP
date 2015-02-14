@@ -20,6 +20,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="Core.ts" />
+    <TypeScriptCompile Include="LocalStorage.ts" />
     <TypeScriptCompile Include="Modules\CommentAndEnter.ts" />
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScroll.ts" />
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollDiscussion.ts" />

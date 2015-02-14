@@ -87,7 +87,7 @@ module ModuleDefinition {
         private handleSaveSettings = () => {
             $('.SGPP__settings_popup input').each((index, element) => {
                 var input = $(element);
-                this.setItem(input.attr('name'), input.val());
+                SGPP.storage.setItem(input.attr('name'), input.val());
             });
         };
 
@@ -98,22 +98,10 @@ module ModuleDefinition {
         shouldRun = (location) => true;
 
         isModuleEnabled = (module: string) => {
-            return this.getItem(module) == "1";
+            return SGPP.storage.getItem(module) == "1";
         }
 
-        private _LSPrefix: string = "SGPP_";
-
-        containsItem = (key: string): boolean => {
-            return localStorage.getItem(this._LSPrefix + key) != null;
-        }
-
-        getItem = (key: string): any => {
-            return localStorage.getItem(this._LSPrefix + key);
-        }
-
-        setItem = (key: string, value: any): void => {
-            localStorage.setItem(this._LSPrefix + key, value);
-        }
+     
     }
 
 }

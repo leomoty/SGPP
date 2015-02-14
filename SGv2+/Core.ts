@@ -1,4 +1,5 @@
 ﻿/// <reference path="ModuleDefinition.ts" />
+/// <reference path="LocalStorage.ts" />
 
 module ModuleDefinition{
 
@@ -9,6 +10,7 @@ module ModuleDefinition{
         private _sgLocation: SGLocation;
         private _debug = true;
         private _settings: ModuleDefinition.Settings = new ModuleDefinition.Settings();
+        private _storage: ModuleDefinition.LocalStorage = new ModuleDefinition.LocalStorage();
 
         modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
 
@@ -22,6 +24,10 @@ module ModuleDefinition{
         
         get location(): SGLocation {
             return this._sgLocation;
+        }
+
+        get storage(): LocalStorage {
+            return this._storage;
         }
 
         log = (msg: string) => {
