@@ -76,10 +76,10 @@ module ModuleDefinition {
 
         private topicInfo: topicInfo;
 
-        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{background-color:rgba(180,180,222,0.1)}\
-                .endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}\
-                .endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}\
-                .endless_new_comments h3 a{color: black;}";
+        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{background-color:rgba(180,180,222,0.1)}"+
+                ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}"+
+                ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}"+
+                ".endless_new_comments h3 a{color: black;}";
 
         getDiscussionId(url:string): string {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
