@@ -321,6 +321,9 @@ module ModuleDefinition {
                     this.loadNextPage();
                 }
             });
+
+            // Ensure second page, when page fits the screen
+            $(window).scroll();
         }
 
     }
