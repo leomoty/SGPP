@@ -7,5 +7,5 @@ del temp.js
 
 del Steamgifts++.js
 type Monkeyheader.js >>Steamgifts++.js
-type temp2.js >>Steamgifts++.js
+type temp2.js >>SGPP.user.js
 del temp2.js
