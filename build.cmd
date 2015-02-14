@@ -1,4 +1,4 @@
-tsc --target ES5 --removeComments --out temp.js SGv2+\App.ts
+tsc --target ES5 --removeComments --out temp.js SGPP\App.ts
 
 pause
 

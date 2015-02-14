@@ -2,7 +2,7 @@
 # Makefile for compiling the project in Unix/Linux systems
 #
 
-INPUT=SGv2+/app.ts
+INPUT=SGPP/app.ts
 OUTPUT=Steamgifts++.js
 
 all:
