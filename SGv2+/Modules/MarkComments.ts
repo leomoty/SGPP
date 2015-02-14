@@ -27,7 +27,7 @@ module ModuleDefinition {
                 this._obj = {
                     lastVisit: Date.now(),
                     lastCommentIDPages: {},
-                    numberOfComments: 0,
+                    numberOfComments: 0
                 };
             }
         }
