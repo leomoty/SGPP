@@ -131,6 +131,23 @@ module ModuleDefinition {
             }
         }
 
+        // 
+        checkNewComments(dom, page: number): boolean {
+
+            var has_new = false;
+
+            $(dom).find('.comment[data-comment-id]').each((i, el) => {
+                var id = parseInt($(el).data('comment-id'));
+
+                if (this.topicInfo.isNewComment(page, id)) {
+                    has_new = true;
+                }
+
+            });
+
+            return has_new;
+        }
+
         markComments(dom, page: number, markRead: boolean = false): void {
 
             $(dom).find('.comment[data-comment-id]').each((i, el) => {
@@ -140,6 +157,12 @@ module ModuleDefinition {
                     $(el).addClass('endless_new');
                 } else {
                     $(el).addClass('endless_not_new');
+                }
+
+                if (this.checkNewComments(el, page)) {
+                    $(el).addClass('endless_new_children');
+                } else {
+                    $(el).addClass('endless_no_new_children');
                 }
 
             });
