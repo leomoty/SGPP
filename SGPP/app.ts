@@ -37,9 +37,21 @@ var modulesNames: Array<string> = new Array<string>(
     "EndlessScrollGiveaways",
     "EndlessScrollMyGiveaways",
     "EndlessScrollGiveawayComments"
-);
+    );
+
+var defaultModules: Array<string> = new Array<string>(
+    "FixedNavbar",
+    "ScrollingSidebar"
+    );
 
 (function ($) {
+
+    //enable default modules if no setting exists for them
+    for (var pos in defaultModules) {
+        if (!SGPP.storage.containsItem(defaultModules[pos])) {
+            SGPP.storage.setItem(defaultModules[pos], "1");
+        }
+    }
     
     //load needed modules into module list
     for (var pos in modulesNames) {
