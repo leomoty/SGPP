@@ -24,6 +24,7 @@ module ModuleDefinition{
             var remove = $('.sidebar .sidebar__entry-delete');
             var button = $('.comment_submit.sidebar__entry-insert');
             var loading = $('.comment_submit.sidebar__entry-loading');
+
             if(!insert.hasClass('is-hidden'))
                 button.removeClass('is-hidden');
             insert.on('click', function() {
@@ -39,14 +40,15 @@ module ModuleDefinition{
                 button.addClass('is-hidden');
                 loading.removeClass('is-hidden');
 
-                var observer = new MutationObserver(function(mutations) {
-				    mutations.forEach(function(mutation) {
-				        if(!$(mutation.target).hasClass('is-hidden'))
-				        	submit.click();
-				    });    
-				});
+                var observer = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                        if (!$(mutation.target).hasClass('is-hidden'))
+                            $('.js__submit-form').hasClass("js__edit-giveaway") && $('.js__submit-form').closest("form").find("input[name=next_step]").val('1'), $('.js__submit-form').closest("form").submit(), !1
+                    });
+                });
 
-				observer.observe(remove[0], { attributes : true, attributeFilter : ['class'] });
+                observer.observe(remove[0], { attributes: true, attributeFilter: ['class'] });
+
             });
         }
 
