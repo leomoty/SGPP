@@ -4,14 +4,15 @@ module ModuleDefinition{
 
     export class FixedNavbar implements SteamGiftsModule {
 
-        style = "body{padding-top:39px!important}"+
-                 "header{position:fixed;top:0;width:100%;z-index:100}";
+        style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" +
+            "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n";
 
         init(): void {
-            
         }
 
         render(): void {
+            $('body').addClass('SPGG_FixedNavbar');
+            $('header').addClass('SPGG_FixedNavbar');
         }
 
         name(): string {
