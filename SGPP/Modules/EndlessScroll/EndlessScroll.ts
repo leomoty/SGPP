@@ -281,6 +281,7 @@ module ModuleDefinition {
 
             var itemsElement = this.getItemsElement(document);
             var pageHeader = this.createPageElement(this.currentPage);
+            var isCommentLink = SGPP.location.hash != '';
 
             this._pages[this.currentPage] = {
                 element: itemsElement,
@@ -294,13 +295,14 @@ module ModuleDefinition {
                     itemsElement.prepend(el);
                 });
 
-                if (this._currentPage != this._lastPage && this._numberOfPages != -1) {
+                // Load last page if reversed and going to first page and not link to a comment
+                if (this._currentPage == 1 && this._numberOfPages != -1 && !isCommentLink) {
                     this._nextPage = this._lastPage;
                     this.loadNextPage();
 
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
-                } else if (this._currentPage != this._lastPage) {
+                } else if (this._currentPage == 1 && !isCommentLink) {
                     this._pagesUrl[this._maxPage] = this.BaseUrl + '/search?page=' + this._maxPage;
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
