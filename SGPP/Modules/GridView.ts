@@ -16,7 +16,7 @@ module ModuleDefinition {
                 ".tile_view_header{min-height:35px;margin-top:5px;font-size:12px}"+
                 ".tile_view_avatar_outer{float:right;display:inline-block;margin-left:5px}"+
                 ".tile_view_avatar{height:24px;width:24px;padding: 2px}"+
-                ".tile_view_faded{opacity:.65}"+
+                ".tile_view_faded{opacity:.4}"+
                 ".sidebar--wide{min-width:329px!important}";
 
         init = () => {
