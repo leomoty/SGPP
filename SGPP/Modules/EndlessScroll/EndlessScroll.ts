@@ -316,6 +316,12 @@ module ModuleDefinition {
 
             itemsElement.prepend(pageHeader);
 
+            if (isCommentLink) {
+                var linkedComment = $("#" + SGPP.location.hash);
+
+                $(window).scrollTop(linkedComment.position().top);
+            }
+
             $(window).scroll((event) => {
                 var scrollPos = $(window).scrollTop() + $(window).height();
 
