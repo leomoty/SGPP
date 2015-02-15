@@ -4,7 +4,7 @@ node_js:
 install:
   - "npm install -g typescript"
 script:
-  - "tsc --target ES5 --removeComments --out temp.js ./SGv2+/app.ts"
+  - "tsc --target ES5 --removeComments --out temp.js ./SGPP/app.ts"
 branches:
   only:
     - master

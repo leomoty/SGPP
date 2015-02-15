@@ -37,9 +37,21 @@ var modulesNames: Array<string> = new Array<string>(
     "EndlessScrollGiveaways",
     "EndlessScrollMyGiveaways",
     "EndlessScrollGiveawayComments"
-);
+    );
+
+var defaultModules: Array<string> = new Array<string>(
+    "FixedNavbar",
+    "ScrollingSidebar"
+    );
 
 (function ($) {
+
+    //enable default modules if no setting exists for them
+    for (var pos in defaultModules) {
+        if (!SGPP.storage.containsItem(defaultModules[pos])) {
+            SGPP.storage.setItem(defaultModules[pos], "1");
+        }
+    }
     
     //load needed modules into module list
     for (var pos in modulesNames) {
@@ -55,11 +67,11 @@ var modulesNames: Array<string> = new Array<string>(
     //load modules
     for (var module in SGPP.modules) {
         //append stylesheet for each module
-        SGPP.log("Module " + m.name() + " append css.");
+        SGPP.log("Module " + SGPP.modules[module].name() + " append css.");
         SGPP.appendCSS(SGPP.modules[module].style);
 
         //init each module
-        SGPP.log("Module " + m.name() + " init() call.");
+        SGPP.log("Module " + SGPP.modules[module].name() + " init() call.");
         SGPP.modules[module].init();
     }
 
@@ -71,6 +83,5 @@ var modulesNames: Array<string> = new Array<string>(
             SGPP.modules[module].render();
         }
     });
-
 
 })(jQuery);

@@ -27,7 +27,7 @@ module ModuleDefinition {
                 this._obj = {
                     lastVisit: Date.now(),
                     lastCommentIDPages: {},
-                    numberOfComments: 0,
+                    numberOfComments: 0
                 };
             }
         }
@@ -76,10 +76,10 @@ module ModuleDefinition {
 
         private topicInfo: topicInfo;
 
-        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{background-color:rgba(180,180,222,0.1)}\
-                .endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}\
-                .endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}\
-                .endless_badge_new {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}";
+        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{background-color:rgba(180,180,222,0.1)}"+
+                ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}"+
+                ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}"+
+                ".endless_badge_new {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}";
 
         getDiscussionId(url:string): string {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);

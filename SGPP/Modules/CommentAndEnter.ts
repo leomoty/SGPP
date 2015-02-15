@@ -42,8 +42,10 @@ module ModuleDefinition{
 
                 var observer = new MutationObserver(function (mutations) {
                     mutations.forEach(function (mutation) {
-                        if (!$(mutation.target).hasClass('is-hidden'))
+                        if (!$(mutation.target).hasClass('is-hidden')) {
+                            submit.closest("input[name=do]").val("comment_new");
                             submit.closest("form").submit()
+                        }
                     });
                 });
 
