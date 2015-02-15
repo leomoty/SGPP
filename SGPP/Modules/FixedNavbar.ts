@@ -14,11 +14,6 @@ module ModuleDefinition{
         render(): void {
             $('body').addClass('SPGG_FixedNavbar');
             $('header').addClass('SPGG_FixedNavbar');
-
-            if (SGPP.location.hash) { //should offset the scrolltop
-                var scrollTop = $(document).scrollTop();
-                $(document).scrollTop(scrollTop - 44);
-            }
         }
 
         name(): string {
