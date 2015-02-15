@@ -84,5 +84,4 @@ var defaultModules: Array<string> = new Array<string>(
         }
     });
 
-
 })(jQuery);
