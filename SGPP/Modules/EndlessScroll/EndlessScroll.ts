@@ -319,7 +319,7 @@ module ModuleDefinition {
             if (isCommentLink) {
                 var linkedComment = $("#" + SGPP.location.hash);
 
-                $(window).scrollTop(linkedComment.position().top - ("FixedNavbar" in SGPP.modules ? 44 : 0));
+                $(window).scrollTop(linkedComment.offset().top);
             }
 
             $(window).scroll((event) => {
