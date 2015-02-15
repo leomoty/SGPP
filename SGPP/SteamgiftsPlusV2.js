@@ -261,12 +261,14 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
         function FixedNavbar() {
-            this.style = "body{padding-top:39px!important}" + "header{position:fixed;top:0;width:100%;z-index:100}";
+            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" + "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + ".comment__summary { margin-top: -44px !important; padding-top: 48px !important; }\n";
             this.shouldRun = function (location) { return true; };
         }
         FixedNavbar.prototype.init = function () {
         };
         FixedNavbar.prototype.render = function () {
+            $('body').addClass('SPGG_FixedNavbar');
+            $('header').addClass('SPGG_FixedNavbar');
         };
         FixedNavbar.prototype.name = function () {
             return "FixedNavbar";
@@ -279,12 +281,15 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedFooter = (function () {
         function FixedFooter() {
-            this.style = "html, body{box-sizing:border-box;height:100%}" + ".page__outer-wrap{box-sizing:border-box;min-height:100%}" + ".offer__outer-wrap{padding-bottom:59px!important}" + ".footer__outer-wrap{position:fixed;bottom:0;width:100%;z-index:101;background-color:#95a4c0}";
+            this.style = "body.SGPP_FixedFooter {padding-bottom: 45px}\n" + ".footer__outer-wrap.SGPP_FixedFooter_outerWrap {padding: 15px 0px; z-index: 100; bottom: 0px; position: fixed; width: 100%; background: inherit}\n" + ".footer__inner-wrap.SGPP_FixedFooter_innerWrap {margin: 0px 25px}\n";
             this.shouldRun = function (location) { return true; };
         }
         FixedFooter.prototype.init = function () {
         };
         FixedFooter.prototype.render = function () {
+            $('body').addClass('SGPP_FixedFooter');
+            $('.footer__outer-wrap').addClass('SGPP_FixedFooter_outerWrap');
+            $('.footer__inner-wrap').addClass('SGPP_FixedFooter_innerWrap');
         };
         FixedFooter.prototype.name = function () {
             return "FixedFooter";
@@ -613,7 +618,7 @@ var ModuleDefinition;
     })();
     var MarkComments = (function () {
         function MarkComments() {
-            this.style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{background-color:rgba(180,180,222,0.1)}" + ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" + ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" + ".endless_badge_new {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}";
+            this.style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" + ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" + ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" + ".endless_badge_new {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}";
         }
         MarkComments.prototype.getDiscussionId = function (url) {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
@@ -670,6 +675,7 @@ var ModuleDefinition;
                 var id = parseInt($(el).data('comment-id'));
                 if (_this.topicInfo.isNewComment(page, id)) {
                     $(el).addClass('endless_new');
+                    $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
                 }
                 else {
                     $(el).addClass('endless_not_new');
@@ -795,6 +801,7 @@ var ModuleDefinition;
         };
         EndlessScroll.prototype.createPageElement = function (page) {
             var _this = this;
+            console.log(page);
             var el = $('<div class="table__heading"><div class="table__column--width-fill"><p><span class="endless_page"></span></p></div></div>');
             var $p = el.find('p');
             this.updatePageElement(el, page);
@@ -950,6 +957,7 @@ var ModuleDefinition;
             if (!this.hasPages(document)) {
                 this._currentPage = 1;
                 this._lastPage = 1;
+                this._numberOfPages = 1;
             }
             else {
                 this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
@@ -957,6 +965,7 @@ var ModuleDefinition;
             }
             var itemsElement = this.getItemsElement(document);
             var pageHeader = this.createPageElement(this.currentPage);
+            var isCommentLink = SGPP.location.hash != '';
             this._pages[this.currentPage] = {
                 element: itemsElement,
                 loaded: true,
@@ -967,13 +976,13 @@ var ModuleDefinition;
                 this.getItems(itemsElement).each(function (i, el) {
                     itemsElement.prepend(el);
                 });
-                if (this._currentPage != this._lastPage && this._numberOfPages != -1) {
+                if (this._currentPage == 1 && this._numberOfPages > 1 && !isCommentLink) {
                     this._nextPage = this._lastPage;
                     this.loadNextPage();
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
                 }
-                else if (this._currentPage != this._lastPage) {
+                else if (this._currentPage == 1 && this._numberOfPages == -1 && !isCommentLink) {
                     this._pagesUrl[this._maxPage] = this.BaseUrl + '/search?page=' + this._maxPage;
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
@@ -987,6 +996,10 @@ var ModuleDefinition;
                 this._nextPage = this._currentPage + 1;
             }
             itemsElement.prepend(pageHeader);
+            if (isCommentLink) {
+                var linkedComment = $("#" + SGPP.location.hash);
+                $(window).scrollTop(linkedComment.offset().top);
+            }
             $(window).scroll(function (event) {
                 var scrollPos = $(window).scrollTop() + $(window).height();
                 if (scrollPos > $('div.pagination').position().top - 200) {

@@ -273,6 +273,7 @@ module ModuleDefinition {
             if (!this.hasPages(document)) {
                 this._currentPage = 1;
                 this._lastPage = 1;
+                this._numberOfPages = 1;
             } else {
                 this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
 
@@ -296,13 +297,13 @@ module ModuleDefinition {
                 });
 
                 // Load last page if reversed and going to first page and not link to a comment
-                if (this._currentPage == 1 && this._numberOfPages != -1 && !isCommentLink) {
+                if (this._currentPage == 1 && this._numberOfPages > 1 && !isCommentLink) {
                     this._nextPage = this._lastPage;
                     this.loadNextPage();
 
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
-                } else if (this._currentPage == 1 && !isCommentLink) {
+                } else if (this._currentPage == 1 && this._numberOfPages == -1 && !isCommentLink) {
                     this._pagesUrl[this._maxPage] = this.BaseUrl + '/search?page=' + this._maxPage;
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
