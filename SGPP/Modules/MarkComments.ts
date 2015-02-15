@@ -76,7 +76,7 @@ module ModuleDefinition {
 
         private topicInfo: topicInfo;
 
-        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{background-color:rgba(180,180,222,0.1)}"+
+        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}"+
                 ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}"+
                 ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}"+
                 ".endless_badge_new {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}";
@@ -155,6 +155,8 @@ module ModuleDefinition {
 
                 if (this.topicInfo.isNewComment(page, id)) {
                     $(el).addClass('endless_new');
+
+                    $(el).find('.comment__username a').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
                 } else {
                     $(el).addClass('endless_not_new');
                 }

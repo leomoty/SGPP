@@ -6,7 +6,7 @@ module ModuleDefinition{
 
         style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" +
         "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + 
-        ".comment__summary { margin-top: -44px; padding-top: 48px; }\n";
+        ".comment__summary { margin-top: -44px !important; padding-top: 48px !important; }\n";
 
         init(): void {
         }
