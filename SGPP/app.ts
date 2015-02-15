@@ -67,11 +67,11 @@ var defaultModules: Array<string> = new Array<string>(
     //load modules
     for (var module in SGPP.modules) {
         //append stylesheet for each module
-        SGPP.log("Module " + m.name() + " append css.");
+        SGPP.log("Module " + SGPP.modules[module].name() + " append css.");
         SGPP.appendCSS(SGPP.modules[module].style);
 
         //init each module
-        SGPP.log("Module " + m.name() + " init() call.");
+        SGPP.log("Module " + SGPP.modules[module].name() + " init() call.");
         SGPP.modules[module].init();
     }
 
