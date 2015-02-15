@@ -156,7 +156,7 @@ module ModuleDefinition {
                 if (this.topicInfo.isNewComment(page, id)) {
                     $(el).addClass('endless_new');
 
-                    $(el).find('.comment__username a').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
+                    $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
                 } else {
                     $(el).addClass('endless_not_new');
                 }
