@@ -261,7 +261,7 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
         function FixedNavbar() {
-            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" + "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + ".comment__summary { margin-top: -44px !important; padding-top: 48px !important; }\n";
+            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" + "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + ".comment__summary { margin-top: -44px !important; padding-top: 48px !important; }\n" + "a { position: relative; z-index: 99; } ";
             this.shouldRun = function (location) { return true; };
         }
         FixedNavbar.prototype.init = function () {
@@ -801,7 +801,6 @@ var ModuleDefinition;
         };
         EndlessScroll.prototype.createPageElement = function (page) {
             var _this = this;
-            console.log(page);
             var el = $('<div class="table__heading"><div class="table__column--width-fill"><p><span class="endless_page"></span></p></div></div>');
             var $p = el.find('p');
             this.updatePageElement(el, page);
