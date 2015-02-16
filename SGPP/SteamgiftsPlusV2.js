@@ -184,14 +184,9 @@ var ModuleDefinition;
                 button: $(document.createElement('i')).addClass('giveaway__icon fa fa-comments-o').attr('title', 'Check who commented'),
                 loader: $(document.createElement('i')).addClass('giveaway__icon fa fa-refresh fa-spin').attr('title', 'loading comments').css('cursor', 'auto'),
                 pos: $(document.createElement('span')).addClass('GAComm_pos fa-stack').attr('title', 'Commented').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x')).append($(document.createElement('i')).addClass('fa fa-check fa-stack-1x')),
-                neg: $(document.createElement('span')).addClass('GAComm_neg fa-stack').attr('title', 'Did not comment').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x')).append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x')),
+                neg: $(document.createElement('span')).addClass('GAComm_neg fa-stack').attr('title', 'Did not comment').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x')).append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x'))
             };
-            this.style = ".GAComm_pos, .GAComm_neg{margin-left:-3px;vertical-align:inherit}\
-                .GAComm_pos > i.fa.fa-check{color:#719A47}\
-                .GAComm_neg > i.fa.fa-times{color:rgba(166,93,92,0.85)}\
-                .GAComm_neg{color:rgba(166,93,92,0.85)}\
-                .GAComm_pos{color:#719A47}\
-                .GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times{font-size:0.7em}";
+            this.style = ".GAComm_pos, .GAComm_neg {margin-left:-3px; vertical-align: inherit}\n" + ".GAComm_pos > i.fa.fa-check {color: #719A47}\n" + ".GAComm_neg > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" + ".GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times {font-size: 0.7em}";
             this.render = function () {
                 _this.elements.button.click(_this.main);
                 $('.page__heading__breadcrumbs').append(_this.elements.button);
@@ -266,13 +261,14 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
         function FixedNavbar() {
-            this.style = "body{padding-top:39px!important}\
-                 header{position:fixed;top:0;width:100%;z-index:100}";
+            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" + "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + ".comment__summary { margin-top: -44px !important; padding-top: 48px !important; }\n" + "a { position: relative; z-index: 99; } ";
             this.shouldRun = function (location) { return true; };
         }
         FixedNavbar.prototype.init = function () {
         };
         FixedNavbar.prototype.render = function () {
+            $('body').addClass('SPGG_FixedNavbar');
+            $('header').addClass('SPGG_FixedNavbar');
         };
         FixedNavbar.prototype.name = function () {
             return "FixedNavbar";
@@ -285,14 +281,15 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedFooter = (function () {
         function FixedFooter() {
-            this.style = "html, body{box-sizing:border-box;height:100%}\
-                    .page__outer-wrap{box-sizing:border-box;min-height:100%;padding-bottom:84px!important}\
-                    .footer__outer-wrap{position:fixed;bottom:0;width:100%;z-index:101;background-color:#95a4c0}";
+            this.style = "body.SGPP_FixedFooter {padding-bottom: 45px}\n" + ".footer__outer-wrap.SGPP_FixedFooter_outerWrap {padding: 15px 0px; z-index: 100; bottom: 0px; position: fixed; width: 100%; background: inherit}\n" + ".footer__inner-wrap.SGPP_FixedFooter_innerWrap {margin: 0px 25px}\n";
             this.shouldRun = function (location) { return true; };
         }
         FixedFooter.prototype.init = function () {
         };
         FixedFooter.prototype.render = function () {
+            $('body').addClass('SGPP_FixedFooter');
+            $('.footer__outer-wrap').addClass('SGPP_FixedFooter_outerWrap');
+            $('.footer__inner-wrap').addClass('SGPP_FixedFooter_innerWrap');
         };
         FixedFooter.prototype.name = function () {
             return "FixedFooter";
@@ -307,14 +304,7 @@ var ModuleDefinition;
         function GridView() {
             var _this = this;
             this.shouldRun = function (location) { return location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1; };
-            this.style = ".gridview_flex{display:flex;flex-wrap:wrap;justify-content:center;margin:0 -5px;}\
-                .global__image-outer-wrap--missing-image {height:69px!important}\
-                .preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,1);border:1px solid #cbcfdb;padding:5px; z-index:10;}\
-                .tile_view_header{min-height:35px;margin-top:5px;font-size:12px}\
-                .tile_view_avatar_outer{float:right;display:inline-block;margin-left:5px}\
-                .tile_view_avatar{height:24px;width:24px;padding: 2px}\
-                .tile_view_faded{opacity:.65}\
-                .sidebar--wide{min-width:329px!important}";
+            this.style = ".gridview_flex{display:flex;flex-wrap:wrap;justify-content:center;margin:0 -5px;}" + ".global__image-outer-wrap--missing-image {height:69px!important}" + ".preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,1);border:1px solid #cbcfdb;padding:5px; z-index:10;}" + ".tile_view_header{min-height:35px;margin-top:5px;font-size:12px}" + ".tile_view_avatar_outer{float:right;display:inline-block;margin-left:5px}" + ".tile_view_avatar{height:24px;width:24px;padding: 2px}" + ".tile_view_faded{opacity:.4}" + ".sidebar--wide{min-width:329px!important}";
             this.init = function () {
             };
             this.render = function () {
@@ -581,7 +571,7 @@ var ModuleDefinition;
                 this._obj = {
                     lastVisit: Date.now(),
                     lastCommentIDPages: {},
-                    numberOfComments: 0,
+                    numberOfComments: 0
                 };
             }
         }
@@ -628,10 +618,7 @@ var ModuleDefinition;
     })();
     var MarkComments = (function () {
         function MarkComments() {
-            this.style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{background-color:rgba(180,180,222,0.1)}\
-                .endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}\
-                .endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}\
-                .endless_new_comments h3 a{color: black;}";
+            this.style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" + ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" + ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" + ".endless_badge_new {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}";
         }
         MarkComments.prototype.getDiscussionId = function (url) {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
@@ -670,6 +657,17 @@ var ModuleDefinition;
                 this.markTopics($('.widget-container').last().prev().prev());
             }
         };
+        MarkComments.prototype.checkNewComments = function (dom, page) {
+            var _this = this;
+            var has_new = false;
+            $(dom).find('.comment[data-comment-id]').each(function (i, el) {
+                var id = parseInt($(el).data('comment-id'));
+                if (_this.topicInfo.isNewComment(page, id)) {
+                    has_new = true;
+                }
+            });
+            return has_new;
+        };
         MarkComments.prototype.markComments = function (dom, page, markRead) {
             var _this = this;
             if (markRead === void 0) { markRead = false; }
@@ -677,9 +675,16 @@ var ModuleDefinition;
                 var id = parseInt($(el).data('comment-id'));
                 if (_this.topicInfo.isNewComment(page, id)) {
                     $(el).addClass('endless_new');
+                    $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
                 }
                 else {
                     $(el).addClass('endless_not_new');
+                }
+                if (_this.checkNewComments(el, page)) {
+                    $(el).addClass('endless_new_children');
+                }
+                else {
+                    $(el).addClass('endless_no_new_children');
                 }
             });
             if (markRead) {
@@ -702,7 +707,10 @@ var ModuleDefinition;
                         var newComments = numComments - lastComments;
                         if (newComments > 0) {
                             $(el).addClass('endless_new_comments');
-                            $(el).find('.table__column--width-fill > p').first().append(' - <strong>' + newComments + ' new comments</strong>');
+                            if (true)
+                                link.after($('<span>').addClass('endless_badge_new').text(newComments).attr('title', newComments + ' new comments since last visit'));
+                            else
+                                $(el).find('.table__column--width-fill > p').first().append(' - <strong>' + newComments + ' new comments</strong>');
                         }
                         else {
                             $(el).addClass('endless_no_new_comments');
@@ -787,8 +795,15 @@ var ModuleDefinition;
         EndlessScroll.prototype.getItems = function (dom) {
             throw 'getItems() not implemented';
         };
-        EndlessScroll.prototype.createControlElement = function (el) {
+        EndlessScroll.prototype.createLoadingElement = function () {
+            var el = $('<span class="endless_loading"> - <i class="fa fa-refresh fa-spin"></i> Loading...</span>');
+            return el;
+        };
+        EndlessScroll.prototype.createPageElement = function (page) {
             var _this = this;
+            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p><span class="endless_page"></span></p></div></div>');
+            var $p = el.find('p');
+            this.updatePageElement(el, page);
             var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
             var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
             controlStartStop.click(function () {
@@ -797,26 +812,21 @@ var ModuleDefinition;
                 return false;
             });
             controlContainer.append(controlStartStop);
-            el.append(controlContainer);
-        };
-        EndlessScroll.prototype.createLoadingElement = function () {
-            var el = $('<div class="table__heading loading_es"><div class="table__column--width-fill"><p><i class="fa fa-refresh fa-spin"></i> Loading next page...</p></div></div>');
-            this.createControlElement(el.find('p'));
+            $p.append(controlContainer);
             return el;
         };
-        EndlessScroll.prototype.createPageElement = function (page) {
-            var el = $('<div class="table__heading"><div class="table__column--width-fill"><p></p></div></div>');
+        EndlessScroll.prototype.updatePageElement = function (el, page) {
+            var text = '';
             if (page > 0) {
                 if (this._numberOfPages > 0)
-                    el.find('p').text('Page ' + page + ' of ' + this._numberOfPages);
+                    text = 'Page ' + page + ' of ' + this._numberOfPages;
                 else
-                    el.find('p').text('Page ' + page);
+                    text = 'Page ' + page;
             }
             else {
-                el.find('p').text('Last page ends here');
+                text = 'Last page ends here';
             }
-            this.createControlElement(el.find('p'));
-            return el;
+            el.find('.endless_page').text(text);
         };
         EndlessScroll.prototype.loadNextPage = function () {
             if (this._stopped) {
@@ -851,12 +861,14 @@ var ModuleDefinition;
                 });
                 var pageContainer = this.createPageContainerElement();
                 var loadingElement = this.createLoadingElement();
-                pageContainer.append(loadingElement);
+                var pageHeaderElement = this.createPageElement(page);
+                pageHeaderElement.find('p').first().append(loadingElement);
+                pageContainer.append(pageHeaderElement);
                 this._pages[page] = {
                     element: pageContainer,
                     loaded: false,
                     loading: false,
-                    visible: true,
+                    visible: true
                 };
                 var elPage = this._pages[target].element;
                 if ((target < page && !this.reverseItems) || (target > page && this.reverseItems)) {
@@ -890,7 +902,7 @@ var ModuleDefinition;
                     var actualPage = parseInt(newPagination.find('a.is-selected').data('page-number'));
                     _this.parseNavigation(newPagination);
                     _this.addItems(itemsContainer, pageContainer, page);
-                    pageContainer.prepend(_this.createPageElement(actualPage));
+                    pageContainer.prepend(pageHeaderElement);
                     _this.getNavigationElement(document).html(newPagination.html());
                     _this.afterAddItems(pageContainer, page);
                     _this._pages[page].loaded = true;
@@ -899,6 +911,7 @@ var ModuleDefinition;
                         _this.updateNextPage(actualPage);
                     }
                     if (actualPage != page) {
+                        _this.updatePageElement(pageHeaderElement, actualPage);
                         _this._pages[actualPage] = _this._pages[page];
                         delete _this._pages[page];
                     }
@@ -943,6 +956,7 @@ var ModuleDefinition;
             if (!this.hasPages(document)) {
                 this._currentPage = 1;
                 this._lastPage = 1;
+                this._numberOfPages = 1;
             }
             else {
                 this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
@@ -950,23 +964,24 @@ var ModuleDefinition;
             }
             var itemsElement = this.getItemsElement(document);
             var pageHeader = this.createPageElement(this.currentPage);
+            var isCommentLink = SGPP.location.hash != '';
             this._pages[this.currentPage] = {
                 element: itemsElement,
                 loaded: true,
                 loading: false,
-                visible: true,
+                visible: true
             };
             if (this.reverseItems) {
                 this.getItems(itemsElement).each(function (i, el) {
                     itemsElement.prepend(el);
                 });
-                if (this._currentPage != this._lastPage && this._numberOfPages != -1) {
+                if (this._currentPage == 1 && this._numberOfPages > 1 && !isCommentLink) {
                     this._nextPage = this._lastPage;
                     this.loadNextPage();
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
                 }
-                else if (this._currentPage != this._lastPage) {
+                else if (this._currentPage == 1 && this._numberOfPages == -1 && !isCommentLink) {
                     this._pagesUrl[this._maxPage] = this.BaseUrl + '/search?page=' + this._maxPage;
                     this._pages[this.currentPage].visible = false;
                     itemsElement.hide();
@@ -980,12 +995,17 @@ var ModuleDefinition;
                 this._nextPage = this._currentPage + 1;
             }
             itemsElement.prepend(pageHeader);
+            if (isCommentLink) {
+                var linkedComment = $("#" + SGPP.location.hash);
+                $(window).scrollTop(linkedComment.offset().top);
+            }
             $(window).scroll(function (event) {
                 var scrollPos = $(window).scrollTop() + $(window).height();
                 if (scrollPos > $('div.pagination').position().top - 200) {
                     _this.loadNextPage();
                 }
             });
+            $(window).scroll();
         };
         return EndlessScroll;
     })();
@@ -1213,6 +1233,9 @@ var ModuleDefinition;
             if (SGPP.location.pageKind == 'giveaways') {
                 return SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won';
             }
+            else if (SGPP.location.pageKind == 'bundle-games') {
+                return true;
+            }
             else if (SGPP.location.pageKind == 'giveaway') {
                 return SGPP.location.subpage == 'entries' || SGPP.location.subpage == 'winners' || SGPP.location.subpage == 'groups';
             }
@@ -1262,16 +1285,22 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var SGPP = new ModuleDefinition.Core();
 var modulesNames = new Array("CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "MarkComments", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
+var defaultModules = new Array("FixedNavbar", "ScrollingSidebar");
 (function ($) {
+    for (var pos in defaultModules) {
+        if (!SGPP.storage.containsItem(defaultModules[pos])) {
+            SGPP.storage.setItem(defaultModules[pos], "1");
+        }
+    }
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         if (SGPP.settings.isModuleEnabled(modulesNames[pos]) && m.shouldRun(SGPP.location))
             SGPP.modules[m.name()] = m;
     }
     for (var module in SGPP.modules) {
-        SGPP.log("Module " + m.name() + " append css.");
+        SGPP.log("Module " + SGPP.modules[module].name() + " append css.");
         SGPP.appendCSS(SGPP.modules[module].style);
-        SGPP.log("Module " + m.name() + " init() call.");
+        SGPP.log("Module " + SGPP.modules[module].name() + " init() call.");
         SGPP.modules[module].init();
     }
     $(document).on("DOMContentLoaded", function () {
