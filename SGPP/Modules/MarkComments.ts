@@ -22,11 +22,16 @@ module ModuleDefinition {
                     this._obj.lastSeenPage = 0;
                 }
 
+                if (!("collapsed" in this._obj)) {
+                    this._obj.collapsed = {};
+                }
+
                 this._isDataStored = true;
             } else {
                 this._obj = {
                     lastVisit: Date.now(),
                     lastCommentIDPages: {},
+                    collapsed: {},
                     numberOfComments: 0
                 };
             }
@@ -42,6 +47,20 @@ module ModuleDefinition {
 
         public getNumComments(): number {
             return this._obj.numberOfComments;
+        }
+
+        public setCommentState(id: number, collapsed:boolean): void {
+            if (!collapsed) {
+                delete this._obj.collapsed[id];
+            } else {
+                this._obj.collapsed[id] = 1;
+            }
+
+            this.save();
+        }
+
+        public getCommentState(id: number): boolean {
+            return id in this._obj.collapsed;
         }
 
         public setLastVisit(): void {
@@ -79,7 +98,9 @@ module ModuleDefinition {
         style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}"+
                 ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}"+
                 ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}"+
-                ".endless_badge_new {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}";
+                ".endless_badge_new, .endless_badge_new_child {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}" +
+                ".endless_badge_new_child { display: none; }" + 
+                ".comment--collapsed .endless_badge_new_child { display: block; }";
 
         getDiscussionId(url:string): string {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
@@ -122,6 +143,24 @@ module ModuleDefinition {
                 this.markComments(document, page, true);
 
                 this.topicInfo.setLastVisit();
+
+                var m = this;
+
+                $("body").on('click', '.comment__collapse-button', function () {
+                    var $this = $(this);
+                    var parent = $this.parents('.comment');
+                    var comment_id = parseInt(parent.data('comment-id'));
+
+                    m.topicInfo.setCommentState(comment_id, true);
+                });
+
+                $("body").on('click', '.comment__expand-button', function () {
+                    var $this = $(this);
+                    var parent = $this.parents('.comment');
+                    var comment_id = parseInt(parent.data('comment-id'));
+
+                    m.topicInfo.setCommentState(comment_id, false);
+                });
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics(document);
@@ -153,7 +192,14 @@ module ModuleDefinition {
             $(dom).find('.comment[data-comment-id]').each((i, el) => {
                 var id = parseInt($(el).data('comment-id'));
 
-                if (this.topicInfo.isNewComment(page, id)) {
+                var is_new = this.topicInfo.isNewComment(page, id);
+                var collapsed = this.topicInfo.getCommentState(id);
+
+                if (collapsed) {
+                    $(el).addClass('comment--collapsed');
+                }
+
+                if (is_new) {
                     $(el).addClass('endless_new');
 
                     $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
@@ -162,11 +208,15 @@ module ModuleDefinition {
                 }
 
                 if (this.checkNewComments(el, page)) {
+
+                    if (!is_new) {
+                        $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new_child').text('New replies').attr('title', 'New since last visit'));
+                    }
+
                     $(el).addClass('endless_new_children');
                 } else {
                     $(el).addClass('endless_no_new_children');
                 }
-
             });
 
             if (markRead) {
