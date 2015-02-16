@@ -79,7 +79,9 @@ module ModuleDefinition {
         style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}"+
                 ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}"+
                 ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}"+
-                ".endless_badge_new {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}";
+                ".endless_badge_new, .endless_badge_new_child {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}" +
+                ".endless_badge_new_child { display: none; }" + 
+                ".comment--collapsed .endless_badge_new_child { display: block; }";
 
         getDiscussionId(url:string): string {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
@@ -153,7 +155,9 @@ module ModuleDefinition {
             $(dom).find('.comment[data-comment-id]').each((i, el) => {
                 var id = parseInt($(el).data('comment-id'));
 
-                if (this.topicInfo.isNewComment(page, id)) {
+                var is_new = this.topicInfo.isNewComment(page, id);
+
+                if (is_new) {
                     $(el).addClass('endless_new');
 
                     $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
@@ -162,11 +166,15 @@ module ModuleDefinition {
                 }
 
                 if (this.checkNewComments(el, page)) {
+
+                    if (!is_new) {
+                        $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new_child').text('New replies').attr('title', 'New since last visit'));
+                    }
+
                     $(el).addClass('endless_new_children');
                 } else {
                     $(el).addClass('endless_no_new_children');
                 }
-
             });
 
             if (markRead) {
