@@ -85,6 +85,12 @@ module ModuleDefinition{
             );
 
             bubble.append(loading);
+            bubble.hover(function() {
+                bubble.stop(true).fadeIn('fast');
+            }, function() {
+                delayedBubble.close();
+            });
+
 
             var delayedBubble = {
                 timeout: null,
@@ -123,41 +129,36 @@ module ModuleDefinition{
                 }
             };
 
-            $('a[href^="/user/"]:not(.nav__avatar-outer-wrap)').hover(function(e) {
-                var $el = $(e.target);
-                
-                if ($el.attr('href').split('/').length > 3 || $el.prop('href') == document.URL)
-                    return;
+            $(document).on({
+                mouseenter: function(e) {
+                    var $el = $(e.target);
+                    
+                    if ($el.attr('href').split('/').length > 3 || $el.prop('href') == document.URL)
+                        return;
 
-                var pos = $el.offset();
-                var style;
-                var winWidth = $(window).width();
-                var right = e.target.getBoundingClientRect().left > winWidth / 2;
-                if (right) {
-                    style = {
-                        top: pos.top + ($el.height() / 2) - 25,
-                        right: winWidth - pos.left + 20,
-                        left: ''
-                    };
-                } else {
-                    style = {
-                        top: pos.top + ($el.height() / 2) - 25,
-                        left: pos.left + $el.width() + 20,
-                        right: ''
-                    };
-                }
+                    var pos = $el.offset();
+                    var style;
+                    var winWidth = $(window).width();
+                    var right = e.target.getBoundingClientRect().left > winWidth / 2;
+                    if (right) {
+                        style = {
+                            top: pos.top + ($el.height() / 2) - 25,
+                            right: winWidth - pos.left + 20,
+                            left: ''
+                        };
+                    } else {
+                        style = {
+                            top: pos.top + ($el.height() / 2) - 25,
+                            left: pos.left + $el.width() + 20,
+                            right: ''
+                        };
+                    }
 
-                delayedBubble.run($el.attr('href'), style, right);
+                    delayedBubble.run($el.attr('href'), style, right);
+                },
+                mouseleave: function() {delayedBubble.close();}
+            }, 'a[href^="/user/"]:not(.nav__avatar-outer-wrap)');
 
-            }, function() {
-                delayedBubble.close();
-            });
-
-            bubble.hover(function() {
-                bubble.stop(true).fadeIn('fast');
-            }, function() {
-                delayedBubble.close();
-            });
         }
 
         name(): string {
