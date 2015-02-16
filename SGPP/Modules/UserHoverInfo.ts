@@ -7,38 +7,38 @@ module ModuleDefinition{
         style = '.SGPP_UserInfo_balloon {position: absolute; border: solid 2px black; z-index: 99; min-width: 200px; border-radius: 3px; min-height: 100px; background-color: inherit}\n' +
             '.SGPP_UserInfo_balloon:after {position: absolute; right: 100%; top: 5px; content: ""; height: 0; width: 0; border-style: solid; border-color: transparent black; border-width: 15px 20px 15px 0px}\n' +
             '.SGPP_UserInfo_balloon.right:after {right: -20px; border-width: 15px 0 15px 20px}\n' +
+
+            '.SGPP_UserInfo_balloon .featured__outer-wrap.featured__outer-wrap--user {width: auto; padding: 15px 0}\n' +
+            '.SGPP_UserInfo_balloon .featured__heading i {font-size: inherit}\n' +
+            
+            // smaller table
             '.SGPP_UserInfo_balloon .featured__table__column {width: 175px}\n' +
             '.SGPP_UserInfo_balloon .featured__table .featured__table__row {padding: 5px 0px}\n' +
             '.SGPP_UserInfo_balloon .featured__table__column:not(:first-child) {margin-left: 15px}\n' +
-            '.SGPP_UserInfo_balloon .featured__heading i {font-size: inherit}\n' +
+            
+            // avatar
+            '.SGPP_UserInfo_balloon .featured__outer-wrap .global__image-outer-wrap {float: left; margin: 10px 7px 0px 0px; padding: 2px; width: 48px; height: 48px}\n' +
             '.SGPP_UserInfo_balloon .SGPP_UserOnline {background: linear-gradient(to bottom, #8FB93B 5%, #6E8C31 95%) repeat scroll 0% 0% transparent}\n' +
             '.SGPP_UserInfo_balloon .SGPP_UserOffline {background: linear-gradient(to bottom, rgba(106, 106, 106, 0.45) 5%, rgba(85, 85, 85, 1) 95%) repeat scroll 0% 0% transparent}\n' +
-            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap>*:not(.is-disabled):active {box-shadow: none; position: relative; top: 1px}';
+            
+            // buttons
+            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap {width: 130px; color: rgba(255, 255, 255, 0.4)}\n' +
+            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > * {line-height: 10px; text-shadow: none; background: none; border: none}\n' +
+            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :not(.is-disabled):hover {background: none}\n' +
+            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :not(.is-disabled):active {box-shadow: none; position: relative; top: 1px; background: none; text-shadow: none}\n' +
+            '';
 
         init(): void {
         }
 
         render(): void {
             function generateBalloonInfo(page) {
-
                 var userHeader = $('.featured__outer-wrap.featured__outer-wrap--user', page);
-                userHeader.css({
-                    width: 'auto',
-                    padding: '15px 0px'
-                });
-
                 var tableCells = $('.featured__table__row', userHeader);
                 var username = $('.featured__heading', userHeader).css('display', 'block');
 
-                // make avatar smaller
-                var avatar = $('.global__image-outer-wrap', userHeader);
-                avatar.prependTo(username).css({
-                    'float': 'left',
-                    margin: '10px 7px 0px 0px',
-                    padding: '2px',
-                    width: '48px',
-                    height: '48px'
-                });
+                // move avatar
+                var avatar = $('.global__image-outer-wrap', userHeader).prependTo(username);
 
                 // add color to represent online status
                 var status = tableCells.eq(1).children().last().text().trim();
@@ -52,22 +52,11 @@ module ModuleDefinition{
                 var cv = tableCells.last().children().last();
                 cv[0].title = 'Contributor Value: ' + $('span', cv)[0].title;
                 $('span', cv).removeAttr('title');
-                cv.css('margin-left', '0px').appendTo(username);
+                cv.appendTo(username);
                 tableCells.last().remove();
 
-                // sidebar buttons
-                var btns = $('.sidebar__shortcut-inner-wrap', page);
-                btns.css({
-                    width: '130px',
-                    color: 'rgba(255, 255, 255, 0.4)',
-                });
-                btns.children().css({
-                    lineHeight: '10px',
-                    border: 'none',
-                    background: 'none',
-                    textShadow: 'none',
-                });
-                btns.insertAfter(cv);
+                // add sidebar buttons
+                $('.sidebar__shortcut-inner-wrap', page).insertAfter(cv);
 
                 return userHeader;
             }
