@@ -86,6 +86,12 @@ module ModuleDefinition {
                 return true;
         }
 
+        public forget(): void {
+            if (this.localStorageKey in localStorage) {
+                localStorage.removeItem(this.localStorageKey);
+            }
+        }
+
         private save() {
             localStorage[this.localStorageKey] = JSON.stringify(this._obj);
         }
@@ -95,12 +101,16 @@ module ModuleDefinition {
 
         private topicInfo: topicInfo;
 
-        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}"+
-                ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}"+
-                ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}"+
-                ".endless_badge_new, .endless_badge_new_child {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}" +
-                ".endless_badge_new_child { display: none; }" + 
-                ".comment--collapsed .endless_badge_new_child { display: block; }";
+        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" +
+            ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" +
+            ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" +
+            ".endless_badge_new, .endless_badge_new_child {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}" +
+            ".endless_badge_new_child { display: none; }" +
+            ".comment--collapsed .endless_badge_new_child { display: block; }\n" +
+            ".table__row-outer-wrap .markcomments_controls { display: none; }\n" +
+            ".table__row-outer-wrap:hover .markcomments_controls { display: inline; }" +
+            ".markcomments_controls i { opacity: 0.5; cursor: pointer; }\n" +
+            ".markcomments_controls i:hover { opacity: 1; }";
 
         getDiscussionId(url:string): string {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
@@ -164,6 +174,19 @@ module ModuleDefinition {
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics(document);
+
+                var m = this;
+
+                $("body").on('click', '.markcomments_forget', function () {
+                    var $this = $(this);
+                    var link = $this.parents('h3').children('a');
+
+                    var tInfo = new topicInfo(m.getDiscussionId(link.attr('href')));
+
+                    tInfo.forget();
+
+                    $this.remove();
+                });
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -261,6 +284,8 @@ module ModuleDefinition {
                             $(el).addClass('endless_no_new_comments');
                             $(el).find('.table__column--width-fill > p').first().append(' - no new comments</strong>');
                         }
+
+                        $(el).find('h3').first().append('<span class="markcomments_controls pull-right"><i class="fa fa-remove markcomments_forget" title="Forget this topic"></i></span>');
                     }
                 }
                 catch (err) {
