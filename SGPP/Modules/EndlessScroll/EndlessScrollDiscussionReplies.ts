@@ -62,10 +62,10 @@ module ModuleDefinition {
             return dom.children('.comment');
         }
 
-        beforeAddItems(dom, page: number): void {
+        beforeAddItems(dom, page: number, isReload: boolean): void {
             if ("MarkComments" in SGPP.modules) {
                 var MarkComments: any = SGPP.modules["MarkComments"];
-                MarkComments.markComments(dom, page, true);
+                MarkComments.markComments(dom, page, true, isReload);
             }
         }
 
