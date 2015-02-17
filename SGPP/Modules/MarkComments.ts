@@ -179,12 +179,14 @@ module ModuleDefinition {
 
                 $("body").on('click', '.markcomments_forget', function () {
                     var $this = $(this);
-                    var link = $this.parents('h3').children('a');
+                    var parent = $this.parents('h3')
+                    var link = parent.children('a');
 
                     var tInfo = new topicInfo(m.getDiscussionId(link.attr('href')));
 
                     tInfo.forget();
 
+                    parent.find('.endless_badge_new').remove();
                     $this.remove();
                 });
             }
