@@ -10,14 +10,16 @@ module ModuleDefinition {
 
         shouldRun = (location: SGLocation) => location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1;
 
-        style = ".gridview_flex{display:flex;flex-wrap:wrap;justify-content:center;margin:0 -5px;}"+
-                ".global__image-outer-wrap--missing-image {height:69px!important}"+
-                ".preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,1);border:1px solid #cbcfdb;padding:5px; z-index:10;}"+
-                ".tile_view_header{min-height:35px;margin-top:5px;font-size:12px}"+
-                ".tile_view_avatar_outer{float:right;display:inline-block;margin-left:5px}"+
-                ".tile_view_avatar{height:24px;width:24px;padding: 2px}"+
-                ".tile_view_faded{opacity:.4}"+
-                ".sidebar--wide{min-width:329px!important}";
+        style = ".gridview_flex {display: flex; flex-wrap: wrap; justify-content: center; margin: 0 -5px;}\n" +
+            ".global__image-outer-wrap--missing-image {height: 69px !important}\n" +
+            ".preview {box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset; background-color: rgba(255,255,255,1); border: 1px solid #cbcfdb; padding: 5px; z-index: 10;}\n" +
+            ".tile_view_header {min-height: 35px; margin-top: 5px; font-size: 12px}\n" +
+            ".tile_view_avatar_outer {float: right; display: inline-block; margin-left: 5px}\n" +
+            ".tile_view_avatar {height: 24px; width: 24px; padding: 2px}\n" +
+            ".tile_view_faded {opacity: .4}\n" +
+            ".sidebar--wide {min-width: 329px !important}\n" +
+            ".gridview_extra {display: none}\n" +
+            ".global__image-outer-wrap--game-medium:hover > .gridview_extra {display: block}\n";
 
         init = () => {
 
@@ -56,7 +58,7 @@ module ModuleDefinition {
                 $(eachDiv).append($(this).find('.global__image-outer-wrap--game-medium'));
                 $(eachDiv).css('margin', '5px');
 
-                var gridview_extra = $('<div class="gridview_extra is-hidden preview" style="position:absolute; width:184px;margin-left:-5.8px; border-top: thick #ffffff;"></div>');
+                var gridview_extra = $('<div class="gridview_extra preview" style="position:absolute; width:184px;margin-left:-5.8px; border-top: thick #ffffff;"></div>');
                 var giveawayName = $(this).find('.giveaway__heading__name').text();
                 var avatar = $(this).find('.global__image-outer-wrap--avatar-small');
                 avatar.addClass('tile_view_avatar');
@@ -102,13 +104,6 @@ module ModuleDefinition {
                 $(container).append(eachDiv);
             });
             $(container).append($('<div style="margin-top: 5px; margin-bottom: 20px;width: 0px;height: 69px;"></div>')); //tricks browser in case of last line only having 1 giveaway
-            $(container).find('.global__image-outer-wrap--game-medium').hover(
-                function () {
-                    $(this).find('.gridview_extra').removeClass('is-hidden');
-                },
-                function () {
-                    $(this).find('.gridview_extra').addClass('is-hidden');
-                });
             return container;
         }
 

@@ -11,6 +11,7 @@ module ModuleDefinition{
         private _debug = true;
         private _settings: ModuleDefinition.Settings = new ModuleDefinition.Settings();
         private _storage: ModuleDefinition.LocalStorage = new ModuleDefinition.LocalStorage();
+        private _styleSheet: JQuery;
 
         modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
 
@@ -36,7 +37,7 @@ module ModuleDefinition{
         };
 
         appendCSS = (css: string) => {
-            $('style').append(css);
+            this._styleSheet.append(css);
         }
 
 
@@ -59,7 +60,7 @@ module ModuleDefinition{
             this.resolvePath();
 
             //create SGPP stylesheet section in the page head
-            $('head').append($('<style>'));
+            this._styleSheet = $(document.createElement('style')).attr('id', 'SGPP_StyleSheet').appendTo('head');
             this.appendCSS('/* SGPP Stylesheet */ ');
 
             //init settings

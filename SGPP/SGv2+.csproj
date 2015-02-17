@@ -36,6 +36,7 @@
     <TypeScriptCompile Include="Modules\LivePreview.ts" />
     <TypeScriptCompile Include="Modules\ScrollingSidebar.ts" />
     <TypeScriptCompile Include="Modules\Settings.ts" />
+    <TypeScriptCompile Include="Modules\UserHoverInfo.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery_bpopup.d.ts" />
     <TypeScriptCompile Include="Scripts\pagedown\MarkdownConverter.d.ts" />
     <TypeScriptCompile Include="ModuleDefinition.ts" />
