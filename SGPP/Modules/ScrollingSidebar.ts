@@ -15,7 +15,7 @@ module ModuleDefinition{
             var side = $('.sidebar');
             var sideOuter = $(document.createElement('div')).addClass(side.attr('class'));
             var sideInner = side.wrapInner(sideOuter).children().first().addClass('SGPP__scrollingSidebar');
-            var sideAds = sideInner.children('.adsbygoogle'); // GoogleAds
+            var sideAds = side.find('.adsbygoogle'); // GoogleAds
 
             var delayedAdSlider = (() => {
                 var timeout;
