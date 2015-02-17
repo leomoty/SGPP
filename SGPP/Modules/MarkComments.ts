@@ -187,37 +187,39 @@ module ModuleDefinition {
             return has_new;
         }
 
-        markComments(dom, page: number, markRead: boolean = false): void {
+        markComments(dom, page: number, markRead: boolean = false, forceMark: boolean = false): void {
+            // Don't mark if topic wasn't viewed before, unless asked to.
+            if (this.topicInfo.isDataStored || forceMark) {
+                $(dom).find('.comment[data-comment-id]').each((i, el) => {
+                    var id = parseInt($(el).data('comment-id'));
 
-            $(dom).find('.comment[data-comment-id]').each((i, el) => {
-                var id = parseInt($(el).data('comment-id'));
+                    var is_new = this.topicInfo.isNewComment(page, id);
+                    var collapsed = this.topicInfo.getCommentState(id);
 
-                var is_new = this.topicInfo.isNewComment(page, id);
-                var collapsed = this.topicInfo.getCommentState(id);
-
-                if (collapsed) {
-                    $(el).addClass('comment--collapsed');
-                }
-
-                if (is_new) {
-                    $(el).addClass('endless_new');
-
-                    $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
-                } else {
-                    $(el).addClass('endless_not_new');
-                }
-
-                if (this.checkNewComments(el, page)) {
-
-                    if (!is_new) {
-                        $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new_child').text('New replies').attr('title', 'New since last visit'));
+                    if (collapsed) {
+                        $(el).addClass('comment--collapsed');
                     }
 
-                    $(el).addClass('endless_new_children');
-                } else {
-                    $(el).addClass('endless_no_new_children');
-                }
-            });
+                    if (is_new) {
+                        $(el).addClass('endless_new');
+
+                        $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
+                    } else {
+                        $(el).addClass('endless_not_new');
+                    }
+
+                    if (this.checkNewComments(el, page)) {
+
+                        if (!is_new) {
+                            $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new_child').text('New replies').attr('title', 'New since last visit'));
+                        }
+
+                        $(el).addClass('endless_new_children');
+                    } else {
+                        $(el).addClass('endless_no_new_children');
+                    }
+                });
+            }
 
             if (markRead) {
                 var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0]);
