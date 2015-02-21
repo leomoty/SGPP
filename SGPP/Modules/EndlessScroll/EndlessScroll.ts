@@ -121,7 +121,7 @@ module ModuleDefinition {
             }
         }
 
-        loadPage(page: number): void {
+        loadPage(page: number, force_reload: boolean = false): void {
 
             if (!(page in this._pagesUrl)) {
                 throw 'No URL for page ' + this._currentPage;
@@ -169,7 +169,7 @@ module ModuleDefinition {
 
             if (pg.loading) {
                 return;
-            } else if (pg.loaded) {
+            } else if (pg.loaded && !force_reload) {
                 if (!pg.visible) {
                     pg.element.show();
                     pg.visible = true;
@@ -183,11 +183,16 @@ module ModuleDefinition {
 
                 this._pages[page].loading = true;
 
+                var isReload = this._pages[page].loaded;
+
                 $.get(url,(data) => {
 
                     var dom = $.parseHTML(data);
 
-                    this.beforeAddItems(dom, page);
+                    if (isReload)
+                        pageContainer.children().remove();
+
+                    this.beforeAddItems(dom, page, isReload);
 
                     var itemsContainer = this.getItemsElement(dom);
 
@@ -206,7 +211,7 @@ module ModuleDefinition {
                     // Update navigation on page               
                     this.getNavigationElement(document).html(newPagination.html());
 
-                    this.afterAddItems(pageContainer, page);
+                    this.afterAddItems(pageContainer, page, isReload);
 
                     this._pages[page].loaded = true;
 
@@ -226,7 +231,7 @@ module ModuleDefinition {
             }
         }
 
-        beforeAddItems(dom, page:number): void {
+        beforeAddItems(dom, page: number, isReload: boolean): void {
         }
 
         addItems(dom, pageContainer: JQuery, page:number): void {
@@ -240,7 +245,7 @@ module ModuleDefinition {
             });
         }
 
-        afterAddItems(pageContainer: JQuery, page: number): void {
+        afterAddItems(pageContainer: JQuery, page: number, isReload: boolean): void {
         }
 
         parseNavigation(dom: JQuery): void {

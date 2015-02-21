@@ -20,7 +20,7 @@
 /// <reference path="Modules/EndlessScroll/EndlessScrollDiscussionReplies.ts" />
 /// <reference path="Modules/EndlessScroll/EndlessScrollGiveawayComments.ts" />
 /// <reference path="Modules/EndlessScroll/EndlessScrollGiveaways.ts" />
-/// <reference path="Modules/EndlessScroll/EndlessScrollMyGiveaways.ts" />
+/// <reference path="Modules/EndlessScroll/EndlessScrollLists.ts" />
 
 var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
@@ -37,8 +37,8 @@ var modulesNames: Array<string> = new Array<string>(
     "EndlessScrollDiscussion",
     "EndlessScrollDiscussionReplies",
     "EndlessScrollGiveaways",
-    "EndlessScrollMyGiveaways",
-    "EndlessScrollGiveawayComments"
+    "EndlessScrollGiveawayComments",
+    "EndlessScrollLists"
     );
 
 var defaultModules: Array<string> = new Array<string>(

@@ -4,7 +4,7 @@
 
 module ModuleDefinition {
 
-    export class EndlessScrollMyGiveaways extends ModuleDefinition.EndlessScroll implements SteamGiftsModule {
+    export class EndlessScrollLists extends ModuleDefinition.EndlessScroll implements SteamGiftsModule {
 
         style = "";
 
@@ -15,7 +15,11 @@ module ModuleDefinition {
                 return true;
             } else if (SGPP.location.pageKind == 'giveaway') {
                 return SGPP.location.subpage == 'entries' || SGPP.location.subpage == 'winners' || SGPP.location.subpage == 'groups';
+            } else if (SGPP.location.pageKind == 'account') {
+                return SGPP.location.subpage == 'manage' || SGPP.location.subpage == 'feedback' || SGPP.location.subpage == 'steam';
             }
+
+            console.log(SGPP.location);
 
             return false;
         }
@@ -63,7 +67,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "EndlessScrollMyGiveaways";
+            return "EndlessScrollLists";
         }
 
     }
