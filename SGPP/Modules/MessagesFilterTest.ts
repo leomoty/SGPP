@@ -4,7 +4,13 @@ module ModuleDefinition {
 
     export class MessagesFilterTest implements SteamGiftsModule {
 
-        style = ".message_filter_hidden { display: none; } .message_filter_visible { } .filterdrop { position: absolute; } .filterdrop a { display: block; }";
+        style = ".message_filter_hidden { display: none; }\n" +
+        ".message_filter_visible { }\n" +
+        ".filterdrop { position: absolute; }\n" + 
+        ".filterdrop a { display: block; }\n" + 
+        ".message-filters { margin-left: 5px; }\n" +
+        ".message-filter { cursor: pointer; }\n" + 
+        ".message-filter i { margin: 0; }";
 
         private _filterElement: JQuery;
 
@@ -12,14 +18,16 @@ module ModuleDefinition {
             return (SGPP.location.pageKind == 'discussion' || SGPP.location.pageKind == 'trade');
         }
 
-        private _displayMode = 'all';
+        private _hideRead = false;
 
-        get displayMode(): string {
-            return this._displayMode;
+        get hideRead(): boolean {
+            return this._hideRead;
         }
 
-        set displayMode(v: string) {
-            this._displayMode = v;
+        set hideRead(v: boolean) {
+            this._hideRead = v;
+
+            this._filterElement.find('.hideread i').toggleClass('fa-square-o', !v).toggleClass('fa-check-square-o', v);
 
             this.filterAll();
         }
@@ -32,8 +40,11 @@ module ModuleDefinition {
 
             var visible = true;
 
-            if (this.displayMode == 'new_only') {
-                visible = !($el.hasClass('endless_no_new') || $el.hasClass('endless_no_new_children'));
+            var is_new = !$el.hasClass('endless_not_new');
+            var has_new_children = !$el.hasClass('endless_no_new_children');
+
+            if (this.hideRead) {
+                visible = visible && (is_new || has_new_children);
             }
 
             $el.toggleClass('message_filter_hidden', !visible);
@@ -57,19 +68,13 @@ module ModuleDefinition {
 
             var m = this;
 
-            this._filterElement = $('<div class="pull-right"><div class="btn">Filter messages <i class="fa fa-angle-down"></i></div><div class="filterdrop is-hidden"><div class="filter"><a href="#" data-filter="all">All</a></div><div class="filter"><a href="#" data-filter="new_only">New only</a></div></div></div>');
+            this._filterElement = $('<span class="message-filters"></span>');
 
-            this._filterElement.find('.btn').click(function () {
-                $(this).parent().find('.filterdrop').toggleClass('is-hidden');
+            this._filterElement.append('<span class="message-filter hideread"><i class="fa fa-square-o"></i> Hide Read</span>').click(() => {
+                m.hideRead = !m.hideRead;
             });
 
-            this._filterElement.find('.filter a').click(function () {
-                m.displayMode = $(this).data('filter');
-
-                return false;
-            });
-
-            $('.comments:eq(1)').prev().append(this._filterElement);
+            $('.comments:eq(1)').prev().find('div').append(this._filterElement);
 
             this.filterAll();
         }
