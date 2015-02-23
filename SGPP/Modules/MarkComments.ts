@@ -101,6 +101,10 @@ module ModuleDefinition {
 
         private topicInfo: topicInfo;
 
+        get topic(): topicInfo {
+            return this.topicInfo;
+        }
+
         style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" +
             ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" +
             ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" +
