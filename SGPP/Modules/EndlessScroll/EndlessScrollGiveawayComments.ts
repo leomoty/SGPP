@@ -36,7 +36,6 @@ module ModuleDefinition {
             this.preparePage();
         }
 
-
         createPageContainerElement(): JQuery {
             return $('<div class="comments">');
         }
