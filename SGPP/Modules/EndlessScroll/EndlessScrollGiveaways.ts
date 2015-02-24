@@ -33,9 +33,7 @@ module ModuleDefinition {
                     $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text())
                 });
                 pageContainer.find(".trigger-popup").click(function () {
-                    var a: any = $("." + $(this).attr("data-popup"));
-
-                    a.bPopup({
+                    $("." + $(this).attr("data-popup")).bPopup({
                         opacity: .85,
                         fadeSpeed: 200,
                         followSpeed: 500,
