@@ -21,11 +21,26 @@ module ModuleDefinition {
         }
 
         init(): void {
-            
         }
 
         render(): void {
             this.preparePage();
+
+            $(this).on('afterAddItems',(event: JQueryEventObject, pageContainer: JQuery, page: number, isReload: boolean) => {
+                // Fix hide popups
+                pageContainer.find(".giveaway__hide").click(function () {
+                    $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
+                    $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text())
+                });
+                pageContainer.find(".trigger-popup").click(function () {
+                    $("." + $(this).attr("data-popup")).bPopup({
+                        opacity: .85,
+                        fadeSpeed: 200,
+                        followSpeed: 500,
+                        modalColor: "#3c424d"
+                    });
+                });
+            });
         }
 
         createPageContainerElement(): JQuery {
@@ -38,24 +53,6 @@ module ModuleDefinition {
 
         getItems(dom: JQuery): JQuery {
             return dom.children('.giveaway__row-outer-wrap');
-        }
-
-        afterAddItems(pageContainer: JQuery): void {
-            // Fix hide popups
-            pageContainer.find(".giveaway__hide").click(function () {
-                $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
-                $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text())
-            });
-            pageContainer.find(".trigger-popup").click(function () {
-                var a: any = $("." + $(this).attr("data-popup"));
-
-                a.bPopup({
-                    opacity: .85,
-                    fadeSpeed: 200,
-                    followSpeed: 500,
-                    modalColor: "#3c424d"
-                });
-            });
         }
 
         name(): string {

@@ -101,6 +101,10 @@ module ModuleDefinition {
 
         private topicInfo: topicInfo;
 
+        get topic(): topicInfo {
+            return this.topicInfo;
+        }
+
         style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" +
             ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" +
             ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" +
@@ -150,7 +154,7 @@ module ModuleDefinition {
                 if (currentPageNavEl.length != 0)
                     page = currentPageNavEl.first().data('page-number');
 
-                this.markComments(document, page, true);
+                this.markComments($(document), page, true);
 
                 this.topicInfo.setLastVisit();
 
@@ -171,9 +175,15 @@ module ModuleDefinition {
 
                     m.topicInfo.setCommentState(comment_id, false);
                 });
+
+                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems',(event: JQueryEventObject, dom:JQuery, page: number, isReload: boolean) => {
+                        this.markComments(dom, page, true, isReload);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
-                this.markTopics(document);
+                this.markTopics($(document));
 
                 var m = this;
 
@@ -189,6 +199,12 @@ module ModuleDefinition {
                     parent.find('.endless_badge_new').remove();
                     $this.remove();
                 });
+
+                if ("EndlessScrollDiscussion" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems',(event: JQueryEventObject, dom: JQuery, page: number, isReload: boolean) => {
+                        this.markTopics(dom);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -212,10 +228,10 @@ module ModuleDefinition {
             return has_new;
         }
 
-        markComments(dom, page: number, markRead: boolean = false, forceMark: boolean = false): void {
+        markComments(dom: JQuery, page: number, markRead: boolean = false, forceMark: boolean = false): void {
             // Don't mark if topic wasn't viewed before, unless asked to.
             if (this.topicInfo.isDataStored || forceMark) {
-                $(dom).find('.comment[data-comment-id]').each((i, el) => {
+                dom.find('.comment[data-comment-id]').each((i, el) => {
                     var id = parseInt($(el).data('comment-id'));
 
                     var is_new = this.topicInfo.isNewComment(page, id);
@@ -253,9 +269,9 @@ module ModuleDefinition {
             }
         }
 
-        markTopics(dom): void {
+        markTopics(dom: JQuery): void {
 
-            $(dom).find('.table__row-outer-wrap').each((i: number, el: Element) => {
+            dom.find('.table__row-outer-wrap').each((i: number, el: Element) => {
                 try {
                     var link = $(el).find('h3 a').first();
                     var tInfo = new topicInfo(this.getDiscussionId(link.attr('href')));
