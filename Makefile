@@ -13,5 +13,18 @@ all:
 	cat Monkeyheader.js >> $(OUTPUT)
 	cat temp2.js >> $(OUTPUT)
 	rm -f temp2.js
+:compileonly
+	tsc --target ES5 --removeComments --out temp2.js $(INPUT)
+	cat Monkeyheader.js >> $(OUTPUT)
+	cat temp2.js >> $(OUTPUT)
+	rm -f temp2.js
+:compressonly
+	tsc --target ES5 --removeComments --out temp.js $(INPUT)
+	java -jar yuicompressor-2.4.8.jar --type js --nomunge -o temp2.js temp.js
+	rm -f temp.js
+	rm -f $(OUTPUT)
+	cat Monkeyheader.js >> $(OUTPUT)
+	cat temp2.js >> $(OUTPUT)
+	rm -f temp2.js
 clean:
 	rm -f $(OUTPUT) temp.js temp2.js
