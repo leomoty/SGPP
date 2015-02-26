@@ -18,6 +18,7 @@ module ModuleDefinition {
             ".tile_view_avatar {height: 24px; width: 24px; padding: 2px}\n" +
             ".tile_view_faded {opacity: .4}\n" +
             ".sidebar--wide {min-width: 329px !important}\n" +
+            ".sidebar__mpu{text-align:center}\n" + //fixes ads not being in the center because of the wider sidebar
             ".gridview_extra {display: none}\n" +
             ".global__image-outer-wrap--game-medium:hover > .gridview_extra {display: block}\n";
 

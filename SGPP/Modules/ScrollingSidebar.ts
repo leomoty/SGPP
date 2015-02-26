@@ -4,7 +4,7 @@ module ModuleDefinition{
 
     export class ScrollingSidebar implements SteamGiftsModule {
 
-        style = "";
+        style = ".sidebarAdNoMargin{margin-bottom:0px}"; //removes margin in case of an ad blocker
 
         init(): void {
             
@@ -29,6 +29,14 @@ module ModuleDefinition{
                     }, 250);
                 }
             })();
+
+            var adsContainer = sideAds.children('.adsbygoogle');
+            if(adsContainer.children().length == 0)
+                sideAds.addClass('sidebarAdNoMargin');
+            adsContainer.on("DOMNodeInserted",(event) => {
+                if(adsContainer.children().length > 0)
+                    sideAds.removeClass('sidebarAdNoMargin');
+            });
 
             var $win = $(window);
             var footerHeight = $('.footer__outer-wrap').outerHeight();
