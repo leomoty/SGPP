@@ -63,7 +63,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "EndlessScrollDiscussionReplies";
+            return "Endless Scroll on Discussion comments";
         }
 
     }

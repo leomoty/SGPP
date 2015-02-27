@@ -162,7 +162,7 @@ module ModuleDefinition{
         }
 
         name(): string {
-            return "UserHoverInfo";
+            return "Show User Profile on Hover";
         }
 
         shouldRun = (location: SGLocation) => true;

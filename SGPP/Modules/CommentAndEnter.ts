@@ -5,7 +5,7 @@ module ModuleDefinition{
     export class CommentAndEnter implements SteamGiftsModule {
 
     	name(): string {
-            return "CommentAndEnter";
+            return "Comment and Enter on Giveaways";
         }
 
         shouldRun = (location: SGLocation) => location.pageKind == 'giveaway' && location.subpage == '';

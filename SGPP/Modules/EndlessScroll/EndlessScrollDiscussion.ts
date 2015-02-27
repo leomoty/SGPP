@@ -31,7 +31,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "EndlessScrollDiscussion";
+            return "Endless Scroll on Discussions page";
         }
 
     }

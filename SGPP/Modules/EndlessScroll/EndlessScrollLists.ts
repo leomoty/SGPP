@@ -67,7 +67,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "EndlessScrollLists";
+            return "Endless Scroll everywhere else";
         }
 
     }

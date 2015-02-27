@@ -65,7 +65,7 @@ var defaultModules: Array<string> = new Array<string>(
         //Checks if the module is enabled in LocalStorage, rule of thumb, if it didn't exist before, it isn't.
         //Also checks should run for the current page
         if (SGPP.settings.isModuleEnabled(modulesNames[pos]) && m.shouldRun(SGPP.location))
-            SGPP.modules[m.name()] = m; //Put module into module list
+            SGPP.modules[modulesNames[pos]] = m; //Put module into module list
     }
 
     //load modules

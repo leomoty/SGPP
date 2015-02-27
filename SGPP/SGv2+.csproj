@@ -34,6 +34,7 @@
     <TypeScriptCompile Include="Modules\FixedNavbar.ts" />
     <TypeScriptCompile Include="Modules\GridView.ts" />
     <TypeScriptCompile Include="Modules\LivePreview.ts" />
+    <TypeScriptCompile Include="Modules\MessagesFilterTest.ts" />
     <TypeScriptCompile Include="Modules\ScrollingSidebar.ts" />
     <TypeScriptCompile Include="Modules\Settings.ts" />
     <TypeScriptCompile Include="Modules\UserHoverInfo.ts" />

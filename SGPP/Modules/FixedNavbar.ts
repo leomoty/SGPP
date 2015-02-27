@@ -19,7 +19,7 @@ module ModuleDefinition{
         }
 
         name(): string {
-            return "FixedNavbar";
+            return "Fixed Navbar on top";
         }
 
         shouldRun = (location: SGLocation) => true;

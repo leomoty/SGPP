@@ -313,7 +313,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "MarkComments";
+            return "Mark Comments";
         }
 
     }

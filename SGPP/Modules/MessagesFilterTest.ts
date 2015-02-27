@@ -80,7 +80,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "MessagesFilterTest";
+            return "Hide Read Comments";
         }
 
     }

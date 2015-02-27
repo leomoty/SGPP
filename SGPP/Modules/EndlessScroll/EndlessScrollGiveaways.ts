@@ -56,7 +56,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "EndlessScrollGiveaways";
+            return "Endless Scroll on Giveaways";
         }
 
     }

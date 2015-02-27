@@ -53,7 +53,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "EntryCommenters";
+            return "Checks if entries/winners commented on Giveaways";
         }
 
         shouldRun(loc: SGLocation): boolean {return loc.pageKind == 'giveaway' && (loc.subpage == 'entries' || loc.subpage == 'winners')}

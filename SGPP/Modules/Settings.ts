@@ -4,7 +4,9 @@ module ModuleDefinition {
 
     export class Settings implements SteamGiftsModule {
 
-        style = "";
+        style = ".SGPP__settings { cursor: pointer; }\n" +
+        ".SGPP__settings_page { min-height: 400px; max-height: 500px; overflow-y: scroll; overflow-x: hidden; }\n" +
+        ".SGPP__settings_icon { width: 48px; }";
 
         private settingsNavIcon: string = '<a class="nav__row SGPP__settings">\n' +
             '<i class="icon-red fa fa-fw fa-bars"> </i>\n' +
@@ -16,9 +18,9 @@ module ModuleDefinition {
 
         private settingsPage = (modules) => {
             return '<div class="popup SGPP__settings_popup">\n' +
-                //'<i class="popup__icon fa fa-bars"></i>\n' +
+                '<i class="popup__icon fa fa-bars SGPP__settings_icon"></i>\n' +
                 '<p class="popup__heading">Steamgifts++ Settings</p>\n' +
-                '<div class="form__rows" style="max-height:500px; overflow-y:scroll; overflow-x:hidden; min-width:400px;">' + modules + '</div>\n' +
+                '<div class="form__rows SGPP__settings_page">' + modules + '</div>\n' +
                 '<p class="popup__actions" style="margin-top:5px;">\n' +
                 '<span class="SGPP__settings-save b-close">Save</span>\n' +
                 '<span class="b-close">Close</span>\n' +
@@ -52,7 +54,7 @@ module ModuleDefinition {
             for (var pos in modulesNames) {
                 i++;
                 var SGModule: SteamGiftsModule = new ModuleDefinition[modulesNames[pos]]();
-                modules += this.moduleSetting(i, SGModule.name(), modulesNames[pos], this.isModuleEnabled(modulesNames[pos]));
+                modules += this.moduleSetting(i, SGModule.name(), modulesNames[pos], false);//this.isModuleEnabled(modulesNames[pos]));
             }
 
             var completeSettingsPage = this.settingsPage(modules);
@@ -82,6 +84,18 @@ module ModuleDefinition {
         private handleSettingClick = () => {
             var popup: JQueryBPopup = $(".SGPP__settings_popup").bPopup({ opacity: .85, fadeSpeed: 200, followSpeed: 500, modalColor: "#3c424d" });
             $(".SGPP__settings_popup .SGPP__settings-checkbox").addClass("form__checkbox");
+
+            $('.SGPP__settings_popup input').each((index, element) => {
+                var input = $(element);
+                var value = SGPP.storage.getItem(input.attr('name'));
+                input.val(value);
+                
+                var checkbox = input.siblings('.SGPP__settings-checkbox');
+
+                checkbox.toggleClass('is-selected', value == 1);
+                checkbox.toggleClass('is-disabled', value != 1);
+
+            });
         };
         
         private handleSaveSettings = () => {
@@ -89,6 +103,7 @@ module ModuleDefinition {
                 var input = $(element);
                 SGPP.storage.setItem(input.attr('name'), input.val());
             });
+            window.location.reload();
         };
 
         name(): string {

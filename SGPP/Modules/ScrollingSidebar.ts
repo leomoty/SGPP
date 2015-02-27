@@ -83,7 +83,7 @@ module ModuleDefinition{
 
 
         name(): string {
-            return "ScrollingSidebar";
+            return "Scrolling Sidebar";
         }
 
         shouldRun = (location: SGLocation) => true;
