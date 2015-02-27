@@ -10,16 +10,24 @@ module ModuleDefinition {
 
         shouldRun = (location: SGLocation) => location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1;
 
-        style = ".gridview_flex {display: flex; flex-wrap: wrap; justify-content: center; margin: 0 -5px;}\n" +
-            ".global__image-outer-wrap--missing-image {height: 69px !important}\n" +
-            ".preview {box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset; background-color: rgba(255,255,255,1); border: 1px solid #cbcfdb; padding: 5px; z-index: 10;}\n" +
-            ".tile_view_header {min-height: 35px; margin-top: 5px; font-size: 12px}\n" +
-            ".tile_view_avatar_outer {float: right; display: inline-block; margin-left: 5px}\n" +
-            ".tile_view_avatar {height: 24px; width: 24px; padding: 2px}\n" +
-            ".tile_view_faded {opacity: .4}\n" +
-            ".sidebar--wide {min-width: 329px !important}\n" +
-            ".gridview_extra {display: none}\n" +
-            ".global__image-outer-wrap--game-medium:hover > .gridview_extra {display: block}\n";
+        style = ".SGPP__gridView {display: flex; flex-wrap: wrap; justify-content: space-around; margin: 5px;}\n" +
+            ".tile_view_header {font-size: 12px; border-bottom: 1px solid #D2D6E0; box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.3); margin-bottom: 3px; text-align: center}\n" +
+            ".SGPP__gridAvatar_outer {float: right; display: inline-block; margin-left: 5px}\n" +
+            ".SGPP__gridAvatar {height: 27px; width: 27px; padding: 2px}\n" +
+            ".SGPP__gridTile {margin: 5px}\n" +
+            ".SGPP__gridTile > .global__image-outer-wrap--game-medium {position: relative}\n" +
+            ".SGPP__gridTile:not(:hover) .SGPP__gridTileTime {display: none}\n" +
+            ".SGPP__gridTile:hover {opacity: 1}\n" +
+            ".SGPP__gridTile:hover > .global__image-outer-wrap--game-medium {border-radius: 4px 4px 0 0; border-bottom: 1px dotted transparent}\n" +
+            ".SGPP__gridTile:hover > .SGPP__gridTileInfo {display: block; border-radius: 0 0 4px 4px}\n" +
+            ".SGPP__gridTileInfo {display: none; position:absolute; width:184px; border-top: none; z-index: 10}\n" +
+            ".SGPP__gridTileInfo .giveaway__icon {opacity: 0.7}\n" +
+            ".SGPP__gridTileTime {position: absolute; bottom: 5px; left: 5px; height: 16px; text-align: center; background-color: #FFF; border-radius: 0 3px 0 0; padding: 2px 4px}\n" +
+            ".SGPP__gridTileTime i {font-size: inherit; color:inherit}\n" +
+            ".SGPP__gridTileIcons {position: absolute; bottom: 5px; right: 5px}\n" +
+            ".SGPP__gridTileIcons > * {display: inline-block; width: 20px; height: 16px; text-align: center; padding: 2px; border-radius: 3px 0 0; vertical-align: middle}\n" +
+            ".SGPP__gridTileIcons > :not(:last-child) {padding-right: 4px; margin-right: -3px}\n" +
+            "";
 
         init = () => {
 
@@ -28,7 +36,7 @@ module ModuleDefinition {
         render = () => {
             var esg = $('.pagination').prev();
             esg.parent().on("DOMNodeInserted",(event) => {
-                if($(event.target).hasClass('pagination__navigation')) 
+                if($(event.target).hasClass('pagination__navigation'))
                     this.updateGridview($('.pagination').prev());
             });
 
@@ -38,73 +46,75 @@ module ModuleDefinition {
         updateGridview = (esg) => {
             var giveaways = $(document.createElement('div')).wrapInner(esg.children('.giveaway__row-outer-wrap'));
             var gridview = this.generateGridview(giveaways);
-            esg.remove('.giveaway__row-outer-wrap').addClass('SGPP__Gridview').append(gridview);
+            esg.append(gridview);
         }
 
-        generateGridview = (root) => {
-            //win chance displayed in giveaway description
-            function calculateWinChance(copies, entries) : any {
-                var res = (+(parseFloat(copies) / parseFloat(entries)) * 100);
-                return Math.min(res, 100).toFixed(2);
+        generateGridview = (root: JQuery) => {
+            function calcWinChance(copies: number, entries: number) : string {
+                var chance = +(copies / entries) * 100;
+                return chance < 0.01 ? '<0.01' : Math.min(chance, 100).toFixed(2);
             }
 
-            //create gridcontainer
-            var container = document.createElement('div');
-            $(container).addClass('gridview_flex');
-            $(root).find('.giveaway__row-inner-wrap').each(function () {
-                if ($(this).parents('.pinned-giveaways').length != 0) return;
-                var eachDiv = document.createElement('div');
-                $(this).children('.global__image-outer-wrap--game-medium').removeClass('global__image-outer-wrap--missing-image').children().first().wrap(document.createElement('div')).parent().addClass('global__image-outer-wrap--missing-image');
-                $(eachDiv).append($(this).find('.global__image-outer-wrap--game-medium'));
-                $(eachDiv).css('margin', '5px');
+            // helping functions
+            var strong = (txt) => '<strong>' + txt + '</strong>';
+            var floatLeft = (el) => $('<div>', {style: 'float: left', append: el});
+            var floatRight = (el) => $('<div>', {style: 'float: right', append: el});
 
-                var gridview_extra = $('<div class="gridview_extra preview" style="position:absolute; width:184px;margin-left:-5.8px; border-top: thick #ffffff;"></div>');
-                var giveawayName = $(this).find('.giveaway__heading__name').text();
-                var avatar = $(this).find('.global__image-outer-wrap--avatar-small');
-                avatar.addClass('tile_view_avatar');
+            // containers
+            var gridPage = $('<div>', {'class': 'SGPP__gridView'});
+            var gridTile = $('<div>', {'class': 'SGPP__gridTile'});
+            var tileInfo = $('<div>', {'class': 'SGPP__gridTileInfo global__image-outer-wrap'});
+            var tileIcns = $('<div>', {'class': 'SGPP__gridTileIcons'});
 
-                var copies = "0";
-                var cost = "0";
-                if ($(this).find('.giveaway__heading__thin').length == 1) {
-                    cost = $(this).find('.giveaway__heading__thin').text().replace("(", "").replace(")", "");
-                    copies = "1";
+            root.find('.giveaway__row-inner-wrap').each(function () {
+                var $el = $(this);
+                if ($el.parents('.pinned-giveaways').length != 0)
+                    return;
+
+                var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded'));
+
+                var gameImg = $el.children('.global__image-outer-wrap--game-medium').appendTo(thisTile).css('position', 'relative');
+
+                var gaColumns = $el.find('.giveaway__columns').children();
+                var timeLeft = gaColumns.eq(0).addClass('SGPP__gridTileTime').appendTo(gameImg);
+                timeLeft.find('span').text((i, txt) => txt.match(/\d+(?:\s+)./)[0].replace(' ', ''))
+                var icons = gaColumns.slice(2);
+                if (icons.length > 0) {
+                    icons.filter('.giveaway__column--contributor-level').text((i, txt) => txt.replace('Level ', ''));
+                    tileIcns.clone().append(icons).appendTo(gameImg);
                 }
-                else {
-                    cost = $(this).find('.giveaway__heading__thin:nth(1)').text().replace("(", "").replace(")", "");
-                    copies = $(this).find('.giveaway__heading__thin:nth(0)').text().replace("(", "").replace("Copies)", "");
-                }
 
-                var timeLeft = $(this).find('.fa-clock-o').next().text();
-                var timeSplit = timeLeft.split(" ");
-                var entries = $(this).find('.fa-tag').next().text();
-                var entriesSplit = entries.split(" ");
-                var comments = $(this).find('.fa-comment').next().text();
-                var commentsSplit = comments.split(" ");
+                var giveawayName = $el.find('.giveaway__heading__name').text();
+                var avatar = $el.find('.global__image-outer-wrap--avatar-small').addClass('SGPP__gridAvatar');
 
-                var winChance = calculateWinChance(copies, entries.replace(",", ""));
-                
-                if ($(this).hasClass('is-faded'))
-                    $(eachDiv).find('.global__image-outer-wrap--missing-image').addClass('tile_view_faded');
+                var thinText = $el.find('.giveaway__heading__thin').toArray();
+                var cost = parseInt(thinText.pop().textContent.replace(/\D+/g, ""));
+                var copies = thinText.length == 0 ? 1 : parseInt(thinText.pop().textContent.replace(/\D+/g, ""));
 
-                gridview_extra.append('<div class="giveaway__heading__name tile_view_header">' + giveawayName + '</div>');
-                gridview_extra.append('<div class="tile_view_avatar_outer">' + avatar[0].outerHTML + '</div>');
-                gridview_extra.append('<div style="float:left;"><strong>' + copies + '</strong> Copies</div>');
-                gridview_extra.append('<div style="float:right;"><strong>' + cost + '</strong></div>');
-                gridview_extra.append('<div style="clear:both;"></div>');
-                if (timeSplit[0] === "Ended")
-                    gridview_extra.append('<div style="margin-top:-14px;"><strong>' + timeSplit[0] + '</strong></div>');
-                else
-                    gridview_extra.append('<div style="margin-top:-14px;"><strong>' + timeSplit[0] + '</strong> ' + timeSplit[1] + '</div>');
-                gridview_extra.append('<div style="clear:both;"></div>');
-                gridview_extra.append('<div style="float:left;"><strong>' + entriesSplit[0] + '</strong> Entries</div>');
-                gridview_extra.append('<div style="float:right;"><strong>' + winChance + '</strong>% Chance</div>');
-                gridview_extra.append('<div style="clear:both;"></div>');
-                gridview_extra.append('<div><strong>' + commentsSplit[0] + '</strong> Comments</div>');
-                $(eachDiv).children().first().append(gridview_extra);
-                $(container).append(eachDiv);
+                var gaLinks = $el.find('.giveaway__links').children();
+                var entries = parseInt(gaLinks.eq(0).text().replace(/\D+/g, ""));
+                var comments = parseInt(gaLinks.eq(1).text().replace(/\D+/g, ""));
+
+                var winChance = calcWinChance(copies, entries);
+
+                tileInfo.clone().append(
+                    $('<div>', {text: giveawayName, 'class': 'giveaway__heading__name tile_view_header'}),
+                    $('<div>', {'class': "SGPP__gridAvatar_outer", title: 'Created ' + gaColumns.eq(1).text(), append: avatar}),
+                    $('<div>', {style: 'display: inline-block; width: 145px'}).append(
+                        floatLeft(strong(copies) + (copies > 1 ? ' Copies' : ' Copy')),
+                        floatRight(strong(cost + 'P')),
+                        $('<div>', {style: 'clear: both'}),
+                        floatLeft(strong(winChance + '%')).attr('title', 'Probability to win'),
+                        floatRight($el.find('.giveaway__icon'))
+                    ),
+                    $('<div>', {style: 'clear: both'}),
+                    floatLeft(strong(entries) + ' Entries'),
+                    floatRight(strong(comments) + ' Comments')
+                ).appendTo(thisTile);
+
+                gridPage.append(thisTile);
             });
-            $(container).append($('<div style="margin-top: 5px; margin-bottom: 20px;width: 0px;height: 69px;"></div>')); //tricks browser in case of last line only having 1 giveaway
-            return container;
+            return gridPage;
         }
 
     }

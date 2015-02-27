@@ -10,22 +10,24 @@ module ModuleDefinition{
 
             '.SGPP_UserInfo_balloon .featured__outer-wrap.featured__outer-wrap--user {width: auto; padding: 15px 0}\n' +
             '.SGPP_UserInfo_balloon .featured__heading i {font-size: inherit}\n' +
-            
+
             // smaller table
             '.SGPP_UserInfo_balloon .featured__table__column {width: 175px}\n' +
             '.SGPP_UserInfo_balloon .featured__table .featured__table__row {padding: 5px 0px}\n' +
             '.SGPP_UserInfo_balloon .featured__table__column:not(:first-child) {margin-left: 15px}\n' +
-            
+
             // avatar
             '.SGPP_UserInfo_balloon .featured__outer-wrap .global__image-outer-wrap {float: left; margin: 10px 7px 0px 0px; padding: 2px; width: 48px; height: 48px}\n' +
             '.SGPP_UserInfo_balloon .SGPP_UserOnline {background: linear-gradient(to bottom, #8FB93B 5%, #6E8C31 95%) repeat scroll 0% 0% transparent}\n' +
             '.SGPP_UserInfo_balloon .SGPP_UserOffline {background: linear-gradient(to bottom, rgba(106, 106, 106, 0.45) 5%, rgba(85, 85, 85, 1) 95%) repeat scroll 0% 0% transparent}\n' +
-            
+
             // buttons
             '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap {width: 130px; color: rgba(255, 255, 255, 0.4)}\n' +
             '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > * {line-height: 10px; text-shadow: none; background: none; border: none}\n' +
-            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :not(.is-disabled):hover {background: none}\n' +
-            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :not(.is-disabled):active {box-shadow: none; position: relative; top: 1px; background: none; text-shadow: none}\n' +
+            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > .is-selected, ' +
+            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :hover, ' +
+            '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :active ' +
+                '{background: none; text-shadow: none; box-shadow: none}\n' +
             '';
 
         init(): void {
@@ -55,33 +57,32 @@ module ModuleDefinition{
                 cv.appendTo(username);
                 tableCells.last().remove();
 
-                // add sidebar buttons
-                $('.sidebar__shortcut-inner-wrap', page).insertAfter(cv);
+                // add sidebar stuff
+                var sideBtns = $('.sidebar__shortcut-inner-wrap', page).insertAfter(cv);
+                sideBtns.children().eq(2).click(function() {  // fix report button
+                    $(this).find('form').submit();
+                })
+                var suspension = $('.sidebar__suspension', page);
+                if (suspension.length > 0){
+                    $('<span>', {
+                        style: 'color: #B16C86',
+                        text: ' (' + suspension.text().trim() + ')',
+                        title: $('.sidebar__suspension-time', page).text()
+                    }).appendTo(tableCells.eq(0).children().last());
+                }
 
                 return userHeader;
             }
 
-            var bubble = $(document.createElement('div'))
-                .attr('id', 'SGPP_UserInfo_balloon')
-                .addClass('SGPP_UserInfo_balloon')
-                .appendTo('body').hide();
-
-            var cacheDiv = $(document.createElement('div'))
-                .attr('id', 'SGPP_UserInfo_cache')
-                .appendTo('body').hide();
+            var bubble = $('<div>', {id: 'SGPP_UserInfo_balloon', 'class': 'SGPP_UserInfo_balloon'}).appendTo('body').hide();
 
             var cacheList = {};
 
-            var loading = $(document.createElement('div'))
-                .css('color', 'black')
-                .append(
-                    $(document.createElement('i'))
-                    .addClass('fa fa-refresh fa-spin fa-4x')
-                    .css({
-                        margin: '30px 80px',
-                        fontSize: '4em', // damn it, cg, fix your css!
-                        color: "#6B7A8C"
-                    })
+            var loading = $('<div>', {style: 'color: black'}).append(
+                $('<i>', {
+                    'class': 'fa fa-refresh fa-spin fa-4x',
+                    style: 'margin: 30px 80px; font-size: 4em; color: #6B7A8C'
+                })
             );
 
             bubble.append(loading);
@@ -98,16 +99,15 @@ module ModuleDefinition{
                     clearTimeout(this.timeout);
                     this.timeout = setTimeout(function() {
                         bubble.css(style);
-                        bubble.children().appendTo(cacheDiv);
-                        if (right) {
+                        bubble.children().remove();
+                        if (right)
                             bubble.addClass('right');
-                        } else {
+                        else
                             bubble.removeClass('right');
-                        }
                         var username = url.match(/\/user\/(.+?)(?:\/|$)/)[1];
-                        if (username !== undefined && username in cacheList) {
+                        if (username !== undefined && username in cacheList)
                             bubble.append(cacheList[username]).stop(true).show();
-                        } else {
+                        else {
                             bubble.append(loading).stop(true).show();
                             $.ajax({
                                 url: url,
@@ -116,7 +116,7 @@ module ModuleDefinition{
                                 success: function(html) {
                                     var info = generateBalloonInfo(html).data('user', username);
                                     cacheList[username] = info;
-                                    bubble.children().appendTo(cacheDiv);
+                                    bubble.children().remove();
                                     bubble.append(info);
                                 }
                             });
@@ -132,7 +132,7 @@ module ModuleDefinition{
             $(document).on({
                 mouseenter: function(e) {
                     var $el = $(e.target);
-                    
+
                     if ($el.attr('href').split('/').length > 3 || $el.prop('href') == document.URL)
                         return;
 
@@ -149,8 +149,8 @@ module ModuleDefinition{
                     } else {
                         style = {
                             top: pos.top + ($el.height() / 2) - 25,
-                            left: pos.left + $el.width() + 20,
-                            right: ''
+                            right: '',
+                            left: pos.left + $el.width() + 20
                         };
                     }
 
