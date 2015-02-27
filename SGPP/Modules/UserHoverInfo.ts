@@ -59,36 +59,31 @@ module ModuleDefinition{
 
                 // add sidebar stuff
                 var sideBtns = $('.sidebar__shortcut-inner-wrap', page).insertAfter(cv);
-                sideBtns.children().eq(2).click(function() {  // report button
+                sideBtns.children().eq(2).click(function() {  // fix report button
                     $(this).find('form').submit();
                 })
-                var suspension = $('.sidebar__suspension');
+                var suspension = $('.sidebar__suspension', page);
                 if (suspension.length > 0){
-                    var roleText = $(document.createElement('span')).text(' (' + suspension.text().trim() + ')').css('color', '#B16C86');
-                    var suspensionTime = $('.sidebar__suspension-time');
-                    if (suspensionTime.length > 0)
-                        roleText.attr('title', suspensionTime.text())
-                    tableCells.eq(0).children().last().append(roleText);
+                    $('<span>', {
+                        style: 'color: #B16C86',
+                        text: ' (' + suspension.text().trim() + ')',
+                        title: $('.sidebar__suspension-time', page).text()
+                    }).appendTo(tableCells.eq(0).children().last());
                 }
 
                 return userHeader;
             }
 
-            var bubble = $(document.createElement('div')).attr('id', 'SGPP_UserInfo_balloon')
-                .addClass('SGPP_UserInfo_balloon').appendTo('body').hide();
+            var bubble = $('<div>', {id: 'SGPP_UserInfo_balloon', 'class': 'SGPP_UserInfo_balloon'}).appendTo('body').hide();
 
             var cacheList = {};
 
-            var loading = $(document.createElement('div')).css('color', 'black')
-                .append(
-                    $(document.createElement('i'))
-                    .addClass('fa fa-refresh fa-spin fa-4x')
-                    .css({
-                        margin: '30px 80px',
-                        fontSize: '4em', // damn it, cg, fix your css!
-                        color: "#6B7A8C"
-                    })
-                );
+            var loading = $('<div>', {style: 'color: black'}).append(
+                $('<i>', {
+                    'class': 'fa fa-refresh fa-spin fa-4x',
+                    style: 'margin: 30px 80px; font-size: 4em; color: #6B7A8C'
+                })
+            );
 
             bubble.append(loading);
             bubble.hover(function() {
