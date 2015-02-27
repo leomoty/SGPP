@@ -92,7 +92,7 @@ module ModuleDefinition{
                 pageKind = split[0] || '';
                 description = split[2] || '';
 
-                if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion' || split[0] == 'user') {
+                if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion' || split[0] == 'user' || split[0] == 'group') {
                     subpage = (split[3] == 'search' ? '' : split[3]) || '';
                     code = split[1] || '';
                 } else {
