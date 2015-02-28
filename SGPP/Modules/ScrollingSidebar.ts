@@ -7,7 +7,7 @@ module ModuleDefinition{
         style = "";
 
         init(): void {
-            
+
         }
 
         render(): void {
@@ -15,7 +15,7 @@ module ModuleDefinition{
             var side = $('.sidebar');
             var sideOuter = $(document.createElement('div')).addClass(side.attr('class'));
             var sideInner = side.wrapInner(sideOuter).children().first().addClass('SGPP__scrollingSidebar');
-            var sideAds = sideInner.children('.sidebar__mpu'); // GoogleAds
+            var sideAds = side.find('.adsbygoogle'); // GoogleAds
 
             var delayedAdSlider = (() => {
                 var timeout;
@@ -37,15 +37,10 @@ module ModuleDefinition{
             var offset = 25; // space between .sidebar and .featured__container
             var navHeight = 0;
 
-            if (SGPP.modules['FixedNavbar'] !== undefined) {
+            if (SGPP.modules['FixedNavbar'] !== undefined)
                 offset += $('header').outerHeight();
-            } else {
+            else
                 navHeight += $('header').outerHeight();
-            }
-
-            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document, () => {
-                featHeight = $('.featured__container').height();
-            });
 
             var handleScrolling = () => {
                 var winTop = $win.scrollTop();
@@ -57,7 +52,6 @@ module ModuleDefinition{
                     });
                     delayedAdSlider(true);
 
-                // } else if (winTop <= featHeight + navbarOffset) { // in case navbar is NOT fixed
                 } else if (winTop <= featHeight + navHeight) {
                     sideInner.css({
                         position: 'static',
@@ -76,15 +70,20 @@ module ModuleDefinition{
                 }
             };
 
+            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', () => {
+                featHeight = $('.featured__container').height();
+                handleScrolling();
+            });
+
             handleScrolling();
 
             $(document).scroll(handleScrolling);
         }
 
-        
+
 
         name(): string {
-            return "ScrollingSidebar";
+            return "Scrolling Sidebar";
         }
 
         shouldRun = (location: SGLocation) => true;

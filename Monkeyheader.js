@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Steamgifts++
 // @namespace       https://github.com/leomoty/SGPP
-// @version         0.2.4 beta
+// @version         0.2.5 beta
 // @description     SG++ for Steamgifts.com
 // @author          Leomoty
 // @match           http://www.steamgifts.com/*

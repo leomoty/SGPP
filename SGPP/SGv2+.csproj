@@ -28,12 +28,13 @@
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollGiveawayComments.ts" />
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollGiveaways.ts" />
     <TypeScriptCompile Include="Modules\MarkComments.ts" />
-    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollMyGiveaways.ts" />
+    <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollLists.ts" />
     <TypeScriptCompile Include="Modules\EntryCommenters.ts" />
     <TypeScriptCompile Include="Modules\FixedFooter.ts" />
     <TypeScriptCompile Include="Modules\FixedNavbar.ts" />
     <TypeScriptCompile Include="Modules\GridView.ts" />
     <TypeScriptCompile Include="Modules\LivePreview.ts" />
+    <TypeScriptCompile Include="Modules\MessagesFilterTest.ts" />
     <TypeScriptCompile Include="Modules\ScrollingSidebar.ts" />
     <TypeScriptCompile Include="Modules\Settings.ts" />
     <TypeScriptCompile Include="Modules\UserHoverInfo.ts" />

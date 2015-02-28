@@ -15,12 +15,13 @@
 /// <reference path="Modules/Settings.ts" />
 /// <reference path="Modules/UserHoverInfo.ts" />
 /// <reference path="Modules/MarkComments.ts" />
+/// <reference path="Modules/MessagesFilterTest.ts" />
 
 /// <reference path="Modules/EndlessScroll/EndlessScrollDiscussion.ts" />
 /// <reference path="Modules/EndlessScroll/EndlessScrollDiscussionReplies.ts" />
 /// <reference path="Modules/EndlessScroll/EndlessScrollGiveawayComments.ts" />
 /// <reference path="Modules/EndlessScroll/EndlessScrollGiveaways.ts" />
-/// <reference path="Modules/EndlessScroll/EndlessScrollMyGiveaways.ts" />
+/// <reference path="Modules/EndlessScroll/EndlessScrollLists.ts" />
 
 var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
@@ -34,11 +35,12 @@ var modulesNames: Array<string> = new Array<string>(
     "ScrollingSidebar",
     "UserHoverInfo",
     "MarkComments",
+    "MessagesFilterTest",
     "EndlessScrollDiscussion",
     "EndlessScrollDiscussionReplies",
     "EndlessScrollGiveaways",
-    "EndlessScrollMyGiveaways",
-    "EndlessScrollGiveawayComments"
+    "EndlessScrollGiveawayComments",
+    "EndlessScrollLists"
     );
 
 var defaultModules: Array<string> = new Array<string>(
@@ -63,7 +65,7 @@ var defaultModules: Array<string> = new Array<string>(
         //Checks if the module is enabled in LocalStorage, rule of thumb, if it didn't exist before, it isn't.
         //Also checks should run for the current page
         if (SGPP.settings.isModuleEnabled(modulesNames[pos]) && m.shouldRun(SGPP.location))
-            SGPP.modules[m.name()] = m; //Put module into module list
+            SGPP.modules[modulesNames[pos]] = m; //Put module into module list
     }
 
     //load modules

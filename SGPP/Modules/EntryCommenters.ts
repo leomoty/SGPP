@@ -12,68 +12,101 @@ module ModuleDefinition {
         commenters: any = {};
         private page: number;
         private pageStart: number = 1337; // goes down
-        private elements: any = {
-            button: $(document.createElement('i')).addClass('giveaway__icon fa fa-comments-o').attr('title', 'Check who commented'),
-            loader: $(document.createElement('i')).addClass('giveaway__icon fa fa-refresh fa-spin').attr('title', 'loading comments').css('cursor', 'auto'),
-            pos: $(document.createElement('span')).addClass('GAComm_pos fa-stack').attr('title', 'Commented')
-                .append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x'))
-                .append($(document.createElement('i')).addClass('fa fa-check fa-stack-1x')),
-            neg: $(document.createElement('span')).addClass('GAComm_neg fa-stack').attr('title', 'Did not comment')
-                .append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x'))
-                .append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x'))
-        };
+        private button: JQuery;
+        private elements: any;
 
-        style = ".GAComm_pos, .GAComm_neg {margin-left:-3px; vertical-align: inherit}\n" +
-            ".GAComm_pos > i.fa.fa-check {color: #719A47}\n" +                  // only interior
-            ".GAComm_neg > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" +  // only interior
-            // ".GAComm_neg {color: rgba(166, 93, 92, 0.85)}\n" +               // fully colored
-            // ".GAComm_pos {color: #719A47}\n" +                               // fully colored
-            ".GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times {font-size: 0.7em}";
+        style =
+            ".SGPP_EntryComm {margin: 0 10px}\n"+
+            ".SGPP_EntryComm > i {margin: 0}\n"+
+            ".SGPP_EntryComm:not(.loading) > .fa-spin {display: none}\n" +
+            ".SGPP_EntryComm.loading > .fa-comments-o {display: none}\n" +
+            ".SGPP_EntryComm.active > .fa-comments-o {opacity: 0.7}\n" +
+            ".SGPP_EntryComm:hover > .fa-comments-o {opacity: 1}\n" +
 
-        init(): void {}
+            "span.SGPP_EntryComm_comment {vertical-align: inherit; text-shadow: none}\n" +
+            ".SGPP_EntryComm_disabled .SGPP_EntryComm_comment {visibility: hidden}\n" +
+            ".SGPP_EntryComm_comment > i.fa.fa-check, .SGPP_EntryComm_comment > i.fa.fa-times {font-size: 0.7em}\n" +
+            ".SGPP_EntryComm_comment > i.fa.fa-check {color: #719A47}\n" +                  // only interior
+            ".SGPP_EntryComm_comment > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" +  // only interior
+            // ".SGPP_EntryComm_comment.positive {color: #719A47}\n" +                      // fully colored
+            // ".SGPP_EntryComm_comment.negative {color: rgba(166, 93, 92, 0.85)}\n" +      // fully colored
+            '';
+
+        init(): void {
+            var balloons = $(document.createElement('i')).addClass('giveaway__icon fa fa-comments-o').attr('title', 'Check who commented');
+            var spinner = $(document.createElement('i')).addClass('giveaway__icon fa fa-refresh fa-spin').attr('title', 'Loading comments...').css('cursor', 'auto');
+
+            this.button = $(document.createElement('span')).addClass('SGPP_EntryComm').append(balloons, spinner);
+
+            var balloon = $(document.createElement('span')).addClass('SGPP_EntryComm_comment fa-stack').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x'));
+            var pos = $(document.createElement('i')).addClass('fa fa-check fa-stack-1x');
+            var neg = $(document.createElement('i')).addClass('fa fa-times fa-stack-1x');
+
+            this.elements = {
+                pos: balloon.clone().addClass('positive').attr('title', 'Commented').append(pos),
+                neg: balloon.clone().addClass('negative').attr('title', 'Did not comment').append(neg),
+            }
+        }
 
         render = () => {
-            this.elements.button.click(this.main);
-            $('.page__heading__breadcrumbs').append(this.elements.button);
-            $('.page__heading__breadcrumbs').append(this.elements.loader.hide());
-            
+            this.button.appendTo('.page__heading__breadcrumbs').one('click', this.firstRun);
         }
 
         name(): string {
-            return "EntryCommenters";
+            return "Checks if entries/winners commented on Giveaways";
         }
 
         shouldRun(loc: SGLocation): boolean {return loc.pageKind == 'giveaway' && (loc.subpage == 'entries' || loc.subpage == 'winners')}
 
-        private main = () => {
+        private firstRun = () => {
             if (!this.cacheCompleted) {
                 if (!this.isLoading) {
-                    this.elements.button.hide();
-                    this.elements.loader.show();
+                    this.button.addClass('loading');
 
                     this.isLoading = true;
                     this.getCommenters();
                 }
 
-                setTimeout(this.main, 1000);
+                setTimeout(this.firstRun, 1000);
                 return;
             }
 
-            this.elements.loader.hide();
-            this.elements.button.show();
+            this.button.removeClass('loading');
+            $('.table__rows .table__column--width-fill > a').each(this.main);
 
-            $('.table__rows .table__column--width-fill').each((i, el) => {
-                $('.GAComm_pos, .GAComm_neg', el).remove();
-                var wrapper = $('p.table__column__heading', el);
-                if (wrapper.length > 0) el = wrapper[0];
+            this.button.addClass('active');
+            this.button.click(this.toggleState);
 
-                if (this.commenters[el.textContent.trim()]) {
-                    this.elements.pos.clone().appendTo(el);
-                } else {
-                    this.elements.neg.clone().appendTo(el);
-                }
-            });
+            var observer = new MutationObserver((mutations) => {
+                for (var i = 0; i < mutations.length; i++) {
+                    $('.table__rows').toggleClass('SGPP_EntryComm_disabled', !this.button.hasClass('active'));
+                    $(mutations[i].addedNodes).find('.table__column--width-fill > a').each(this.main)
+                };
+            })
+            observer.observe($('.table')[0], {
+                childList: true,
+                subtree: true
+            })
+
         }
+
+        private toggleState = () => {
+            this.button.toggleClass('active');
+            $('.table__rows').toggleClass('SGPP_EntryComm_disabled', !this.button.hasClass('active'));
+        }
+
+        private main = (i, el) => {
+            // the winners list is wrapped in a <p> element, god knows why.
+            var wrapper = $('p.table__column__heading', el);
+            if (wrapper.length > 0) el = wrapper[0];
+
+            if (this.commenters[el.textContent.trim()]) {
+                this.elements.pos.clone().appendTo(el);
+            } else {
+                this.elements.neg.clone().appendTo(el);
+            }
+        }
+
         private getCommenters = () => {
             this.url += SGPP.location.code + '/' + SGPP.location.description + '/search?page='
             this.page = this.pageStart;
@@ -90,7 +123,7 @@ module ModuleDefinition {
 
         private handleCommentPage = (html: string) => {
             var $html = $(html);
-            $('.comment__username', $html).each((i, el) => {
+            $('.comments .comment__username', $html).each((i, el) => {
                 this.commenters[el.textContent.trim()] = true;
             });
 

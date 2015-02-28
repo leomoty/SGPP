@@ -18,7 +18,7 @@ module ModuleDefinition{
         }
 
         name(): string {
-            return "FixedFooter";
+            return "Fixed Footer on bottom";
         }
 
         shouldRun = (location: SGLocation) => true;

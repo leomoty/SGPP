@@ -121,7 +121,7 @@ module ModuleDefinition {
             }
         }
 
-        loadPage(page: number): void {
+        loadPage(page: number, force_reload: boolean = false): void {
 
             if (!(page in this._pagesUrl)) {
                 throw 'No URL for page ' + this._currentPage;
@@ -169,7 +169,7 @@ module ModuleDefinition {
 
             if (pg.loading) {
                 return;
-            } else if (pg.loaded) {
+            } else if (pg.loaded && !force_reload) {
                 if (!pg.visible) {
                     pg.element.show();
                     pg.visible = true;
@@ -183,17 +183,25 @@ module ModuleDefinition {
 
                 this._pages[page].loading = true;
 
+                var isReload = this._pages[page].loaded;
+
                 $.get(url,(data) => {
 
                     var dom = $.parseHTML(data);
 
-                    this.beforeAddItems(dom, page);
-
-                    var itemsContainer = this.getItemsElement(dom);
+                    if (isReload)
+                        pageContainer.children().remove();
 
                     //
                     var newPagination = this.getNavigationElement(dom);
                     var actualPage = parseInt(newPagination.find('a.is-selected').data('page-number'));
+
+                    var $dom = $(dom);
+
+                    // beforeAddItems(event: JQueryEventObject, dom: JQuery, page: number, isReload: boolean)
+                    $(this).trigger('beforeAddItems', [$dom, actualPage, isReload]);
+
+                    var itemsContainer = this.getItemsElement(dom);
 
                     // Cache urls for pages
                     this.parseNavigation(newPagination);
@@ -206,7 +214,8 @@ module ModuleDefinition {
                     // Update navigation on page               
                     this.getNavigationElement(document).html(newPagination.html());
 
-                    this.afterAddItems(pageContainer, page);
+                    // afterAddItems(event: JQueryEventObject, pageContainer: JQuery, page: number, isReload: boolean)
+                    $(this).trigger('afterAddItems', [pageContainer, actualPage, isReload]);
 
                     this._pages[page].loaded = true;
 
@@ -226,11 +235,12 @@ module ModuleDefinition {
             }
         }
 
-        beforeAddItems(dom, page:number): void {
-        }
-
-        addItems(dom, pageContainer: JQuery, page:number): void {
+        addItems(dom, pageContainer: JQuery, page: number): void {
             this.getItems(dom).each((i: number, el: Element) => {
+
+                // addItem(el: element)
+                $(this).trigger('addItem', [el]);
+
                 if (this.reverseItems) {
                     pageContainer.prepend(el);
                 }
@@ -238,9 +248,6 @@ module ModuleDefinition {
                     pageContainer.append(el);
                 }
             });
-        }
-
-        afterAddItems(pageContainer: JQuery, page: number): void {
         }
 
         parseNavigation(dom: JQuery): void {
