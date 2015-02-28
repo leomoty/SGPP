@@ -30,15 +30,8 @@ module ModuleDefinition {
             return dom.children('.table__row-outer-wrap');
         }
 
-        beforeAddItems(dom): void {
-            if ("MarkComments" in SGPP.modules) {
-                var MarkComments:any = SGPP.modules["MarkComments"];
-                MarkComments.markTopics(dom);
-            }
-        }
-
         name(): string {
-            return "EndlessScrollDiscussion";
+            return "Endless Scroll on Discussions page";
         }
 
     }

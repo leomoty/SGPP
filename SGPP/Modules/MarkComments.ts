@@ -86,6 +86,12 @@ module ModuleDefinition {
                 return true;
         }
 
+        public forget(): void {
+            if (this.localStorageKey in localStorage) {
+                localStorage.removeItem(this.localStorageKey);
+            }
+        }
+
         private save() {
             localStorage[this.localStorageKey] = JSON.stringify(this._obj);
         }
@@ -95,12 +101,20 @@ module ModuleDefinition {
 
         private topicInfo: topicInfo;
 
-        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}"+
-                ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}"+
-                ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}"+
-                ".endless_badge_new, .endless_badge_new_child {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}" +
-                ".endless_badge_new_child { display: none; }" + 
-                ".comment--collapsed .endless_badge_new_child { display: block; }";
+        get topic(): topicInfo {
+            return this.topicInfo;
+        }
+
+        style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" +
+            ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" +
+            ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" +
+            ".endless_badge_new, .endless_badge_new_child {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}" +
+            ".endless_badge_new_child { display: none; }" +
+            ".comment--collapsed .endless_badge_new_child { display: block; }\n" +
+            ".table__row-outer-wrap .markcomments_controls { display: none; }\n" +
+            ".table__row-outer-wrap:hover .markcomments_controls { display: inline; }" +
+            ".markcomments_controls i { opacity: 0.5; cursor: pointer; }\n" +
+            ".markcomments_controls i:hover { opacity: 1; }";
 
         getDiscussionId(url:string): string {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
@@ -140,7 +154,7 @@ module ModuleDefinition {
                 if (currentPageNavEl.length != 0)
                     page = currentPageNavEl.first().data('page-number');
 
-                this.markComments(document, page, true);
+                this.markComments($(document), page, true);
 
                 this.topicInfo.setLastVisit();
 
@@ -161,9 +175,36 @@ module ModuleDefinition {
 
                     m.topicInfo.setCommentState(comment_id, false);
                 });
+
+                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems',(event: JQueryEventObject, dom:JQuery, page: number, isReload: boolean) => {
+                        this.markComments(dom, page, true, isReload);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
-                this.markTopics(document);
+                this.markTopics($(document));
+
+                var m = this;
+
+                $("body").on('click', '.markcomments_forget', function () {
+                    var $this = $(this);
+                    var parent = $this.parents('h3')
+                    var link = parent.children('a');
+
+                    var tInfo = new topicInfo(m.getDiscussionId(link.attr('href')));
+
+                    tInfo.forget();
+
+                    parent.find('.endless_badge_new').remove();
+                    $this.remove();
+                });
+
+                if ("EndlessScrollDiscussion" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems',(event: JQueryEventObject, dom: JQuery, page: number, isReload: boolean) => {
+                        this.markTopics(dom);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -187,37 +228,39 @@ module ModuleDefinition {
             return has_new;
         }
 
-        markComments(dom, page: number, markRead: boolean = false): void {
+        markComments(dom: JQuery, page: number, markRead: boolean = false, forceMark: boolean = false): void {
+            // Don't mark if topic wasn't viewed before, unless asked to.
+            if (this.topicInfo.isDataStored || forceMark) {
+                dom.find('.comment[data-comment-id]').each((i, el) => {
+                    var id = parseInt($(el).data('comment-id'));
 
-            $(dom).find('.comment[data-comment-id]').each((i, el) => {
-                var id = parseInt($(el).data('comment-id'));
+                    var is_new = this.topicInfo.isNewComment(page, id);
+                    var collapsed = this.topicInfo.getCommentState(id);
 
-                var is_new = this.topicInfo.isNewComment(page, id);
-                var collapsed = this.topicInfo.getCommentState(id);
-
-                if (collapsed) {
-                    $(el).addClass('comment--collapsed');
-                }
-
-                if (is_new) {
-                    $(el).addClass('endless_new');
-
-                    $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
-                } else {
-                    $(el).addClass('endless_not_new');
-                }
-
-                if (this.checkNewComments(el, page)) {
-
-                    if (!is_new) {
-                        $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new_child').text('New replies').attr('title', 'New since last visit'));
+                    if (collapsed) {
+                        $(el).addClass('comment--collapsed');
                     }
 
-                    $(el).addClass('endless_new_children');
-                } else {
-                    $(el).addClass('endless_no_new_children');
-                }
-            });
+                    if (is_new) {
+                        $(el).addClass('endless_new');
+
+                        $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
+                    } else {
+                        $(el).addClass('endless_not_new');
+                    }
+
+                    if (this.checkNewComments(el, page)) {
+
+                        if (!is_new) {
+                            $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new_child').text('New replies').attr('title', 'New since last visit'));
+                        }
+
+                        $(el).addClass('endless_new_children');
+                    } else {
+                        $(el).addClass('endless_no_new_children');
+                    }
+                });
+            }
 
             if (markRead) {
                 var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0]);
@@ -226,9 +269,9 @@ module ModuleDefinition {
             }
         }
 
-        markTopics(dom): void {
+        markTopics(dom: JQuery): void {
 
-            $(dom).find('.table__row-outer-wrap').each((i: number, el: Element) => {
+            dom.find('.table__row-outer-wrap').each((i: number, el: Element) => {
                 try {
                     var link = $(el).find('h3 a').first();
                     var tInfo = new topicInfo(this.getDiscussionId(link.attr('href')));
@@ -259,6 +302,8 @@ module ModuleDefinition {
                             $(el).addClass('endless_no_new_comments');
                             $(el).find('.table__column--width-fill > p').first().append(' - no new comments</strong>');
                         }
+
+                        $(el).find('h3').first().append('<span class="markcomments_controls pull-right"><i class="fa fa-remove markcomments_forget" title="Forget this topic"></i></span>');
                     }
                 }
                 catch (err) {
@@ -268,7 +313,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "MarkComments";
+            return "Mark Comments";
         }
 
     }
