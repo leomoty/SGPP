@@ -35,6 +35,7 @@
     <TypeScriptCompile Include="Modules\GridView.ts" />
     <TypeScriptCompile Include="Modules\LivePreview.ts" />
     <TypeScriptCompile Include="Modules\MessagesFilterTest.ts" />
+    <TypeScriptCompile Include="Modules\PopupGiveaway.ts" />
     <TypeScriptCompile Include="Modules\ScrollingSidebar.ts" />
     <TypeScriptCompile Include="Modules\Settings.ts" />
     <TypeScriptCompile Include="Modules\UserHoverInfo.ts" />
@@ -47,7 +48,7 @@
     <Content Include="packages.config" />
     <Content Include="Scripts\pagedown\MarkdownConverter.js" />
   </ItemGroup>
-  <PropertyGroup>
+    <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup>

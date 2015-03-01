@@ -16,6 +16,7 @@
 /// <reference path="Modules/UserHoverInfo.ts" />
 /// <reference path="Modules/MarkComments.ts" />
 /// <reference path="Modules/MessagesFilterTest.ts" />
+/// <reference path="Modules/PopupGiveaway.ts" />
 
 /// <reference path="Modules/EndlessScroll/EndlessScrollDiscussion.ts" />
 /// <reference path="Modules/EndlessScroll/EndlessScrollDiscussionReplies.ts" />
@@ -36,6 +37,7 @@ var modulesNames: Array<string> = new Array<string>(
     "UserHoverInfo",
     "MarkComments",
     "MessagesFilterTest",
+    "PopupGiveaway",
     "EndlessScrollDiscussion",
     "EndlessScrollDiscussionReplies",
     "EndlessScrollGiveaways",
