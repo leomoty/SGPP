@@ -77,7 +77,7 @@ module ModuleDefinition{
         init = () => {
             this.log("Steamgifts++ plugin started.");
          
-            var userUrl = $('.nav__button-container a[href^="/user/"');
+            var userUrl = $('.nav__button-container a[href^="/user/"]');
             if (userUrl.length)
                 this._currentUser = userUrl.attr('href').substr("/user/".length);
 
