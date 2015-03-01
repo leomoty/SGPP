@@ -35,16 +35,19 @@ module ModuleDefinition {
 
         render = () => {
             var esg = $('.pagination').prev();
-            esg.parent().on("DOMNodeInserted",(event) => {
-                if($(event.target).hasClass('pagination__navigation'))
-                    this.updateGridview($('.pagination').prev());
+            
+            SGPP.on("EndlessScrollGiveaways", "afterAddItems",(event: JQueryEventObject, pageContainer: JQuery, page: number, isReload: boolean) => {
+                this.updateGridview(pageContainer);
             });
 
             this.updateGridview(esg);
         }
 
         updateGridview = (esg) => {
-            var giveaways = $(document.createElement('div')).wrapInner(esg.children('.giveaway__row-outer-wrap'));
+            var giveawaysList = esg.children('.giveaway__row-outer-wrap');
+            if (!giveawaysList.length)
+                return;
+            var giveaways = $(document.createElement('div')).wrapInner(giveawaysList);
             var gridview = this.generateGridview(giveaways);
             esg.append(gridview);
         }
