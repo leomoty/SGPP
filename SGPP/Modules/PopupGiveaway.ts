@@ -8,7 +8,7 @@ module ModuleDefinition {
         ".SGPP__popup_giveaway .page__outer-wrap { padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right:20px }\n" +
         ".SGPP__popup_giveaway .comment__parent { margin-top: 10px }\n" +
         ".SGPP__popup_giveaway .global__image-outer-wrap--avatar-small { margin-right: 5px }\n" +
-        ".SGPP__popup_giveaway .page__description { max-height: 150px; overflow-y: auto }\n" +
+        ".SGPP__popup_giveaway .page__description { max-height: 200px; overflow-y: auto }\n" +
         ".SGPP__popup_giveaway .markdown li { position:relative }\n" +
         ".SGPP__popup_giveaway .featured__outer-wrap form > * { background-color: #f0f2f5 }\n" +
         ".SGPP__popup_giveaway .featured__outer-wrap form { margin-top: 5px; }\n";
@@ -47,6 +47,8 @@ module ModuleDefinition {
                     done((page) => {
 
                         var featured = $('.featured__outer-wrap', page);
+
+                        $('.featured__column--whitelist, .featured__column--group', featured).each(function () { this.childNodes[1].nodeValue = '' });
 
                         var pageOuterWrap = $('<div>', { 'class': 'page__outer-wrap' });
 
