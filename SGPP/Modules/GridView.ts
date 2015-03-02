@@ -35,7 +35,7 @@ module ModuleDefinition {
 
         render = () => {
             var esg = $('.pagination').prev();
-            
+
             SGPP.on("EndlessScrollGiveaways", "afterAddItems",(event: JQueryEventObject, pageContainer: JQuery, page: number, isReload: boolean) => {
                 this.updateGridview(pageContainer);
             });
@@ -66,7 +66,7 @@ module ModuleDefinition {
             // containers
             var gridPage = $('<div>', {'class': 'SGPP__gridView'});
             var gridTile = $('<div>', {'class': 'SGPP__gridTile'});
-            var tileInfo = $('<div>', {'class': 'SGPP__gridTileInfo global__image-outer-wrap'});
+            var tileInfo = $('<h2>', {'class': 'SGPP__gridTileInfo global__image-outer-wrap'});
             var tileIcns = $('<div>', {'class': 'SGPP__gridTileIcons'});
 
             root.find('.giveaway__row-inner-wrap').each(function () {
