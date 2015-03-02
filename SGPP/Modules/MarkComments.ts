@@ -176,11 +176,9 @@ module ModuleDefinition {
                     m.topicInfo.setCommentState(comment_id, false);
                 });
 
-                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems',(event: JQueryEventObject, dom:JQuery, page: number, isReload: boolean) => {
-                        this.markComments(dom, page, true, isReload);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussionReplies", 'beforeAddItems',(event: JQueryEventObject, dom:JQuery, page: number, isReload: boolean) => {
+                    this.markComments(dom, page, true, isReload);
+                });
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics($(document));
@@ -200,11 +198,9 @@ module ModuleDefinition {
                     $this.remove();
                 });
 
-                if ("EndlessScrollDiscussion" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems',(event: JQueryEventObject, dom: JQuery, page: number, isReload: boolean) => {
-                        this.markTopics(dom);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussion", 'beforeAddItems',(event: JQueryEventObject, dom: JQuery, page: number, isReload: boolean) => {
+                    this.markTopics(dom);
+                });
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
