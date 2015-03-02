@@ -4,11 +4,17 @@ module ModuleDefinition {
 
     export class PopupGiveaway implements SteamGiftsModule {
 
-        style = "";
+        style = ".SGPP__popup_giveaway { text-align: justify; width: 90%; max-width: 1000px }\n" +
+        ".SGPP__popup_giveaway .page__outer-wrap { padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right:20px }\n" +
+        ".SGPP__popup_giveaway .comment__parent { margin-top: 10px }\n" +
+        ".SGPP__popup_giveaway .global__image-outer-wrap--avatar-small { margin-right: 5px }\n" +
+        ".SGPP__popup_giveaway .page__description { max-height: 150px; overflow-y: auto }\n" +
+        ".SGPP__popup_giveaway .markdown li { position:relative }\n" +
+        ".SGPP__popup_giveaway .featured__outer-wrap form > * { background-color: #f0f2f5 }\n" +
+        ".SGPP__popup_giveaway .featured__outer-wrap form { margin-top: 5px; }\n";
 
         private popupGiveaway = $('<div>', {
             'class': 'SGPP__popup_giveaway is-hidden',
-            'style': 'text-align: justify; width: 90%; max-width: 1000px;'
         });
 
         init(): void {
@@ -38,93 +44,100 @@ module ModuleDefinition {
                 onOpen: () => {
                     this.popupGiveaway.removeClass('is-hidden');
                     $.ajax({ url: self.attr('href') }).
-                        done( (page) => {
+                    done((page) => {
 
-                            var featured = $('.featured__outer-wrap', page);
+                        var featured = $('.featured__outer-wrap', page);
 
-                            var pageOuterWrap = $('<div>', { 'class': 'page__outer-wrap', style: 'padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right:20px;' });
+                        var pageOuterWrap = $('<div>', { 'class': 'page__outer-wrap' });
 
-                            var enterButton = $('.sidebar form', page);
+                        var enterButton = $('.sidebar form', page);
 
-                            if (!enterButton.length)
-                                enterButton = $('.sidebar__error', page);
+                        if (!enterButton.length)
+                            enterButton = $('.sidebar__error', page);
 
-                            var commentArea = $('.comment--submit .comment__parent', page).css('margin-top', '10px');
-                            commentArea.find('.global__image-outer-wrap--avatar-small').css('margin-right', '5px');
-                            commentArea.find('span').addClass('b-close');
+                        var pageDescription = $('.page__description', page);
 
-                            var commentButton = $('.js__submit-form', commentArea);
+                        var commentArea = $('.comment--submit .comment__parent', page);
+                        commentArea.find('span').addClass('b-close');
 
+                        var commentButton = $('.js__submit-form', commentArea);
+
+                        featured.find('.featured__summary').append(enterButton);
+
+                        if (pageDescription.length) {
                             pageOuterWrap.append(
-                                enterButton,
                                 this.headingHelper("Description"),
-                                $('.page__description', page),
-                                $(this.headingHelper("Reply")).css('margin-top', '10px'),
-                                commentArea
-                                );
+                                pageDescription
+                            );
+                        }
 
-                            this.popupGiveaway.append(featured, pageOuterWrap);
+                        pageOuterWrap.append(
+                            this.headingHelper("Reply"),
+                            commentArea
+                        );
 
-                            this.popupGiveaway.bPopup().reposition();
+                        this.popupGiveaway.append(featured, pageOuterWrap);
 
-                            $(".sidebar__entry-insert, .sidebar__entry-delete", pageOuterWrap).on("click", (e) => {
-                                var t = $(e.currentTarget);
-                                t.addClass("is-hidden"),
-                                t.closest("form").find(".sidebar__entry-loading").removeClass("is-hidden"),
-                                t.closest("form").find("input[name=do]").val(t.attr("data-do")),
-                                $.ajax({
-                                    url: '/ajax.php', type: "POST",
-                                    dataType: "json",
-                                    data: t.closest("form").serialize(),
-                                    success: function (e) {
-                                        t.closest("form").find(".sidebar__entry-loading").addClass("is-hidden");
+                        this.popupGiveaway.bPopup().reposition();
 
-                                        if (e.type === "success") {
-                                            if (t.hasClass("sidebar__entry-insert")) {
-                                                t.closest("form").find(".sidebar__entry-delete").removeClass("is-hidden");
-                                                self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').addClass('is-faded');
-                                            } else if (t.hasClass("sidebar__entry-delete")) {
-                                                t.closest("form").find(".sidebar__entry-insert").removeClass("is-hidden");
-                                                self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').removeClass('is-faded');
-                                            }
-                                        } else if (e.type === "error") {
-                                            t.closest("form").html("undefined" != typeof e.link && e.link !== !1 ?
-                                                '<a href="' + e.link + '" class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</a>"
-                                                : '<div class="sidebar__error is-disabled"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</div>");
+                        $(".sidebar__entry-insert, .sidebar__entry-delete", featured).on("click", (e) => {
+                            var t = $(e.currentTarget);
+                            t.addClass("is-hidden"),
+                            t.closest("form").find(".sidebar__entry-loading").removeClass("is-hidden"),
+                            t.closest("form").find("input[name=do]").val(t.attr("data-do")),
+                            $.ajax({
+                                url: '/ajax.php', type: "POST",
+                                dataType: "json",
+                                data: t.closest("form").serialize(),
+                                success: function (e) {
+                                    t.closest("form").find(".sidebar__entry-loading").addClass("is-hidden");
+
+                                    if (e.type === "success") {
+                                        if (t.hasClass("sidebar__entry-insert")) {
+                                            t.closest("form").find(".sidebar__entry-delete").removeClass("is-hidden");
+                                            self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').addClass('is-faded');
+                                        } else if (t.hasClass("sidebar__entry-delete")) {
+                                            t.closest("form").find(".sidebar__entry-insert").removeClass("is-hidden");
+                                            self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').removeClass('is-faded');
                                         }
-
-                                        if ("undefined" != typeof e.entry_count && e.entry_count !== !1) {
-                                            $(".live__entry-count").text(e.entry_count);
-                                            $(".nav__points").text(e.points);
-                                        }
+                                    } else if (e.type === "error") {
+                                        t.closest("form").html("undefined" != typeof e.link && e.link !== !1 ?
+                                            '<a href="' + e.link + '" class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</a>"
+                                            : '<div class="sidebar__error is-disabled"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</div>");
                                     }
-                                });
-                            });
 
-                            commentButton.on("click", (e) => {
-                                e.preventDefault();
-
-                                var el = $(e.currentTarget);
-                                $.ajax({
-                                    url: self.attr('href'),
-                                    type: 'POST',
-                                    dataType: "json",
-                                    data: el.closest("form").serialize(),
-                                    complete: (e) => {
-                                        if (e.getResponseHeader('TM-finalURL')) {
-                                            el.closest("form").find("textarea").val("");
-                                            el.hide();
-                                        }
+                                    if ("undefined" != typeof e.entry_count && e.entry_count !== !1) {
+                                        $(".live__entry-count").text(e.entry_count);
+                                        $(".nav__points").text(e.points);
                                     }
-                                })
+                                }
                             });
                         });
+
+                        commentButton.on("click", (e) => {
+                            e.preventDefault();
+
+                            var el = $(e.currentTarget);
+                            $.ajax({
+                                url: self.attr('href'),
+                                type: 'POST',
+                                dataType: "json",
+                                data: el.closest("form").serialize(),
+                                complete: (e) => {
+                                    if (e.getResponseHeader('TM-finalURL')) {
+                                        el.closest("form").find("textarea").val("");
+                                        el.hide();
+                                    }
+                                }
+                            })
+                        });
+                    });
                 },
                 onClose: () => {
                     this.popupGiveaway.addClass('is-hidden');
                     this.popupGiveaway.empty();
                 },
-                follow: [false, false]
+                follow: [true, false]
             });
         }
 
