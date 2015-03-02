@@ -8,7 +8,7 @@ module ModuleDefinition {
 
         private popupGiveaway = $('<div>', {
             'class': 'SGPP__popup_giveaway is-hidden',
-            'style': 'text-align: justify; width: 90%; max-width: 1000px; min-height: 550px;'
+            'style': 'text-align: justify; width: 90%; max-width: 1000px;'
         });
 
         init(): void {
@@ -64,6 +64,8 @@ module ModuleDefinition {
                                 );
 
                             this.popupGiveaway.append(featured, pageOuterWrap);
+
+                            this.popupGiveaway.bPopup().reposition();
 
                             $(".sidebar__entry-insert, .sidebar__entry-delete", pageOuterWrap).on("click", (e) => {
                                 var t = $(e.currentTarget);

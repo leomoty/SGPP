@@ -34,7 +34,7 @@ interface bPopupSettings {
 
 interface JQueryBPopup {
     close(): void;
-    reposition(animateSpeed: Number): void;
+    reposition(animateSpeed?: Number): void;
 }
 
 interface JQuery {
