@@ -27,6 +27,7 @@ module ModuleDefinition {
             ".SGPP__gridTileIcons {position: absolute; bottom: 5px; right: 5px}\n" +
             ".SGPP__gridTileIcons > * {display: inline-block; width: 20px; height: 16px; text-align: center; padding: 2px; border-radius: 3px 0 0; vertical-align: middle}\n" +
             ".SGPP__gridTileIcons > :not(:last-child) {padding-right: 4px; margin-right: -3px}\n" +
+            ".SGPP__gridTileIcons i {font-size: inherit; color: inherit}\n" +
             "";
 
         init = () => {
