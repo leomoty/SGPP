@@ -1,6 +1,6 @@
 ﻿/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
 /// <reference path="Scripts/typings/jquery/jquery_bpopup.d.ts" />
-                                                    
+
 
 /// <reference path="Core.ts" />
 /// <reference path="ModuleDefinition.ts" />
@@ -14,6 +14,7 @@
 /// <reference path="Modules/ScrollingSidebar.ts" />
 /// <reference path="Modules/Settings.ts" />
 /// <reference path="Modules/UserHoverInfo.ts" />
+/// <reference path="Modules/UserTags.ts" />
 /// <reference path="Modules/MarkComments.ts" />
 /// <reference path="Modules/MessagesFilterTest.ts" />
 /// <reference path="Modules/PopupGiveaway.ts" />
@@ -35,6 +36,7 @@ var modulesNames: Array<string> = new Array<string>(
     "GridView",
     "ScrollingSidebar",
     "UserHoverInfo",
+    "UserTags",
     "MarkComments",
     "MessagesFilterTest",
     "PopupGiveaway",
@@ -58,7 +60,7 @@ var defaultModules: Array<string> = new Array<string>(
             SGPP.storage.setItem(defaultModules[pos], "1");
         }
     }
-    
+
     //load needed modules into module list
     for (var pos in modulesNames) {
         //Load next module
