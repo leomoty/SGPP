@@ -80,7 +80,9 @@ module ModuleDefinition {
 
                         this.popupGiveaway.append(featured, pageOuterWrap);
 
-                        this.popupGiveaway.bPopup().reposition();
+                        this.popupGiveaway.css({
+                            'top': Math.max(0,(($(window).height() - (/* featured height*/208 + pageOuterWrap.outerHeight())) / 2) + $(window).scrollTop()) + "px"
+                        });
 
                         $(".sidebar__entry-insert, .sidebar__entry-delete", featured).on("click", (e) => {
                             var t = $(e.currentTarget);
