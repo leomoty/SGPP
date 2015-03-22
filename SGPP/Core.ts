@@ -84,13 +84,14 @@ module ModuleDefinition{
             //init SGLocation
             this.resolvePath();
 
+            //init settings
+            this._settings.init(this._storage);
+
             //create SGPP stylesheet section in the page head
             this._styleSheet = $(document.createElement('style')).attr('id', 'SGPP_StyleSheet').appendTo('head');
             this.appendCSS('/* SGPP Stylesheet */ ');
 
-            //init settings
             this.appendCSS(this._settings.style);
-            this._settings.init();
         }
 
         render(): void {

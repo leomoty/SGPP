@@ -47,7 +47,7 @@ module ModuleDefinition {
         }
 
         get reverseItems(): boolean {
-            return true;
+            return SGPP.settings.getSettingForModule("EndlessScrollDiscussionReplies", "reversedDiscussionReplies") || false;
         }
 
         createPageContainerElement(): JQuery {
