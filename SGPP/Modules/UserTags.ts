@@ -99,11 +99,11 @@ module ModuleDefinition{
 
         init(): void {}
 
-        render(): void {
+        render = () => {
             this.tagConfigModal = new UserTagConfig(this.updateTags);
 
             var usersLinks = $('a[href^="/user/"]:not(.global__image-outer-wrap, .nav__avatar-outer-wrap)');
-            this.usertagsCache = JSON.parse(SGPP.storage.getItem('createdTags')) || {};
+            this.usertagsCache = SGPP.storage.getItem('createdTags', {});
             usersLinks.each((i, el) => {
                 var pathSplit = $(el).prop('pathname').split('/');
                 var username = el.textContent.trim();
@@ -148,7 +148,7 @@ module ModuleDefinition{
                 delete this.usertagsCache[user];
             else
                 this.usertagsCache[user] = config;
-            SGPP.storage.setItem('createdTags', JSON.stringify(this.usertagsCache));
+            SGPP.storage.setItem('createdTags', this.usertagsCache);
 
             console.log(1, user)
             $('a[href="/user/' + user + '"]').each((i, el) => {

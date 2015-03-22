@@ -12,7 +12,7 @@ module ModuleDefinition {
         }
 
         init(): void {
-            
+
         }
 
         render(): void {
@@ -38,6 +38,10 @@ module ModuleDefinition {
 
         createPageContainerElement(): JQuery {
             return $('<div class="comments">');
+        }
+
+        get reverseItems(): boolean {
+            return SGPP.settings.getSettingForModule("EndlessScrollGiveawayComments", "reversedGiveawayComments") || false;
         }
 
         getItemsElement(dom): JQuery {

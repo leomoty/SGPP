@@ -39,6 +39,8 @@
     <TypeScriptCompile Include="Modules\ScrollingSidebar.ts" />
     <TypeScriptCompile Include="Modules\Settings.ts" />
     <TypeScriptCompile Include="Modules\UserHoverInfo.ts" />
+    <TypeScriptCompile Include="Modules\UserTags.ts" />
+    <TypeScriptCompile Include="Scripts\typings\greasemonkey\greasemonkey.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery_bpopup.d.ts" />
     <TypeScriptCompile Include="Scripts\pagedown\MarkdownConverter.d.ts" />
     <TypeScriptCompile Include="ModuleDefinition.ts" />
@@ -48,7 +50,7 @@
     <Content Include="packages.config" />
     <Content Include="Scripts\pagedown\MarkdownConverter.js" />
   </ItemGroup>
-    <PropertyGroup>
+  <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup>
