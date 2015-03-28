@@ -93,8 +93,11 @@ module ModuleDefinition{
 
             '.SGPP__tagOptions {margin-bottom: 15px}\n' +
             '.SGPP__tagOptions > div {display: flex; justify-content: space-between}\n' +
-            '.SGPP__tagOptions > div > input {width: 125px; height: auto}\n' +
+            '.SGPP__tagOptions > div > input {width: 125px; height: 30px;}\n' +
+            '.SGPP__tagOptions > div :not(:first-child) { margin-top: 5px;}\n' +
             '.SGPP__tagOptions .popup__actions {margin-top: 15px}\n' +
+            '.SGPP__tagOptions > div > span { line-height: 35px;}\n' +
+            '.SGPP__tagOptions > div > input[type="color"] { padding: 3px 6px;}\n' +
             '';
 
         init(): void {}
