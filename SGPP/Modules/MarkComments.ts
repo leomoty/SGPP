@@ -273,7 +273,7 @@ module ModuleDefinition {
                     var tInfo = new topicInfo(this.getDiscussionId(link.attr('href')));
 
                     // Make sure links go to last page if using reversed messages
-                    if (true) {
+                    if (SGPP.settings.getSettingForModule("EndlessScrollDiscussionReplies", "reversedDiscussionReplies") || false) {
                         link.attr('href', link.attr('href') + '/search?page=31337');
                     }
 

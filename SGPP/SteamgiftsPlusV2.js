@@ -7,11 +7,19 @@ var ModuleDefinition;
             this.containsItem = function (key) {
                 return localStorage.getItem(_this._LSPrefix + key) != null;
             };
-            this.getItem = function (key) {
-                return localStorage.getItem(_this._LSPrefix + key);
+            this.getItem = function (key, defaultValue) {
+                return JSON.parse(localStorage.getItem(_this._LSPrefix + key) || null) || defaultValue;
             };
             this.setItem = function (key, value) {
-                localStorage.setItem(_this._LSPrefix + key, value);
+                localStorage.setItem(_this._LSPrefix + key, JSON.stringify(value));
+            };
+            this.clear = function () {
+                SGPP.log("Removing all SGPP entries from LocalStorage.");
+                Object.keys(localStorage).forEach(function (key) {
+                    if (key.indexOf(_this._LSPrefix) == 0) {
+                        localStorage.removeItem(key);
+                    }
+                });
             };
         }
         return LocalStorage;
@@ -32,16 +40,29 @@ var ModuleDefinition;
                     console.log("[" + new Date() + "] SGPP - " + msg);
             };
             this.appendCSS = function (css) {
-                $('style').append(css);
+                _this._styleSheet.append(css);
+            };
+            this.on = function (moduleName, event, callback) {
+                if (typeof moduleName === 'string') {
+                    _this.addOnCallbackHelper(moduleName, event, callback);
+                }
+                else {
+                    for (var pos in moduleName) {
+                        _this.addOnCallbackHelper(moduleName[pos], event, callback);
+                    }
+                }
             };
             this.style = "";
             this.init = function () {
                 _this.log("Steamgifts++ plugin started.");
+                var userUrl = $('.nav__button-container a[href^="/user/"]');
+                if (userUrl.length)
+                    _this._currentUser = userUrl.attr('href').substr("/user/".length);
                 _this.resolvePath();
-                $('head').append($('<style>'));
+                _this._settings.init(_this._storage);
+                _this._styleSheet = $(document.createElement('style')).attr('id', 'SGPP_StyleSheet').appendTo('head');
                 _this.appendCSS('/* SGPP Stylesheet */ ');
                 _this.appendCSS(_this._settings.style);
-                _this._settings.init();
             };
             this.resolvePath = function () {
                 var hash = "";
@@ -61,7 +82,7 @@ var ModuleDefinition;
                     });
                     pageKind = split[0] || '';
                     description = split[2] || '';
-                    if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion' || split[0] == 'user') {
+                    if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion' || split[0] == 'user' || split[0] == 'group') {
                         subpage = (split[3] == 'search' ? '' : split[3]) || '';
                         code = split[1] || '';
                     }
@@ -87,6 +108,13 @@ var ModuleDefinition;
             };
             this.init();
         }
+        Object.defineProperty(Core.prototype, "user", {
+            get: function () {
+                return this._currentUser;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(Core.prototype, "settings", {
             get: function () {
                 return this._settings;
@@ -108,6 +136,12 @@ var ModuleDefinition;
             enumerable: true,
             configurable: true
         });
+        Core.prototype.addOnCallbackHelper = function (moduleName, event, callback) {
+            if (moduleName in SGPP.modules) {
+                SGPP.log("Handler attached on " + moduleName + " (" + event + ")");
+                $(SGPP.modules[moduleName]).on(event, callback);
+            }
+        };
         Core.prototype.name = function () {
             return "Core";
         };
@@ -126,45 +160,40 @@ var ModuleDefinition;
     var CommentAndEnter = (function () {
         function CommentAndEnter() {
             this.shouldRun = function (location) { return location.pageKind == 'giveaway' && location.subpage == ''; };
-            this.style = ".comment_submit{margin-bottom:0!important}";
+            this.style = "div.SGPP_CommAndEnter {margin: 0 0 0 5px}\n";
             this.init = function () {
             };
             this.render = function () {
-                var submit = $('.js__submit-form');
-                submit.before('<div class="sidebar__entry-insert comment_submit is-hidden">Comment and Enter</div>');
-                submit.before('<div class="sidebar__entry-loading is-disabled is-hidden comment_submit"><i class="fa fa-refresh fa-spin"></i> Please wait...</div>');
-                var insert = $('.sidebar .sidebar__entry-insert');
-                var remove = $('.sidebar .sidebar__entry-delete');
-                var button = $('.comment_submit.sidebar__entry-insert');
-                var loading = $('.comment_submit.sidebar__entry-loading');
-                if (!insert.hasClass('is-hidden'))
-                    button.removeClass('is-hidden');
-                insert.on('click', function () {
-                    button.addClass('is-hidden');
-                    loading.removeClass('is-hidden');
+                var enterGa = $('.sidebar .sidebar__entry-insert');
+                if (enterGa.length === 0)
+                    return;
+                var leaveGa = $('.sidebar .sidebar__entry-delete');
+                var loadGa = $('.sidebar .sidebar__entry-loading');
+                var submitBtn = $('.js__submit-form');
+                var commLoading = loadGa.clone().addClass('SGPP_CommAndEnter').insertAfter(submitBtn);
+                var commAndEnter = enterGa.clone().addClass('SGPP_CommAndEnter').text('Submit + Enter').insertAfter(submitBtn);
+                var observer = new MutationObserver(function (mutations) {
+                    commAndEnter.toggleClass('is-hidden', enterGa.hasClass('is-hidden'));
+                    commLoading.toggleClass('is-hidden', loadGa.hasClass('is-hidden'));
                 });
-                remove.on('click', function () {
-                    loading.addClass('is-hidden');
-                    button.removeClass('is-hidden');
-                });
-                button.on('click', function () {
-                    insert.click();
-                    button.addClass('is-hidden');
-                    loading.removeClass('is-hidden');
+                var observerOptions = { attributes: true, attributeFilter: ['class'] };
+                observer.observe(enterGa[0], observerOptions);
+                observer.observe(loadGa[0], observerOptions);
+                commAndEnter.click(function (e) {
+                    enterGa.click();
+                    $('textarea.description').prop('disabled', true);
                     var observer = new MutationObserver(function (mutations) {
-                        mutations.forEach(function (mutation) {
-                            if (!$(mutation.target).hasClass('is-hidden')) {
-                                submit.closest("input[name=do]").val("comment_new");
-                                submit.closest("form").submit();
-                            }
-                        });
+                        if (!leaveGa.hasClass('is-hidden')) {
+                            submitBtn.closest("input[name=do]").val("comment_new");
+                            submitBtn.closest("form").submit();
+                        }
                     });
-                    observer.observe(remove[0], { attributes: true, attributeFilter: ['class'] });
+                    observer.observe(leaveGa[0], observerOptions);
                 });
             };
         }
         CommentAndEnter.prototype.name = function () {
-            return "CommentAndEnter";
+            return "Comment and Enter on Giveaways";
         };
         return CommentAndEnter;
     })();
@@ -180,43 +209,50 @@ var ModuleDefinition;
             this.isLoading = false;
             this.commenters = {};
             this.pageStart = 1337;
-            this.elements = {
-                button: $(document.createElement('i')).addClass('giveaway__icon fa fa-comments-o').attr('title', 'Check who commented'),
-                loader: $(document.createElement('i')).addClass('giveaway__icon fa fa-refresh fa-spin').attr('title', 'loading comments').css('cursor', 'auto'),
-                pos: $(document.createElement('span')).addClass('GAComm_pos fa-stack').attr('title', 'Commented').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x')).append($(document.createElement('i')).addClass('fa fa-check fa-stack-1x')),
-                neg: $(document.createElement('span')).addClass('GAComm_neg fa-stack').attr('title', 'Did not comment').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x')).append($(document.createElement('i')).addClass('fa fa-times fa-stack-1x'))
-            };
-            this.style = ".GAComm_pos, .GAComm_neg {margin-left:-3px; vertical-align: inherit}\n" + ".GAComm_pos > i.fa.fa-check {color: #719A47}\n" + ".GAComm_neg > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" + ".GAComm_pos > i.fa.fa-check, .GAComm_neg > i.fa.fa-times {font-size: 0.7em}";
+            this.style = ".SGPP_EntryComm {margin: 0 10px}\n" + ".SGPP_EntryComm > i {margin: 0}\n" + ".SGPP_EntryComm:not(.loading) > .fa-spin {display: none}\n" + ".SGPP_EntryComm.loading > .fa-comments-o {display: none}\n" + ".SGPP_EntryComm.active > .fa-comments-o {opacity: 0.7}\n" + ".SGPP_EntryComm:hover > .fa-comments-o {opacity: 1}\n" + "span.SGPP_EntryComm_comment {vertical-align: inherit; text-shadow: none}\n" + ".SGPP_EntryComm_disabled .SGPP_EntryComm_comment {visibility: hidden}\n" + ".SGPP_EntryComm_comment > i.fa.fa-check, .SGPP_EntryComm_comment > i.fa.fa-times {font-size: 0.7em}\n" + ".SGPP_EntryComm_comment > i.fa.fa-check {color: #719A47}\n" + ".SGPP_EntryComm_comment > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" + '';
             this.render = function () {
-                _this.elements.button.click(_this.main);
-                $('.page__heading__breadcrumbs').append(_this.elements.button);
-                $('.page__heading__breadcrumbs').append(_this.elements.loader.hide());
+                _this.button.appendTo('.page__heading__breadcrumbs').one('click', _this.firstRun);
             };
-            this.main = function () {
+            this.firstRun = function () {
                 if (!_this.cacheCompleted) {
                     if (!_this.isLoading) {
-                        _this.elements.button.hide();
-                        _this.elements.loader.show();
+                        _this.button.addClass('loading');
                         _this.isLoading = true;
                         _this.getCommenters();
                     }
-                    setTimeout(_this.main, 1000);
+                    setTimeout(_this.firstRun, 1000);
                     return;
                 }
-                _this.elements.loader.hide();
-                _this.elements.button.show();
-                $('.table__rows .table__column--width-fill').each(function (i, el) {
-                    $('.GAComm_pos, .GAComm_neg', el).remove();
-                    var wrapper = $('p.table__column__heading', el);
-                    if (wrapper.length > 0)
-                        el = wrapper[0];
-                    if (_this.commenters[el.textContent.trim()]) {
-                        _this.elements.pos.clone().appendTo(el);
+                _this.button.removeClass('loading');
+                $('.table__rows .table__column--width-fill > a').each(_this.main);
+                _this.button.addClass('active');
+                _this.button.click(_this.toggleState);
+                var observer = new MutationObserver(function (mutations) {
+                    for (var i = 0; i < mutations.length; i++) {
+                        $('.table__rows').toggleClass('SGPP_EntryComm_disabled', !_this.button.hasClass('active'));
+                        $(mutations[i].addedNodes).find('.table__column--width-fill > a').each(_this.main);
                     }
-                    else {
-                        _this.elements.neg.clone().appendTo(el);
-                    }
+                    ;
                 });
+                observer.observe($('.table')[0], {
+                    childList: true,
+                    subtree: true
+                });
+            };
+            this.toggleState = function () {
+                _this.button.toggleClass('active');
+                $('.table__rows').toggleClass('SGPP_EntryComm_disabled', !_this.button.hasClass('active'));
+            };
+            this.main = function (i, el) {
+                var wrapper = $('p.table__column__heading', el);
+                if (wrapper.length > 0)
+                    el = wrapper[0];
+                if (_this.commenters[el.textContent.trim()]) {
+                    _this.elements.pos.clone().appendTo(el);
+                }
+                else {
+                    _this.elements.neg.clone().appendTo(el);
+                }
             };
             this.getCommenters = function () {
                 _this.url += SGPP.location.code + '/' + SGPP.location.description + '/search?page=';
@@ -232,7 +268,7 @@ var ModuleDefinition;
             };
             this.handleCommentPage = function (html) {
                 var $html = $(html);
-                $('.comment__username', $html).each(function (i, el) {
+                $('.comments .comment__username', $html).each(function (i, el) {
                     _this.commenters[el.textContent.trim()] = true;
                 });
                 if (_this.page == _this.pageStart) {
@@ -246,9 +282,19 @@ var ModuleDefinition;
             };
         }
         EntryCommenters.prototype.init = function () {
+            var balloons = $(document.createElement('i')).addClass('giveaway__icon fa fa-comments-o').attr('title', 'Check who commented');
+            var spinner = $(document.createElement('i')).addClass('giveaway__icon fa fa-refresh fa-spin').attr('title', 'Loading comments...').css('cursor', 'auto');
+            this.button = $(document.createElement('span')).addClass('SGPP_EntryComm').append(balloons, spinner);
+            var balloon = $(document.createElement('span')).addClass('SGPP_EntryComm_comment fa-stack').append($(document.createElement('i')).addClass('fa fa-comment-o fa-stack-1x'));
+            var pos = $(document.createElement('i')).addClass('fa fa-check fa-stack-1x');
+            var neg = $(document.createElement('i')).addClass('fa fa-times fa-stack-1x');
+            this.elements = {
+                pos: balloon.clone().addClass('positive').attr('title', 'Commented').append(pos),
+                neg: balloon.clone().addClass('negative').attr('title', 'Did not comment').append(neg),
+            };
         };
         EntryCommenters.prototype.name = function () {
-            return "EntryCommenters";
+            return "Checks if entries/winners commented on Giveaways";
         };
         EntryCommenters.prototype.shouldRun = function (loc) {
             return loc.pageKind == 'giveaway' && (loc.subpage == 'entries' || loc.subpage == 'winners');
@@ -261,7 +307,7 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
         function FixedNavbar() {
-            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" + "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + ".comment__summary { margin-top: -44px !important; padding-top: 48px !important; }\n" + "a { position: relative; z-index: 99; } ";
+            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" + "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + ".comment__summary {margin-top: -44px !important; padding-top: 48px !important;}\n" + ".comment__actions__button {position: relative; z-index: 5;}\n" + ".page__heading__breadcrumbs {z-index: 5;}";
             this.shouldRun = function (location) { return true; };
         }
         FixedNavbar.prototype.init = function () {
@@ -271,7 +317,7 @@ var ModuleDefinition;
             $('header').addClass('SPGG_FixedNavbar');
         };
         FixedNavbar.prototype.name = function () {
-            return "FixedNavbar";
+            return "Fixed Navbar on top";
         };
         return FixedNavbar;
     })();
@@ -292,7 +338,7 @@ var ModuleDefinition;
             $('.footer__inner-wrap').addClass('SGPP_FixedFooter_innerWrap');
         };
         FixedFooter.prototype.name = function () {
-            return "FixedFooter";
+            return "Fixed Footer on bottom";
         };
         return FixedFooter;
     })();
@@ -304,83 +350,63 @@ var ModuleDefinition;
         function GridView() {
             var _this = this;
             this.shouldRun = function (location) { return location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1; };
-            this.style = ".gridview_flex{display:flex;flex-wrap:wrap;justify-content:center;margin:0 -5px;}" + ".global__image-outer-wrap--missing-image {height:69px!important}" + ".preview{box-shadow:1px 1px 0 #fff inset,0 7px 7px rgba(255,255,255,.37)inset;background-color:rgba(255,255,255,1);border:1px solid #cbcfdb;padding:5px; z-index:10;}" + ".tile_view_header{min-height:35px;margin-top:5px;font-size:12px}" + ".tile_view_avatar_outer{float:right;display:inline-block;margin-left:5px}" + ".tile_view_avatar{height:24px;width:24px;padding: 2px}" + ".tile_view_faded{opacity:.4}" + ".sidebar--wide{min-width:329px!important}";
+            this.style = ".SGPP__gridView {display: flex; flex-wrap: wrap; justify-content: space-around; margin: 5px;}\n" + ".tile_view_header {font-size: 12px; border-bottom: 1px solid #D2D6E0; box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.3); margin-bottom: 3px; text-align: center}\n" + ".SGPP__gridAvatar_outer {float: right; display: inline-block; margin-left: 5px}\n" + ".SGPP__gridAvatar {height: 27px; width: 27px; padding: 2px}\n" + ".SGPP__gridTile {margin: 5px}\n" + ".SGPP__gridTile > .global__image-outer-wrap--game-medium {position: relative}\n" + ".SGPP__gridTile:not(:hover) .SGPP__gridTileTime {display: none}\n" + ".SGPP__gridTile:hover {opacity: 1}\n" + ".SGPP__gridTile:hover > .global__image-outer-wrap--game-medium {border-radius: 4px 4px 0 0; border-bottom: 1px dotted transparent}\n" + ".SGPP__gridTile:hover > .SGPP__gridTileInfo {display: block; border-radius: 0 0 4px 4px}\n" + ".SGPP__gridTileInfo {display: none; position:absolute; width:184px; border-top: none; z-index: 10}\n" + ".SGPP__gridTileInfo .giveaway__icon {opacity: 0.7}\n" + ".SGPP__gridTileTime {position: absolute; bottom: 5px; left: 5px; height: 16px; text-align: center; background-color: #FFF; border-radius: 0 3px 0 0; padding: 2px 4px}\n" + ".SGPP__gridTileTime i {font-size: inherit; color:inherit}\n" + ".SGPP__gridTileIcons {position: absolute; bottom: 5px; right: 5px}\n" + ".SGPP__gridTileIcons > * {display: inline-block; width: 20px; height: 16px; text-align: center; padding: 2px; border-radius: 3px 0 0; vertical-align: middle}\n" + ".SGPP__gridTileIcons > :not(:last-child) {padding-right: 4px; margin-right: -3px}\n" + ".SGPP__gridTileIcons i {font-size: inherit; color: inherit}\n" + "";
             this.init = function () {
             };
             this.render = function () {
                 var esg = $('.pagination').prev();
-                esg.parent().on("DOMNodeInserted", function (event) {
-                    if ($(event.target).hasClass('pagination__navigation'))
-                        _this.updateGridview($('.pagination').prev());
+                SGPP.on("EndlessScrollGiveaways", "afterAddItems", function (event, pageContainer, page, isReload) {
+                    _this.updateGridview(pageContainer);
                 });
                 _this.updateGridview(esg);
             };
             this.updateGridview = function (esg) {
-                var giveaways = $(document.createElement('div')).wrapInner(esg.children('.giveaway__row-outer-wrap'));
+                var giveawaysList = esg.children('.giveaway__row-outer-wrap');
+                if (!giveawaysList.length)
+                    return;
+                var giveaways = $(document.createElement('div')).wrapInner(giveawaysList);
                 var gridview = _this.generateGridview(giveaways);
-                esg.remove('.giveaway__row-outer-wrap').addClass('SGPP__Gridview').append(gridview);
+                esg.append(gridview);
             };
             this.generateGridview = function (root) {
-                function calculateWinChance(copies, entries) {
-                    var res = (+(parseFloat(copies) / parseFloat(entries)) * 100);
-                    return Math.min(res, 100).toFixed(2);
+                function calcWinChance(copies, entries) {
+                    var chance = +(copies / entries) * 100;
+                    return chance < 0.01 ? '<0.01' : Math.min(chance, 100).toFixed(2);
                 }
-                var container = document.createElement('div');
-                $(container).addClass('gridview_flex');
-                $(root).find('.giveaway__row-inner-wrap').each(function () {
-                    if ($(this).parents('.pinned-giveaways').length != 0)
+                var strong = function (txt) { return '<strong>' + txt + '</strong>'; };
+                var floatLeft = function (el) { return $('<div>', { style: 'float: left', append: el }); };
+                var floatRight = function (el) { return $('<div>', { style: 'float: right', append: el }); };
+                var gridPage = $('<div>', { 'class': 'SGPP__gridView' });
+                var gridTile = $('<div>', { 'class': 'SGPP__gridTile' });
+                var tileInfo = $('<h2>', { 'class': 'SGPP__gridTileInfo global__image-outer-wrap' });
+                var tileIcns = $('<div>', { 'class': 'SGPP__gridTileIcons' });
+                root.find('.giveaway__row-inner-wrap').each(function () {
+                    var $el = $(this);
+                    if ($el.parents('.pinned-giveaways').length != 0)
                         return;
-                    var eachDiv = document.createElement('div');
-                    $(this).children('.global__image-outer-wrap--game-medium').removeClass('global__image-outer-wrap--missing-image').children().first().wrap(document.createElement('div')).parent().addClass('global__image-outer-wrap--missing-image');
-                    $(eachDiv).append($(this).find('.global__image-outer-wrap--game-medium'));
-                    $(eachDiv).css('margin', '5px');
-                    var gridview_extra = $('<div class="gridview_extra is-hidden preview" style="position:absolute; width:184px;margin-left:-5.8px; border-top: thick #ffffff;"></div>');
-                    var giveawayName = $(this).find('.giveaway__heading__name').text();
-                    var avatar = $(this).find('.global__image-outer-wrap--avatar-small');
-                    avatar.addClass('tile_view_avatar');
-                    var copies = "0";
-                    var cost = "0";
-                    if ($(this).find('.giveaway__heading__thin').length == 1) {
-                        cost = $(this).find('.giveaway__heading__thin').text().replace("(", "").replace(")", "");
-                        copies = "1";
+                    var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded'));
+                    var gameImg = $el.children('.global__image-outer-wrap--game-medium').appendTo(thisTile).css('position', 'relative');
+                    var gaColumns = $el.find('.giveaway__columns').children();
+                    var timeLeft = gaColumns.eq(0).addClass('SGPP__gridTileTime').appendTo(gameImg);
+                    timeLeft.find('span').text(function (i, txt) { return txt.match(/\d+(?:\s+)./)[0].replace(' ', ''); });
+                    var icons = gaColumns.slice(2);
+                    if (icons.length > 0) {
+                        icons.filter('.giveaway__column--contributor-level').text(function (i, txt) { return txt.replace('Level ', ''); });
+                        tileIcns.clone().append(icons).appendTo(gameImg);
                     }
-                    else {
-                        cost = $(this).find('.giveaway__heading__thin:nth(1)').text().replace("(", "").replace(")", "");
-                        copies = $(this).find('.giveaway__heading__thin:nth(0)').text().replace("(", "").replace("Copies)", "");
-                    }
-                    var timeLeft = $(this).find('.fa-clock-o').next().text();
-                    var timeSplit = timeLeft.split(" ");
-                    var entries = $(this).find('.fa-tag').next().text();
-                    var entriesSplit = entries.split(" ");
-                    var comments = $(this).find('.fa-comment').next().text();
-                    var commentsSplit = comments.split(" ");
-                    var winChance = calculateWinChance(copies, entries.replace(",", ""));
-                    if ($(this).hasClass('is-faded'))
-                        $(eachDiv).find('.global__image-outer-wrap--missing-image').addClass('tile_view_faded');
-                    gridview_extra.append('<div class="giveaway__heading__name tile_view_header">' + giveawayName + '</div>');
-                    gridview_extra.append('<div class="tile_view_avatar_outer">' + avatar[0].outerHTML + '</div>');
-                    gridview_extra.append('<div style="float:left;"><strong>' + copies + '</strong> Copies</div>');
-                    gridview_extra.append('<div style="float:right;"><strong>' + cost + '</strong></div>');
-                    gridview_extra.append('<div style="clear:both;"></div>');
-                    if (timeSplit[0] === "Ended")
-                        gridview_extra.append('<div style="margin-top:-14px;"><strong>' + timeSplit[0] + '</strong></div>');
-                    else
-                        gridview_extra.append('<div style="margin-top:-14px;"><strong>' + timeSplit[0] + '</strong> ' + timeSplit[1] + '</div>');
-                    gridview_extra.append('<div style="clear:both;"></div>');
-                    gridview_extra.append('<div style="float:left;"><strong>' + entriesSplit[0] + '</strong> Entries</div>');
-                    gridview_extra.append('<div style="float:right;"><strong>' + winChance + '</strong>% Chance</div>');
-                    gridview_extra.append('<div style="clear:both;"></div>');
-                    gridview_extra.append('<div><strong>' + commentsSplit[0] + '</strong> Comments</div>');
-                    $(eachDiv).children().first().append(gridview_extra);
-                    $(container).append(eachDiv);
+                    var giveawayName = $el.find('.giveaway__heading__name').text();
+                    var avatar = $el.find('.global__image-outer-wrap--avatar-small').addClass('SGPP__gridAvatar');
+                    var thinText = $el.find('.giveaway__heading__thin').toArray();
+                    var cost = parseInt(thinText.pop().textContent.replace(/\D+/g, ""));
+                    var copies = thinText.length == 0 ? 1 : parseInt(thinText.pop().textContent.replace(/\D+/g, ""));
+                    var gaLinks = $el.find('.giveaway__links').children();
+                    var entries = parseInt(gaLinks.eq(0).text().replace(/\D+/g, ""));
+                    var comments = parseInt(gaLinks.eq(1).text().replace(/\D+/g, ""));
+                    var winChance = calcWinChance(copies, entries);
+                    tileInfo.clone().append($('<div>', { text: giveawayName, 'class': 'giveaway__heading__name tile_view_header' }), $('<div>', { 'class': "SGPP__gridAvatar_outer", title: 'Created ' + gaColumns.eq(1).text(), append: avatar }), $('<div>', { style: 'display: inline-block; width: 145px' }).append(floatLeft(strong(copies) + (copies > 1 ? ' Copies' : ' Copy')), floatRight(strong(cost + 'P')), $('<div>', { style: 'clear: both' }), floatLeft(strong(winChance + '%')).attr('title', 'Probability to win'), floatRight($el.find('.giveaway__icon'))), $('<div>', { style: 'clear: both' }), floatLeft(strong(entries) + ' Entries'), floatRight(strong(comments) + ' Comments')).appendTo(thisTile);
+                    gridPage.append(thisTile);
                 });
-                $(container).append($('<div style="margin-top: 5px; margin-bottom: 20px;width: 0px;height: 69px;"></div>'));
-                $(container).find('.global__image-outer-wrap--game-medium').hover(function () {
-                    $(this).find('.gridview_extra').removeClass('is-hidden');
-                }, function () {
-                    $(this).find('.gridview_extra').addClass('is-hidden');
-                });
-                return container;
+                return gridPage;
             };
         }
         GridView.prototype.name = function () {
@@ -421,7 +447,7 @@ var ModuleDefinition;
             var side = $('.sidebar');
             var sideOuter = $(document.createElement('div')).addClass(side.attr('class'));
             var sideInner = side.wrapInner(sideOuter).children().first().addClass('SGPP__scrollingSidebar');
-            var sideAds = sideInner.children('.adsbygoogle');
+            var sideAds = side.find('.adsbygoogle');
             var delayedAdSlider = (function () {
                 var timeout;
                 return function (up) {
@@ -440,15 +466,10 @@ var ModuleDefinition;
             var featHeight = $('.featured__container').height();
             var offset = 25;
             var navHeight = 0;
-            if (SGPP.modules['FixedNavbar'] !== undefined) {
+            if (SGPP.modules['FixedNavbar'] !== undefined)
                 offset += $('header').outerHeight();
-            }
-            else {
+            else
                 navHeight += $('header').outerHeight();
-            }
-            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', document, function () {
-                featHeight = $('.featured__container').height();
-            });
             var handleScrolling = function () {
                 var winTop = $win.scrollTop();
                 if (winTop + sideInner.height() >= $widgetContainer.position().top + $widgetContainer.height()) {
@@ -476,11 +497,15 @@ var ModuleDefinition;
                     delayedAdSlider(true);
                 }
             };
+            $('.featured__inner-wrap .global__image-outer-wrap img').on('load', function () {
+                featHeight = $('.featured__container').height();
+                handleScrolling();
+            });
             handleScrolling();
             $(document).scroll(handleScrolling);
         };
         ScrollingSidebar.prototype.name = function () {
-            return "ScrollingSidebar";
+            return "Scrolling Sidebar";
         };
         return ScrollingSidebar;
     })();
@@ -491,65 +516,325 @@ var ModuleDefinition;
     var Settings = (function () {
         function Settings() {
             var _this = this;
-            this.style = "";
-            this.settingsNavIcon = '<a class="nav__row SGPP__settings">\n' + '<i class="icon-red fa fa-fw fa-bars"> </i>\n' + '<div class="nav__row__summary">\n' + '<p class="nav__row__summary__name" > SG++ Settings</p>\n' + '<p class="nav__row__summary__description"> Steamgifts++ settings.</p>\n' + '</div>\n' + '</a>\n';
-            this.settingsPage = function (modules) {
-                return '<div class="popup SGPP__settings_popup">\n' + '<p class="popup__heading">Steamgifts++ Settings</p>\n' + '<div class="form__rows" style="max-height:500px; overflow-y:scroll; overflow-x:hidden; min-width:400px;">' + modules + '</div>\n' + '<p class="popup__actions" style="margin-top:5px;">\n' + '<span class="SGPP__settings-save b-close">Save</span>\n' + '<span class="b-close">Close</span>\n' + '</p>\n' + '</div>\n';
-            };
-            this.moduleSetting = function (num, friendlyName, name, current) {
-                return '<div class="form__row" style="margin-bottom:10px;">\n' + '<div class="form__heading"><div class="form__heading__number">' + num + '</div><div class="form__heading__text">' + friendlyName + '</div></div>\n' + '<div class= "form__row__indent">\n' + '<div>\n' + '<input type="hidden" name="' + name + '" value="' + (current ? "1" : "0") + '">\n' + '<div class= "SGPP__settings-checkbox ' + (current ? 'is-selected' : 'is-disabled') + '">\n' + '<i class= "form__checkbox__default fa fa-circle-o"> </i><i class="form__checkbox__hover fa fa-circle"> </i><i class= "form__checkbox__selected fa fa-check-circle"> </i>Enabled\n' + '</div>\n' + '</div>\n' + '</div>\n' + '</div>\n';
-            };
-            this.init = function () {
+            this._lsSettings = {};
+            this.style = ".SGPP__settings { cursor: pointer; }\n";
+            this.settingsNavIcon = '<a class="nav__row SGPP__settings" target="_blank" href="/sgpp">\n' + '<i class="icon-red fa fa-fw fa-bars"> </i>\n' + '<div class="nav__row__summary">\n' + '<p class="nav__row__summary__name" > SG++ Settings</p>\n' + '<p class="nav__row__summary__description"> Steamgifts++ settings.</p>\n' + '</div>\n' + '</a>\n';
+            this.init = function (storage) {
+                _this._lsSettings = storage.getItem(ModuleDefinition.Settings.SETTINGS_KEY, {});
+                if (window.location.pathname == '/sgpp') {
+                    unsafeWindow.window['$'] = $;
+                    $('head').html(GM_getResourceText("head"));
+                    $('body').html(GM_getResourceText("settings"));
+                }
             };
             this.render = function () {
-                $(".nav__absolute-dropdown a[href^='/?logout']").before(_this.settingsNavIcon);
-                var modules = "";
-                var i = 0;
-                for (var pos in modulesNames) {
-                    i++;
-                    var SGModule = new ModuleDefinition[modulesNames[pos]]();
-                    modules += _this.moduleSetting(i, SGModule.name(), modulesNames[pos], _this.isModuleEnabled(modulesNames[pos]));
-                }
-                var completeSettingsPage = _this.settingsPage(modules);
-                $('.footer__outer-wrap').before(completeSettingsPage);
-                $('.SGPP__settings').on('click', _this.handleSettingClick);
-                $('.SGPP__settings-save').on("click", _this.handleSaveSettings);
-                $('.SGPP__settings-checkbox').on("click", _this.handleSettingsCheckboxClick);
-            };
-            this.handleSettingsCheckboxClick = function () {
-                var input = $(this).siblings("input");
-                if ($(this).hasClass('is-selected')) {
-                    $(this).removeClass('is-selected');
-                    $(this).addClass('is-disabled');
-                    input.val('0');
+                if (SGPP.location.pageKind != 'sgpp') {
+                    $(".nav__absolute-dropdown a[href^='/?logout']").before(_this.settingsNavIcon);
                 }
                 else {
-                    $(this).removeClass('is-disabled');
-                    $(this).addClass('is-selected');
-                    input.val('1');
+                    $('.SGPP__form__checkbox').each(function (index, el) {
+                        var elem = $(el);
+                        var setting = elem.attr('name');
+                        if (elem.parent('.SGPP__Module').length) {
+                            elem.prop('checked', _this.isModuleEnabled(setting));
+                        }
+                        else {
+                            var module = elem.closest('.form__row').find('.SGPP__Module input').attr('name');
+                            elem.prop('checked', _this.getSettingForModule(module, setting) || false);
+                        }
+                    });
+                    $('.SGPP__form__checkbox').on("click", function (e) {
+                        var target = $(e.target);
+                        var checked = target.prop('checked');
+                        if (target.parent('.SGPP__Module').length) {
+                            var module = target.attr('name');
+                            if (_this._lsSettings.hasOwnProperty(module)) {
+                                _this._lsSettings[module].enabled = checked;
+                            }
+                            else {
+                                _this._lsSettings[module] = {
+                                    "enabled": checked
+                                };
+                            }
+                        }
+                        else {
+                            var module = target.closest('.form__row').find('.SGPP__Module input').attr('name');
+                            var property = target.attr('name');
+                            if (!_this._lsSettings.hasOwnProperty(module)) {
+                                _this._lsSettings[module] = {
+                                    "enabled": false
+                                };
+                            }
+                            _this._lsSettings[module][property] = checked;
+                        }
+                        _this.persistSettings();
+                    });
                 }
-            };
-            this.handleSettingClick = function () {
-                var popup = $(".SGPP__settings_popup").bPopup({ opacity: .85, fadeSpeed: 200, followSpeed: 500, modalColor: "#3c424d" });
-                $(".SGPP__settings_popup .SGPP__settings-checkbox").addClass("form__checkbox");
-            };
-            this.handleSaveSettings = function () {
-                $('.SGPP__settings_popup input').each(function (index, element) {
-                    var input = $(element);
-                    SGPP.storage.setItem(input.attr('name'), input.val());
-                });
             };
             this.shouldRun = function (location) { return true; };
             this.isModuleEnabled = function (module) {
-                return SGPP.storage.getItem(module) == "1";
+                return _this._lsSettings.hasOwnProperty(module) && _this._lsSettings[module].enabled;
+            };
+            this.getSettingForModule = function (module, setting) {
+                return !_this._lsSettings.hasOwnProperty(module) ? null : _this._lsSettings[module][setting];
+            };
+            this.persistSettings = function () {
+                SGPP.storage.setItem(ModuleDefinition.Settings.SETTINGS_KEY, _this._lsSettings);
             };
         }
         Settings.prototype.name = function () {
             return "Settings";
         };
+        Settings.SETTINGS_KEY = "Settings";
         return Settings;
     })();
     ModuleDefinition.Settings = Settings;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var UserHoverInfo = (function () {
+        function UserHoverInfo() {
+            this.style = '.SGPP_UserInfo_balloon {position: absolute; border: solid 2px black; z-index: 99; min-width: 200px; border-radius: 3px; min-height: 100px; background-color: inherit}\n' + '.SGPP_UserInfo_balloon:after {position: absolute; right: 100%; top: 5px; content: ""; height: 0; width: 0; border-style: solid; border-color: transparent black; border-width: 15px 20px 15px 0px}\n' + '.SGPP_UserInfo_balloon.right:after {right: -20px; border-width: 15px 0 15px 20px}\n' + '.SGPP_UserInfo_balloon .featured__outer-wrap.featured__outer-wrap--user {width: auto; padding: 15px 0}\n' + '.SGPP_UserInfo_balloon .featured__heading i {font-size: inherit}\n' + '.SGPP_UserInfo_balloon .featured__table__column {width: 175px}\n' + '.SGPP_UserInfo_balloon .featured__table .featured__table__row {padding: 5px 0px}\n' + '.SGPP_UserInfo_balloon .featured__table__column:not(:first-child) {margin-left: 15px}\n' + '.SGPP_UserInfo_balloon .featured__outer-wrap .global__image-outer-wrap {float: left; margin: 10px 7px 0px 0px; padding: 2px; width: 48px; height: 48px}\n' + '.SGPP_UserInfo_balloon .SGPP_UserOnline {background: linear-gradient(to bottom, #8FB93B 5%, #6E8C31 95%) repeat scroll 0% 0% transparent}\n' + '.SGPP_UserInfo_balloon .SGPP_UserOffline {background: linear-gradient(to bottom, rgba(106, 106, 106, 0.45) 5%, rgba(85, 85, 85, 1) 95%) repeat scroll 0% 0% transparent}\n' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap {width: 130px; color: rgba(255, 255, 255, 0.4)}\n' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > * {line-height: 10px; text-shadow: none; background: none; border: none}\n' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > .is-selected, ' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :hover, ' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :active ' + '{background: none; text-shadow: none; box-shadow: none}\n' + '';
+            this.shouldRun = function (location) { return true; };
+        }
+        UserHoverInfo.prototype.init = function () {
+        };
+        UserHoverInfo.prototype.render = function () {
+            function generateBalloonInfo(page) {
+                var userHeader = $('.featured__outer-wrap.featured__outer-wrap--user', page);
+                var tableCells = $('.featured__table__row', userHeader);
+                var username = $('.featured__heading', userHeader).css('display', 'block');
+                var avatar = $('.global__image-outer-wrap', userHeader).prependTo(username);
+                var status = tableCells.eq(1).children().last().text().trim();
+                if (status.toLowerCase().indexOf('online') > -1)
+                    avatar.attr('title', status).addClass('SGPP_UserOnline');
+                else
+                    avatar.attr('title', 'Online ' + status).addClass('SGPP_UserOffline');
+                tableCells.eq(1).remove();
+                var cv = tableCells.last().children().last();
+                cv[0].title = 'Contributor Value: ' + $('span', cv)[0].title;
+                $('span', cv).removeAttr('title');
+                cv.appendTo(username);
+                tableCells.last().remove();
+                var sideBtns = $('.sidebar__shortcut-inner-wrap', page).insertAfter(cv);
+                sideBtns.children().eq(2).click(function () {
+                    $(this).find('form').submit();
+                });
+                var suspension = $('.sidebar__suspension', page);
+                if (suspension.length > 0) {
+                    $('<span>', {
+                        style: 'color: #B16C86',
+                        text: ' (' + suspension.text().trim() + ')',
+                        title: $('.sidebar__suspension-time', page).text()
+                    }).appendTo(tableCells.eq(0).children().last());
+                }
+                return userHeader;
+            }
+            var bubble = $('<div>', { id: 'SGPP_UserInfo_balloon', 'class': 'SGPP_UserInfo_balloon' }).appendTo('body').hide();
+            var cacheList = {};
+            var loading = $('<div>', { style: 'color: black' }).append($('<i>', {
+                'class': 'fa fa-refresh fa-spin fa-4x',
+                style: 'margin: 30px 80px; font-size: 4em; color: #6B7A8C'
+            }));
+            bubble.append(loading);
+            bubble.hover(function () {
+                bubble.stop(true).fadeIn('fast');
+            }, function () {
+                delayedBubble.close();
+            });
+            var delayedBubble = {
+                timeout: null,
+                run: function (url, style, right) {
+                    clearTimeout(this.timeout);
+                    this.timeout = setTimeout(function () {
+                        bubble.css(style);
+                        bubble.children().remove();
+                        if (right)
+                            bubble.addClass('right');
+                        else
+                            bubble.removeClass('right');
+                        var username = url.match(/\/user\/(.+?)(?:\/|$)/)[1];
+                        if (username !== undefined && username in cacheList)
+                            bubble.append(cacheList[username]).stop(true).show();
+                        else {
+                            bubble.append(loading).stop(true).show();
+                            $.ajax({
+                                url: url,
+                                type: 'GET',
+                                dataType: 'html',
+                                success: function (html) {
+                                    var info = generateBalloonInfo(html).data('user', username);
+                                    cacheList[username] = info;
+                                    bubble.children().remove();
+                                    bubble.append(info);
+                                }
+                            });
+                        }
+                    }, 1500);
+                },
+                close: function () {
+                    clearTimeout(this.timeout);
+                    bubble.stop(true).delay(500).fadeOut('slow');
+                }
+            };
+            $(document).on({
+                mouseenter: function (e) {
+                    var $el = $(e.target);
+                    if ($el.attr('href').split('/').length > 3 || $el.prop('href') == document.URL)
+                        return;
+                    var pos = $el.offset();
+                    var style;
+                    var winWidth = $(window).width();
+                    var right = e.target.getBoundingClientRect().left > winWidth / 2;
+                    if (right) {
+                        style = {
+                            top: pos.top + ($el.height() / 2) - 25,
+                            right: winWidth - pos.left + 20,
+                            left: ''
+                        };
+                    }
+                    else {
+                        style = {
+                            top: pos.top + ($el.height() / 2) - 25,
+                            right: '',
+                            left: pos.left + $el.width() + 20
+                        };
+                    }
+                    delayedBubble.run($el.attr('href'), style, right);
+                },
+                mouseleave: function () {
+                    delayedBubble.close();
+                }
+            }, 'a[href^="/user/"]:not(.nav__avatar-outer-wrap)');
+        };
+        UserHoverInfo.prototype.name = function () {
+            return "Show User Profile on Hover";
+        };
+        return UserHoverInfo;
+    })();
+    ModuleDefinition.UserHoverInfo = UserHoverInfo;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var UserTagConfig = (function () {
+        function UserTagConfig(callback) {
+            var _this = this;
+            this.background = $('<div>', { 'class': 'SGPP__tagModal_background' }).appendTo('body');
+            this.content = $('<div>', { 'class': 'SGPP__tagModal popup' }).appendTo('body');
+            this.config = [];
+            this.update = function (name, config) {
+                _this.$name.text(name);
+                for (var i = 0; i < _this.config.length; i++) {
+                    _this.config[i].val(config[i]);
+                }
+                return _this;
+            };
+            this.show = function () {
+                _this.background.show();
+                _this.content.show();
+                return _this;
+            };
+            this.hide = function () {
+                _this.background.hide();
+                _this.content.hide();
+                return _this;
+            };
+            this.save = function () {
+                var args = [];
+                for (var i = 0; i < _this.config.length; i++)
+                    args.push(_this.config[i].val());
+                _this.callback(_this.$name.text(), args);
+                return _this.hide();
+            };
+            this.callback = callback;
+            $('<i>', { 'class': 'popup__icon fa fa-tag' }).appendTo(this.content);
+            $('<p>', { 'class': 'popup__heading', append: [
+                'Edit custom tag for ',
+                this.$name = $('<span>', { 'class': 'popup__heading__bold' }),
+                ':'
+            ] }).appendTo(this.content);
+            var container = $('<div>', { 'class': 'SGPP__tagOptions' }).appendTo(this.content);
+            var optionline = function (optionName, inputType) {
+                var input = $('<input>', { type: inputType });
+                _this.config.push(input);
+                return $('<div>').append($('<span>', { 'class': 'form__heading__text', text: optionName }), input);
+            };
+            var options = [['Tag text', 'text'], ['Background color', 'color'], ['Text color', 'color']];
+            for (var i = 0; i < options.length; i++) {
+                container.append(optionline(options[i][0], options[i][1]));
+            }
+            $('<div>', { 'class': 'popup__actions' }).appendTo(this.content).append($('<span>', { text: 'save', click: this.save }), $('<span>', { text: 'cancel', click: this.hide }));
+            this.background.click(this.hide);
+            this.hide();
+        }
+        return UserTagConfig;
+    })();
+    var UserTags = (function () {
+        function UserTags() {
+            var _this = this;
+            this.style = '.SGPP__tagIcon {margin-left: 5px; transform: rotate(-45deg); opacity: 0.35; cursor: pointer; text-shadow: none}\n' + '.SGPP__tagIcon:hover {opacity: 0.7}\n' + '.comment__username--op .SGPP__tagIcon {color: #FFF}\n' + '.SGPP__userTag {display: inline-block; color: #465670; background-color: #FFF; font-weight: initial; text-shadow: none; padding: 0 4px; border-radius: 3px; border: 1px solid #D2D6E0; line-height: normal; margin-left: 5px; cursor: pointer}\n' + '.SGPP__tagModal_background {position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(60, 66, 77, 0.85); cursor: pointer; z-index: 9998}\n' + '.SGPP__tagModal {display: block; position: fixed; top: 50px; left: 50%; width: 300px; margin-left: -250px; z-index: 9999}\n' + '.SGPP__tagModal .popup__icon {width: 48px; text-indent: 5px}\n' + '.SGPP__tagOptions {margin-bottom: 15px}\n' + '.SGPP__tagOptions > div {display: flex; justify-content: space-between}\n' + '.SGPP__tagOptions > div > input {width: 125px; height: auto}\n' + '.SGPP__tagOptions .popup__actions {margin-top: 15px}\n' + '';
+            this.render = function () {
+                _this.tagConfigModal = new UserTagConfig(_this.updateTags);
+                var usersLinks = $('a[href^="/user/"]:not(.global__image-outer-wrap, .nav__avatar-outer-wrap)');
+                _this.usertagsCache = SGPP.storage.getItem('createdTags', {});
+                usersLinks.each(function (i, el) {
+                    var pathSplit = $(el).prop('pathname').split('/');
+                    var username = el.textContent.trim();
+                    if (pathSplit.length != 3 || pathSplit[2] != username)
+                        return;
+                    else
+                        _this.createTag(username).insertAfter(el);
+                });
+                $('body').on('click', '.SGPP__tagIcon, .SGPP__userTag', function (e) {
+                    var name = $(e.target).siblings('a[href^="/user/"]').text();
+                    if (name in _this.usertagsCache) {
+                        var config = _this.usertagsCache[name];
+                    }
+                    else {
+                        var config = ['', '#FFFFFF', '#465670'];
+                    }
+                    _this.tagConfigModal.update(name, config).show();
+                });
+            };
+            this.shouldRun = function (location) { return ['about', 'sales', 'legal', 'roles'].indexOf(location.pageKind) < 0; };
+            this.createTag = function (username) {
+                if (username in _this.usertagsCache) {
+                    var config = _this.usertagsCache[username];
+                    return $('<div>', {
+                        text: config[0],
+                        'class': 'SGPP__userTag',
+                        css: { backgroundColor: config[1], color: config[2] }
+                    });
+                }
+                else
+                    return $('<i>', { 'class': 'fa fa-tag SGPP__tagIcon' });
+            };
+            this.updateTags = function (user, config) {
+                if (config[0] === '')
+                    delete _this.usertagsCache[user];
+                else
+                    _this.usertagsCache[user] = config;
+                SGPP.storage.setItem('createdTags', _this.usertagsCache);
+                console.log(1, user);
+                $('a[href="/user/' + user + '"]').each(function (i, el) {
+                    var tag = $(el).siblings('.SGPP__userTag, .SGPP__tagIcon');
+                    if (tag.length === 0)
+                        return;
+                    else {
+                        tag.remove();
+                        _this.createTag(user).insertAfter(el);
+                    }
+                });
+            };
+        }
+        UserTags.prototype.init = function () {
+        };
+        UserTags.prototype.name = function () {
+            return "Custom Tags to Users";
+        };
+        return UserTags;
+    })();
+    ModuleDefinition.UserTags = UserTags;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -565,12 +850,16 @@ var ModuleDefinition;
                 if (!("lastSeenPage" in this._obj)) {
                     this._obj.lastSeenPage = 0;
                 }
+                if (!("collapsed" in this._obj)) {
+                    this._obj.collapsed = {};
+                }
                 this._isDataStored = true;
             }
             else {
                 this._obj = {
                     lastVisit: Date.now(),
                     lastCommentIDPages: {},
+                    collapsed: {},
                     numberOfComments: 0
                 };
             }
@@ -592,6 +881,18 @@ var ModuleDefinition;
         topicInfo.prototype.getNumComments = function () {
             return this._obj.numberOfComments;
         };
+        topicInfo.prototype.setCommentState = function (id, collapsed) {
+            if (!collapsed) {
+                delete this._obj.collapsed[id];
+            }
+            else {
+                this._obj.collapsed[id] = 1;
+            }
+            this.save();
+        };
+        topicInfo.prototype.getCommentState = function (id) {
+            return id in this._obj.collapsed;
+        };
         topicInfo.prototype.setLastVisit = function () {
             this._obj.lastVisit = Date.now();
             this.save();
@@ -611,6 +912,11 @@ var ModuleDefinition;
             else
                 return true;
         };
+        topicInfo.prototype.forget = function () {
+            if (this.localStorageKey in localStorage) {
+                localStorage.removeItem(this.localStorageKey);
+            }
+        };
         topicInfo.prototype.save = function () {
             localStorage[this.localStorageKey] = JSON.stringify(this._obj);
         };
@@ -618,8 +924,15 @@ var ModuleDefinition;
     })();
     var MarkComments = (function () {
         function MarkComments() {
-            this.style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" + ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" + ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" + ".endless_badge_new {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}";
+            this.style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" + ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" + ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" + ".endless_badge_new, .endless_badge_new_child {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}" + ".endless_badge_new_child { display: none; }" + ".comment--collapsed .endless_badge_new_child { display: block; }\n" + ".table__row-outer-wrap .markcomments_controls { display: none; }\n" + ".table__row-outer-wrap:hover .markcomments_controls { display: inline; }" + ".markcomments_controls i { opacity: 0.5; cursor: pointer; }\n" + ".markcomments_controls i:hover { opacity: 1; }";
         }
+        Object.defineProperty(MarkComments.prototype, "topic", {
+            get: function () {
+                return this.topicInfo;
+            },
+            enumerable: true,
+            configurable: true
+        });
         MarkComments.prototype.getDiscussionId = function (url) {
             var match = /(discussion|trade)\/([^/]+)(\/|$)/.exec(url);
             if (!match)
@@ -641,17 +954,51 @@ var ModuleDefinition;
         MarkComments.prototype.init = function () {
         };
         MarkComments.prototype.render = function () {
+            var _this = this;
             if (SGPP.location.pageKind == 'discussion' || SGPP.location.pageKind == 'trade') {
                 this.topicInfo = new topicInfo(this.getDiscussionId(location.pathname));
                 var page = 1;
                 var currentPageNavEl = $('div.pagination__navigation a.is-selected');
                 if (currentPageNavEl.length != 0)
                     page = currentPageNavEl.first().data('page-number');
-                this.markComments(document, page, true);
+                this.markComments($(document), page, true);
                 this.topicInfo.setLastVisit();
+                var m = this;
+                $("body").on('click', '.comment__collapse-button', function () {
+                    var $this = $(this);
+                    var parent = $this.parents('.comment');
+                    var comment_id = parseInt(parent.data('comment-id'));
+                    m.topicInfo.setCommentState(comment_id, true);
+                });
+                $("body").on('click', '.comment__expand-button', function () {
+                    var $this = $(this);
+                    var parent = $this.parents('.comment');
+                    var comment_id = parseInt(parent.data('comment-id'));
+                    m.topicInfo.setCommentState(comment_id, false);
+                });
+                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems', function (event, dom, page, isReload) {
+                        _this.markComments(dom, page, true, isReload);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
-                this.markTopics(document);
+                this.markTopics($(document));
+                var m = this;
+                $("body").on('click', '.markcomments_forget', function () {
+                    var $this = $(this);
+                    var parent = $this.parents('h3');
+                    var link = parent.children('a');
+                    var tInfo = new topicInfo(m.getDiscussionId(link.attr('href')));
+                    tInfo.forget();
+                    parent.find('.endless_badge_new').remove();
+                    $this.remove();
+                });
+                if ("EndlessScrollDiscussion" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems', function (event, dom, page, isReload) {
+                        _this.markTopics(dom);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -668,25 +1015,36 @@ var ModuleDefinition;
             });
             return has_new;
         };
-        MarkComments.prototype.markComments = function (dom, page, markRead) {
+        MarkComments.prototype.markComments = function (dom, page, markRead, forceMark) {
             var _this = this;
             if (markRead === void 0) { markRead = false; }
-            $(dom).find('.comment[data-comment-id]').each(function (i, el) {
-                var id = parseInt($(el).data('comment-id'));
-                if (_this.topicInfo.isNewComment(page, id)) {
-                    $(el).addClass('endless_new');
-                    $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
-                }
-                else {
-                    $(el).addClass('endless_not_new');
-                }
-                if (_this.checkNewComments(el, page)) {
-                    $(el).addClass('endless_new_children');
-                }
-                else {
-                    $(el).addClass('endless_no_new_children');
-                }
-            });
+            if (forceMark === void 0) { forceMark = false; }
+            if (this.topicInfo.isDataStored || forceMark) {
+                dom.find('.comment[data-comment-id]').each(function (i, el) {
+                    var id = parseInt($(el).data('comment-id'));
+                    var is_new = _this.topicInfo.isNewComment(page, id);
+                    var collapsed = _this.topicInfo.getCommentState(id);
+                    if (collapsed) {
+                        $(el).addClass('comment--collapsed');
+                    }
+                    if (is_new) {
+                        $(el).addClass('endless_new');
+                        $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new').text('New').attr('title', 'New since last visit'));
+                    }
+                    else {
+                        $(el).addClass('endless_not_new');
+                    }
+                    if (_this.checkNewComments(el, page)) {
+                        if (!is_new) {
+                            $(el).find('.comment__username').first().after($('<span>').addClass('endless_badge_new_child').text('New replies').attr('title', 'New since last visit'));
+                        }
+                        $(el).addClass('endless_new_children');
+                    }
+                    else {
+                        $(el).addClass('endless_no_new_children');
+                    }
+                });
+            }
             if (markRead) {
                 var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0]);
                 this.topicInfo.setLastCommentID(page, this.getLatestCommentID(dom), numComments);
@@ -694,11 +1052,11 @@ var ModuleDefinition;
         };
         MarkComments.prototype.markTopics = function (dom) {
             var _this = this;
-            $(dom).find('.table__row-outer-wrap').each(function (i, el) {
+            dom.find('.table__row-outer-wrap').each(function (i, el) {
                 try {
                     var link = $(el).find('h3 a').first();
                     var tInfo = new topicInfo(_this.getDiscussionId(link.attr('href')));
-                    if (true) {
+                    if (SGPP.settings.getSettingForModule("EndlessScrollDiscussionReplies", "reversedDiscussionReplies") || false) {
                         link.attr('href', link.attr('href') + '/search?page=31337');
                     }
                     if (tInfo.isDataStored) {
@@ -716,6 +1074,7 @@ var ModuleDefinition;
                             $(el).addClass('endless_no_new_comments');
                             $(el).find('.table__column--width-fill > p').first().append(' - no new comments</strong>');
                         }
+                        $(el).find('h3').first().append('<span class="markcomments_controls pull-right"><i class="fa fa-remove markcomments_forget" title="Forget this topic"></i></span>');
                     }
                 }
                 catch (err) {
@@ -723,11 +1082,191 @@ var ModuleDefinition;
             });
         };
         MarkComments.prototype.name = function () {
-            return "MarkComments";
+            return "Mark Comments";
         };
         return MarkComments;
     })();
     ModuleDefinition.MarkComments = MarkComments;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var MessagesFilterTest = (function () {
+        function MessagesFilterTest() {
+            this.style = ".message_filter_hidden { display: none; }\n" + ".message_filter_visible { }\n" + ".filterdrop { position: absolute; }\n" + ".filterdrop a { display: block; }\n" + ".message-filters { margin-left: 5px; }\n" + ".message-filter { cursor: pointer; }\n" + ".message-filter i { margin: 0; }";
+            this._hideRead = false;
+        }
+        MessagesFilterTest.prototype.shouldRun = function () {
+            return (SGPP.location.pageKind == 'discussion' || SGPP.location.pageKind == 'trade');
+        };
+        Object.defineProperty(MessagesFilterTest.prototype, "hideRead", {
+            get: function () {
+                return this._hideRead;
+            },
+            set: function (v) {
+                this._hideRead = v;
+                this._filterElement.find('.hideread i').toggleClass('fa-square-o', !v).toggleClass('fa-check-square-o', v);
+                this.filterAll();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        MessagesFilterTest.prototype.init = function () {
+        };
+        MessagesFilterTest.prototype.filterItem = function (el) {
+            var $el = $(el);
+            var visible = true;
+            var is_new = !$el.hasClass('endless_not_new');
+            var has_new_children = !$el.hasClass('endless_no_new_children');
+            if (this.hideRead) {
+                visible = visible && (is_new || has_new_children);
+            }
+            $el.toggleClass('message_filter_hidden', !visible);
+            $el.toggleClass('message_filter_visible', visible);
+        };
+        MessagesFilterTest.prototype.filterAll = function () {
+            var _this = this;
+            $('.comment').each(function (i, el) {
+                _this.filterItem(el);
+            });
+        };
+        MessagesFilterTest.prototype.render = function () {
+            var _this = this;
+            if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
+                $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('addItem', function (event, el) {
+                    _this.filterItem(el);
+                });
+            }
+            var m = this;
+            this._filterElement = $('<span class="message-filters"></span>');
+            this._filterElement.append('<span class="message-filter hideread"><i class="fa fa-square-o"></i> Hide Read</span>').click(function () {
+                m.hideRead = !m.hideRead;
+            });
+            $('.comments:eq(1)').prev().find('div').append(this._filterElement);
+            this.filterAll();
+        };
+        MessagesFilterTest.prototype.name = function () {
+            return "Hide Read Comments";
+        };
+        return MessagesFilterTest;
+    })();
+    ModuleDefinition.MessagesFilterTest = MessagesFilterTest;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var PopupGiveaway = (function () {
+        function PopupGiveaway() {
+            var _this = this;
+            this.style = ".SGPP__popup_giveaway { text-align: justify; width: 90%; max-width: 1000px }\n" + ".SGPP__popup_giveaway .page__outer-wrap { padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right:20px }\n" + ".SGPP__popup_giveaway .comment__parent { margin-top: 10px }\n" + ".SGPP__popup_giveaway .global__image-outer-wrap--avatar-small { margin-right: 5px }\n" + ".SGPP__popup_giveaway .page__description { max-height: 200px; overflow-y: auto }\n" + ".SGPP__popup_giveaway .markdown li { position:relative }\n" + ".SGPP__popup_giveaway .featured__outer-wrap form > * { background-color: #f0f2f5 }\n" + ".SGPP__popup_giveaway .featured__outer-wrap form { margin-top: 5px; }\n";
+            this.popupGiveaway = $('<div>', {
+                'class': 'SGPP__popup_giveaway is-hidden',
+            });
+            this.handlePopupCreate = function (dom) {
+                $('a[href^="/giveaway/"]:not([href$="/entries"],[href$="/comments"])', dom).on("click", function (e) {
+                    e.preventDefault();
+                    _this.handlePopup($(e.currentTarget));
+                });
+            };
+            this.headingHelper = function (desc) {
+                return '<div class="page__heading"><div class="page__heading__breadcrumbs">' + desc + '</div></div>';
+            };
+            this.handlePopup = function (self) {
+                _this.popupGiveaway.bPopup({
+                    onOpen: function () {
+                        _this.popupGiveaway.removeClass('is-hidden');
+                        $.ajax({ url: self.attr('href') }).done(function (page) {
+                            var featured = $('.featured__outer-wrap', page);
+                            $('.featured__column--whitelist, .featured__column--group', featured).each(function () {
+                                this.childNodes[1].nodeValue = '';
+                            });
+                            var pageOuterWrap = $('<div>', { 'class': 'page__outer-wrap' });
+                            var enterButton = $('.sidebar form', page);
+                            if (!enterButton.length)
+                                enterButton = $('.sidebar__error', page);
+                            var pageDescription = $('.page__description', page);
+                            var commentArea = $('.comment--submit .comment__parent', page);
+                            commentArea.find('span').addClass('b-close');
+                            var commentButton = $('.js__submit-form', commentArea);
+                            featured.find('.featured__summary').append(enterButton);
+                            if (pageDescription.length) {
+                                pageOuterWrap.append(_this.headingHelper("Description"), pageDescription);
+                            }
+                            pageOuterWrap.append(_this.headingHelper("Reply"), commentArea);
+                            _this.popupGiveaway.append(featured, pageOuterWrap);
+                            _this.popupGiveaway.css({
+                                'top': Math.max(0, (($(window).height() - (208 + pageOuterWrap.outerHeight())) / 2) + $(window).scrollTop()) + "px"
+                            });
+                            $(".sidebar__entry-insert, .sidebar__entry-delete", featured).on("click", function (e) {
+                                var t = $(e.currentTarget);
+                                t.addClass("is-hidden"), t.closest("form").find(".sidebar__entry-loading").removeClass("is-hidden"), t.closest("form").find("input[name=do]").val(t.attr("data-do")), $.ajax({
+                                    url: '/ajax.php',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: t.closest("form").serialize(),
+                                    success: function (e) {
+                                        t.closest("form").find(".sidebar__entry-loading").addClass("is-hidden");
+                                        if (e.type === "success") {
+                                            if (t.hasClass("sidebar__entry-insert")) {
+                                                t.closest("form").find(".sidebar__entry-delete").removeClass("is-hidden");
+                                                self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').addClass('is-faded');
+                                            }
+                                            else if (t.hasClass("sidebar__entry-delete")) {
+                                                t.closest("form").find(".sidebar__entry-insert").removeClass("is-hidden");
+                                                self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').removeClass('is-faded');
+                                            }
+                                        }
+                                        else if (e.type === "error") {
+                                            t.closest("form").html("undefined" != typeof e.link && e.link !== !1 ? '<a href="' + e.link + '" class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</a>" : '<div class="sidebar__error is-disabled"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</div>");
+                                        }
+                                        if ("undefined" != typeof e.entry_count && e.entry_count !== !1) {
+                                            $(".live__entry-count").text(e.entry_count);
+                                            $(".nav__points").text(e.points);
+                                        }
+                                    }
+                                });
+                            });
+                            commentButton.on("click", function (e) {
+                                e.preventDefault();
+                                var el = $(e.currentTarget);
+                                $.ajax({
+                                    url: self.attr('href'),
+                                    type: 'POST',
+                                    dataType: "json",
+                                    data: el.closest("form").serialize(),
+                                    complete: function (e) {
+                                        if (e.getResponseHeader('TM-finalURL')) {
+                                            el.closest("form").find("textarea").val("");
+                                            el.hide();
+                                        }
+                                    }
+                                });
+                            });
+                        });
+                    },
+                    onClose: function () {
+                        _this.popupGiveaway.addClass('is-hidden');
+                        _this.popupGiveaway.empty();
+                    },
+                    follow: [true, false]
+                });
+            };
+            this.shouldRun = function (location) { return location.pageKind == 'giveaways'; };
+        }
+        PopupGiveaway.prototype.init = function () {
+            this.popupGiveaway.appendTo('body');
+        };
+        PopupGiveaway.prototype.render = function () {
+            var _this = this;
+            this.handlePopupCreate($(document));
+            SGPP.on(["EndlessScrollGiveaways", "EndlessScrollLists"], "afterAddItems", function (event, pageContainer, page, isReload) {
+                _this.handlePopupCreate(pageContainer);
+            });
+        };
+        PopupGiveaway.prototype.name = function () {
+            return "Popup Giveaway";
+        };
+        return PopupGiveaway;
+    })();
+    ModuleDefinition.PopupGiveaway = PopupGiveaway;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -844,8 +1383,9 @@ var ModuleDefinition;
                 this._nextPage = page + 1;
             }
         };
-        EndlessScroll.prototype.loadPage = function (page) {
+        EndlessScroll.prototype.loadPage = function (page, force_reload) {
             var _this = this;
+            if (force_reload === void 0) { force_reload = false; }
             if (!(page in this._pagesUrl)) {
                 throw 'No URL for page ' + this._currentPage;
             }
@@ -882,7 +1422,7 @@ var ModuleDefinition;
             if (pg.loading) {
                 return;
             }
-            else if (pg.loaded) {
+            else if (pg.loaded && !force_reload) {
                 if (!pg.visible) {
                     pg.element.show();
                     pg.visible = true;
@@ -894,17 +1434,21 @@ var ModuleDefinition;
             else {
                 var url = this._pagesUrl[page];
                 this._pages[page].loading = true;
+                var isReload = this._pages[page].loaded;
                 $.get(url, function (data) {
                     var dom = $.parseHTML(data);
-                    _this.beforeAddItems(dom, page);
-                    var itemsContainer = _this.getItemsElement(dom);
+                    if (isReload)
+                        pageContainer.children().remove();
                     var newPagination = _this.getNavigationElement(dom);
                     var actualPage = parseInt(newPagination.find('a.is-selected').data('page-number'));
+                    var $dom = $(dom);
+                    $(_this).trigger('beforeAddItems', [$dom, actualPage, isReload]);
+                    var itemsContainer = _this.getItemsElement(dom);
                     _this.parseNavigation(newPagination);
                     _this.addItems(itemsContainer, pageContainer, page);
                     pageContainer.prepend(pageHeaderElement);
                     _this.getNavigationElement(document).html(newPagination.html());
-                    _this.afterAddItems(pageContainer, page);
+                    $(_this).trigger('afterAddItems', [pageContainer, actualPage, isReload]);
                     _this._pages[page].loaded = true;
                     loadingElement.remove();
                     if (_this._nextPage == page || _this._nextPage == -1) {
@@ -918,11 +1462,10 @@ var ModuleDefinition;
                 });
             }
         };
-        EndlessScroll.prototype.beforeAddItems = function (dom, page) {
-        };
         EndlessScroll.prototype.addItems = function (dom, pageContainer, page) {
             var _this = this;
             this.getItems(dom).each(function (i, el) {
+                $(_this).trigger('addItem', [el]);
                 if (_this.reverseItems) {
                     pageContainer.prepend(el);
                 }
@@ -930,8 +1473,6 @@ var ModuleDefinition;
                     pageContainer.append(el);
                 }
             });
-        };
-        EndlessScroll.prototype.afterAddItems = function (pageContainer, page) {
         };
         EndlessScroll.prototype.parseNavigation = function (dom) {
             var _this = this;
@@ -1042,14 +1583,8 @@ var ModuleDefinition;
         EndlessScrollDiscussion.prototype.getItems = function (dom) {
             return dom.children('.table__row-outer-wrap');
         };
-        EndlessScrollDiscussion.prototype.beforeAddItems = function (dom) {
-            if ("MarkComments" in SGPP.modules) {
-                var MarkComments = SGPP.modules["MarkComments"];
-                MarkComments.markTopics(dom);
-            }
-        };
         EndlessScrollDiscussion.prototype.name = function () {
-            return "EndlessScrollDiscussion";
+            return "Endless Scroll on Discussions page";
         };
         return EndlessScrollDiscussion;
     })(ModuleDefinition.EndlessScroll);
@@ -1096,7 +1631,7 @@ var ModuleDefinition;
         });
         Object.defineProperty(EndlessScrollDiscussionReplies.prototype, "reverseItems", {
             get: function () {
-                return true;
+                return SGPP.settings.getSettingForModule("EndlessScrollDiscussionReplies", "reversedDiscussionReplies") || false;
             },
             enumerable: true,
             configurable: true
@@ -1110,14 +1645,8 @@ var ModuleDefinition;
         EndlessScrollDiscussionReplies.prototype.getItems = function (dom) {
             return dom.children('.comment');
         };
-        EndlessScrollDiscussionReplies.prototype.beforeAddItems = function (dom, page) {
-            if ("MarkComments" in SGPP.modules) {
-                var MarkComments = SGPP.modules["MarkComments"];
-                MarkComments.markComments(dom, page, true);
-            }
-        };
         EndlessScrollDiscussionReplies.prototype.name = function () {
-            return "EndlessScrollDiscussionReplies";
+            return "Endless Scroll on Discussion comments";
         };
         return EndlessScrollDiscussionReplies;
     })(ModuleDefinition.EndlessScroll);
@@ -1153,6 +1682,13 @@ var ModuleDefinition;
         EndlessScrollGiveawayComments.prototype.createPageContainerElement = function () {
             return $('<div class="comments">');
         };
+        Object.defineProperty(EndlessScrollGiveawayComments.prototype, "reverseItems", {
+            get: function () {
+                return SGPP.settings.getSettingForModule("EndlessScrollGiveawayComments", "reversedGiveawayComments") || false;
+            },
+            enumerable: true,
+            configurable: true
+        });
         EndlessScrollGiveawayComments.prototype.getItemsElement = function (dom) {
             return $(dom).find('.comments').first();
         };
@@ -1160,7 +1696,7 @@ var ModuleDefinition;
             return dom.children('.comment');
         };
         EndlessScrollGiveawayComments.prototype.name = function () {
-            return "EndlessScrollGiveawayComments";
+            return "Endless Scroll on Giveaway comments";
         };
         return EndlessScrollGiveawayComments;
     })(ModuleDefinition.EndlessScroll);
@@ -1189,6 +1725,20 @@ var ModuleDefinition;
         };
         EndlessScrollGiveaways.prototype.render = function () {
             this.preparePage();
+            $(this).on('afterAddItems', function (event, pageContainer, page, isReload) {
+                pageContainer.find(".giveaway__hide").click(function () {
+                    $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
+                    $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text());
+                });
+                pageContainer.find(".trigger-popup").click(function () {
+                    $("." + $(this).attr("data-popup")).bPopup({
+                        opacity: .85,
+                        fadeSpeed: 200,
+                        followSpeed: 500,
+                        modalColor: "#3c424d"
+                    });
+                });
+            });
         };
         EndlessScrollGiveaways.prototype.createPageContainerElement = function () {
             return $('<div>');
@@ -1199,23 +1749,8 @@ var ModuleDefinition;
         EndlessScrollGiveaways.prototype.getItems = function (dom) {
             return dom.children('.giveaway__row-outer-wrap');
         };
-        EndlessScrollGiveaways.prototype.afterAddItems = function (pageContainer) {
-            pageContainer.find(".giveaway__hide").click(function () {
-                $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
-                $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text());
-            });
-            pageContainer.find(".trigger-popup").click(function () {
-                var a = $("." + $(this).attr("data-popup"));
-                a.bPopup({
-                    opacity: .85,
-                    fadeSpeed: 200,
-                    followSpeed: 500,
-                    modalColor: "#3c424d"
-                });
-            });
-        };
         EndlessScrollGiveaways.prototype.name = function () {
-            return "EndlessScrollGiveaways";
+            return "Endless Scroll on Giveaways";
         };
         return EndlessScrollGiveaways;
     })(ModuleDefinition.EndlessScroll);
@@ -1223,13 +1758,13 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
-    var EndlessScrollMyGiveaways = (function (_super) {
-        __extends(EndlessScrollMyGiveaways, _super);
-        function EndlessScrollMyGiveaways() {
+    var EndlessScrollLists = (function (_super) {
+        __extends(EndlessScrollLists, _super);
+        function EndlessScrollLists() {
             _super.apply(this, arguments);
             this.style = "";
         }
-        EndlessScrollMyGiveaways.prototype.shouldRun = function () {
+        EndlessScrollLists.prototype.shouldRun = function () {
             if (SGPP.location.pageKind == 'giveaways') {
                 return SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won';
             }
@@ -1239,23 +1774,27 @@ var ModuleDefinition;
             else if (SGPP.location.pageKind == 'giveaway') {
                 return SGPP.location.subpage == 'entries' || SGPP.location.subpage == 'winners' || SGPP.location.subpage == 'groups';
             }
+            else if (SGPP.location.pageKind == 'account') {
+                return SGPP.location.subpage == 'manage' || SGPP.location.subpage == 'feedback' || SGPP.location.subpage == 'steam';
+            }
+            console.log(SGPP.location);
             return false;
         };
-        EndlessScrollMyGiveaways.prototype.init = function () {
+        EndlessScrollLists.prototype.init = function () {
         };
-        EndlessScrollMyGiveaways.prototype.render = function () {
+        EndlessScrollLists.prototype.render = function () {
             this.preparePage();
         };
-        EndlessScrollMyGiveaways.prototype.createPageContainerElement = function () {
+        EndlessScrollLists.prototype.createPageContainerElement = function () {
             return $('<div class="table__rows">');
         };
-        EndlessScrollMyGiveaways.prototype.getItemsElement = function (dom) {
+        EndlessScrollLists.prototype.getItemsElement = function (dom) {
             return $(dom).find('.table__rows').first();
         };
-        EndlessScrollMyGiveaways.prototype.getItems = function (dom) {
+        EndlessScrollLists.prototype.getItems = function (dom) {
             return dom.children('.table__row-outer-wrap');
         };
-        EndlessScrollMyGiveaways.prototype.afterAddItems = function (dom) {
+        EndlessScrollLists.prototype.afterAddItems = function (dom) {
             $(dom).find(".table__remove-default").click(function () {
                 var e = $(this);
                 e.addClass("is-hidden");
@@ -1276,31 +1815,37 @@ var ModuleDefinition;
                 });
             });
         };
-        EndlessScrollMyGiveaways.prototype.name = function () {
-            return "EndlessScrollMyGiveaways";
+        EndlessScrollLists.prototype.name = function () {
+            return "Endless Scroll everywhere else";
         };
-        return EndlessScrollMyGiveaways;
+        return EndlessScrollLists;
     })(ModuleDefinition.EndlessScroll);
-    ModuleDefinition.EndlessScrollMyGiveaways = EndlessScrollMyGiveaways;
+    ModuleDefinition.EndlessScrollLists = EndlessScrollLists;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var SGPP = new ModuleDefinition.Core();
-var modulesNames = new Array("CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "MarkComments", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollMyGiveaways", "EndlessScrollGiveawayComments");
-var defaultModules = new Array("FixedNavbar", "ScrollingSidebar");
+var modulesNames = new Array("CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
+var defaultModules = {
+    "FixedNavbar": { "enabled": true },
+    "ScrollingSidebar": { "enabled": true }
+};
+var currentVersion = "0.3.0";
 (function ($) {
-    for (var pos in defaultModules) {
-        if (!SGPP.storage.containsItem(defaultModules[pos])) {
-            SGPP.storage.setItem(defaultModules[pos], "1");
-        }
+    if (!SGPP.storage.containsItem("Version")) {
+        SGPP.storage.clear();
+        SGPP.storage.setItem("Version", currentVersion);
+    }
+    if (!SGPP.storage.containsItem(ModuleDefinition.Settings.SETTINGS_KEY)) {
+        SGPP.storage.setItem(ModuleDefinition.Settings.SETTINGS_KEY, defaultModules);
     }
     for (var pos in modulesNames) {
         var m = new ModuleDefinition[modulesNames[pos]]();
         if (SGPP.settings.isModuleEnabled(modulesNames[pos]) && m.shouldRun(SGPP.location))
-            SGPP.modules[m.name()] = m;
+            SGPP.modules[modulesNames[pos]] = m;
     }
     for (var module in SGPP.modules) {
-        SGPP.log("Module " + SGPP.modules[module].name() + " append css.");
+        SGPP.log("Module " + module + " append css.");
         SGPP.appendCSS(SGPP.modules[module].style);
-        SGPP.log("Module " + SGPP.modules[module].name() + " init() call.");
+        SGPP.log("Module " + module + " init() call.");
         SGPP.modules[module].init();
     }
     $(document).on("DOMContentLoaded", function () {
