@@ -27,6 +27,7 @@ module ModuleDefinition {
             ".SGPP__gridTileIcons {position: absolute; bottom: 5px; right: 5px}\n" +
             ".SGPP__gridTileIcons > * {display: inline-block; width: 20px; height: 16px; text-align: center; padding: 2px; border-radius: 3px 0 0; vertical-align: middle}\n" +
             ".SGPP__gridTileIcons > :not(:last-child) {padding-right: 4px; margin-right: -3px}\n" +
+            ".SGPP__gridTileIcons i {font-size: inherit; color: inherit}\n" +
             "";
 
         init = () => {
@@ -35,16 +36,19 @@ module ModuleDefinition {
 
         render = () => {
             var esg = $('.pagination').prev();
-            esg.parent().on("DOMNodeInserted",(event) => {
-                if($(event.target).hasClass('pagination__navigation'))
-                    this.updateGridview($('.pagination').prev());
+
+            SGPP.on("EndlessScrollGiveaways", "afterAddItems",(event: JQueryEventObject, pageContainer: JQuery, page: number, isReload: boolean) => {
+                this.updateGridview(pageContainer);
             });
 
             this.updateGridview(esg);
         }
 
         updateGridview = (esg) => {
-            var giveaways = $(document.createElement('div')).wrapInner(esg.children('.giveaway__row-outer-wrap'));
+            var giveawaysList = esg.children('.giveaway__row-outer-wrap');
+            if (!giveawaysList.length)
+                return;
+            var giveaways = $(document.createElement('div')).wrapInner(giveawaysList);
             var gridview = this.generateGridview(giveaways);
             esg.append(gridview);
         }
@@ -63,7 +67,7 @@ module ModuleDefinition {
             // containers
             var gridPage = $('<div>', {'class': 'SGPP__gridView'});
             var gridTile = $('<div>', {'class': 'SGPP__gridTile'});
-            var tileInfo = $('<div>', {'class': 'SGPP__gridTileInfo global__image-outer-wrap'});
+            var tileInfo = $('<h2>', {'class': 'SGPP__gridTileInfo global__image-outer-wrap'});
             var tileIcns = $('<div>', {'class': 'SGPP__gridTileIcons'});
 
             root.find('.giveaway__row-inner-wrap').each(function () {

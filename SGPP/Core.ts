@@ -12,6 +12,7 @@ module ModuleDefinition{
         private _settings: ModuleDefinition.Settings = new ModuleDefinition.Settings();
         private _storage: ModuleDefinition.LocalStorage = new ModuleDefinition.LocalStorage();
         private _styleSheet: JQuery;
+        private _currentUser: string;
 
         modules: { [s: string]: ModuleDefinition.SteamGiftsModule; } = {};
 
@@ -19,10 +20,14 @@ module ModuleDefinition{
             this.init();
         }
 
+        get user(): string {
+            return this._currentUser;
+        }
+
         get settings(): Settings {
             return this._settings;
         }
-        
+
         get location(): SGLocation {
             return this._sgLocation;
         }
@@ -32,7 +37,7 @@ module ModuleDefinition{
         }
 
         log = (msg: string) => {
-            if(this._debug)
+            if (this._debug)
                 console.log("[" + new Date() + "] SGPP - " + msg);
         };
 
@@ -40,7 +45,22 @@ module ModuleDefinition{
             this._styleSheet.append(css);
         }
 
+        on = (moduleName: string|string[], event: string, callback: any) => {
+            if (typeof moduleName === 'string') {
+                this.addOnCallbackHelper(moduleName, event, callback);
+            } else {
+                for (var pos in moduleName) {
+                    this.addOnCallbackHelper(moduleName[pos], event, callback);
+                }
+            }
+        }
 
+        private addOnCallbackHelper(moduleName: string, event: string, callback: any) {
+            if (moduleName in SGPP.modules) {
+                SGPP.log("Handler attached on " + moduleName + " (" + event + ")");
+                $(SGPP.modules[moduleName]).on(event, callback);
+            }
+        }
 
         //core module section
 
@@ -56,16 +76,22 @@ module ModuleDefinition{
 
         init = () => {
             this.log("Steamgifts++ plugin started.");
+         
+            var userUrl = $('.nav__button-container a[href^="/user/"]');
+            if (userUrl.length)
+                this._currentUser = userUrl.attr('href').substr("/user/".length);
+
             //init SGLocation
             this.resolvePath();
+
+            //init settings
+            this._settings.init(this._storage);
 
             //create SGPP stylesheet section in the page head
             this._styleSheet = $(document.createElement('style')).attr('id', 'SGPP_StyleSheet').appendTo('head');
             this.appendCSS('/* SGPP Stylesheet */ ');
 
-            //init settings
             this.appendCSS(this._settings.style);
-            this._settings.init();
         }
 
         render(): void {
