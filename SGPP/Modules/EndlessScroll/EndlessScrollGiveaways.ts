@@ -61,12 +61,8 @@ module ModuleDefinition {
         }
 
         hideGiveawaysByGameID(game: number): void {
-            console.log(game);
-
             $('.giveaway__row-outer-wrap').each(function (i: number, e: Element) {
                 var $e = $(e);
-
-                console.log($e.find('.giveaway__hide').data('game-id'));
 
                 if ($e.find('.giveaway__hide').data('game-id') == game) {
                     $e.hide();
