@@ -10,7 +10,7 @@ module ModuleDefinition {
 
         style = ".SGPP__settings { cursor: pointer; }\n";
 
-        private settingsNavIcon: string = '<a class="nav__row SGPP__settings" target="_blank" href="/sgpp">\n' +
+        private settingsNavIcon: string = '<a class="nav__row SGPP__settings" href="/sgpp">\n' +
         '<i class="icon-red fa fa-fw fa-bars"> </i>\n' +
         '<div class="nav__row__summary">\n' +
         '<p class="nav__row__summary__name" > SG++ Settings</p>\n' +
