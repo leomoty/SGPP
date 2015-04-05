@@ -9,6 +9,7 @@ module ModuleDefinition {
         style = "";
 
         shouldRun(): boolean {
+
             if (SGPP.location.pageKind == 'giveaways') {
                 return SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won';
             } else if (SGPP.location.pageKind == 'bundle-games') {
@@ -16,10 +17,8 @@ module ModuleDefinition {
             } else if (SGPP.location.pageKind == 'giveaway') {
                 return SGPP.location.subpage == 'entries' || SGPP.location.subpage == 'winners' || SGPP.location.subpage == 'groups';
             } else if (SGPP.location.pageKind == 'account') {
-                return SGPP.location.subpage == 'manage' || SGPP.location.subpage == 'feedback' || SGPP.location.subpage == 'steam';
-            }
-
-            console.log(SGPP.location);
+                return SGPP.location.subpage == 'manage' || SGPP.location.subpage == 'feedback' || SGPP.location.subpage == 'steam' || SGPP.location.subpage == 'settings';
+            }            
 
             return false;
         }
