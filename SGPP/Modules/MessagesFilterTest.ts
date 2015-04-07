@@ -59,9 +59,12 @@ module ModuleDefinition {
         }
 
         render(): void {
-            SGPP.on("EndlessScrollDiscussionReplies", 'addItem', (event: JQueryEventObject, el: Element) => {
-                this.filterItem(el);
-            });
+
+            if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
+                $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('addItem',(event: JQueryEventObject, el: Element) => {
+                    this.filterItem(el);
+                });
+            }
 
             var m = this;
 
