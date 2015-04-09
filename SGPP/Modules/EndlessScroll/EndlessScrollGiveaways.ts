@@ -41,33 +41,6 @@ module ModuleDefinition {
                     });
                 });
             });
-
-            $('.popup--hide-games .js__submit-form').after('<div class="form__submit-button ajax_submit-form"><i class="fa fa-check-circle"></i> Yes</div>');
-            $('.popup--hide-games .js__submit-form').hide();
-
-            $('.popup--hide-games .ajax_submit-form').click((event) => {
-
-                var form = $('.popup--hide-games form').first();
-
-                $.post('/', form.serialize(),(data) => {
-
-                    $('.popup--hide-games').bPopup().close();
-
-                    this.hideGiveawaysByGameID($(".popup--hide-games input[name=game_id]").val());
-                });
-
-                return false;
-            });
-        }
-
-        hideGiveawaysByGameID(game: number): void {
-            $('.giveaway__row-outer-wrap').each(function (i: number, e: Element) {
-                var $e = $(e);
-
-                if ($e.find('.giveaway__hide').data('game-id') == game) {
-                    $e.hide();
-                }
-            });
         }
 
         createPageContainerElement(): JQuery {
