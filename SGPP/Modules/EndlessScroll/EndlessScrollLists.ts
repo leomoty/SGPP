@@ -17,7 +17,7 @@ module ModuleDefinition {
             } else if (SGPP.location.pageKind == 'giveaway') {
                 return SGPP.location.subpage == 'entries' || SGPP.location.subpage == 'winners' || SGPP.location.subpage == 'groups';
             } else if (SGPP.location.pageKind == 'account') {
-                return SGPP.location.subpage == 'manage' || SGPP.location.subpage == 'feedback' || SGPP.location.subpage == 'steam' || SGPP.location.subpage == 'settings';
+                return SGPP.location.subpage == 'manage' || SGPP.location.subpage == 'trades' || SGPP.location.subpage == 'steam' || SGPP.location.subpage == 'settings';
             }            
 
             return false;

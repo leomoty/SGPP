@@ -518,7 +518,7 @@ var ModuleDefinition;
             var _this = this;
             this._lsSettings = {};
             this.style = ".SGPP__settings { cursor: pointer; }\n";
-            this.settingsNavIcon = '<a class="nav__row SGPP__settings" target="_blank" href="/sgpp">\n' + '<i class="icon-red fa fa-fw fa-bars"> </i>\n' + '<div class="nav__row__summary">\n' + '<p class="nav__row__summary__name" > SG++ Settings</p>\n' + '<p class="nav__row__summary__description"> Steamgifts++ settings.</p>\n' + '</div>\n' + '</a>\n';
+            this.settingsNavIcon = '<a class="nav__row SGPP__settings" href="/sgpp">\n' + '<i class="icon-red fa fa-fw fa-bars"> </i>\n' + '<div class="nav__row__summary">\n' + '<p class="nav__row__summary__name" > SG++ Settings</p>\n' + '<p class="nav__row__summary__description"> Steamgifts++ settings.</p>\n' + '</div>\n' + '</a>\n';
             this.init = function (storage) {
                 _this._lsSettings = storage.getItem(ModuleDefinition.Settings.SETTINGS_KEY, {});
                 if (window.location.pathname == '/sgpp') {
@@ -772,7 +772,7 @@ var ModuleDefinition;
     var UserTags = (function () {
         function UserTags() {
             var _this = this;
-            this.style = '.SGPP__tagIcon {margin-left: 5px; transform: rotate(-45deg); opacity: 0.35; cursor: pointer; text-shadow: none}\n' + '.SGPP__tagIcon:hover {opacity: 0.7}\n' + '.comment__username--op .SGPP__tagIcon {color: #FFF}\n' + '.SGPP__userTag {display: inline-block; color: #465670; background-color: #FFF; font-weight: initial; text-shadow: none; padding: 0 4px; border-radius: 3px; border: 1px solid #D2D6E0; line-height: normal; margin-left: 5px; cursor: pointer}\n' + '.SGPP__tagModal_background {position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(60, 66, 77, 0.85); cursor: pointer; z-index: 9998}\n' + '.SGPP__tagModal {display: block; position: fixed; top: 50px; left: 50%; width: 300px; margin-left: -250px; z-index: 9999}\n' + '.SGPP__tagModal .popup__icon {width: 48px; text-indent: 5px}\n' + '.SGPP__tagOptions {margin-bottom: 15px}\n' + '.SGPP__tagOptions > div {display: flex; justify-content: space-between}\n' + '.SGPP__tagOptions > div > input {width: 125px; height: auto}\n' + '.SGPP__tagOptions .popup__actions {margin-top: 15px}\n' + '';
+            this.style = '.SGPP__tagIcon {margin-left: 5px; transform: rotate(-45deg); opacity: 0.35; cursor: pointer; text-shadow: none}\n' + '.SGPP__tagIcon:hover {opacity: 0.7}\n' + '.comment__username--op .SGPP__tagIcon {color: #FFF}\n' + '.SGPP__userTag {display: inline-block; color: #465670; background-color: #FFF; font-weight: initial; text-shadow: none; padding: 0 4px; border-radius: 3px; border: 1px solid #D2D6E0; line-height: normal; margin-left: 5px; cursor: pointer}\n' + '.SGPP__tagModal_background {position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(60, 66, 77, 0.85); cursor: pointer; z-index: 9998}\n' + '.SGPP__tagModal {display: block; position: fixed; top: 50px; left: 50%; width: 300px; margin-left: -250px; z-index: 9999}\n' + '.SGPP__tagModal .popup__icon {width: 48px; text-indent: 5px}\n' + '.SGPP__tagOptions {margin-bottom: 15px}\n' + '.SGPP__tagOptions > div {display: flex; justify-content: space-between}\n' + '.SGPP__tagOptions > div > input {width: 125px; height: 30px;}\n' + '.SGPP__tagOptions > div :not(:first-child) { margin-top: 5px;}\n' + '.SGPP__tagOptions .popup__actions {margin-top: 15px}\n' + '.SGPP__tagOptions > div > span { line-height: 35px;}\n' + '.SGPP__tagOptions > div > input[type="color"] { padding: 3px 6px;}\n' + '';
             this.render = function () {
                 _this.tagConfigModal = new UserTagConfig(_this.updateTags);
                 var usersLinks = $('a[href^="/user/"]:not(.global__image-outer-wrap, .nav__avatar-outer-wrap)');
@@ -976,11 +976,9 @@ var ModuleDefinition;
                     var comment_id = parseInt(parent.data('comment-id'));
                     m.topicInfo.setCommentState(comment_id, false);
                 });
-                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems', function (event, dom, page, isReload) {
-                        _this.markComments(dom, page, true, isReload);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussionReplies", 'beforeAddItems', function (event, dom, page, isReload) {
+                    _this.markComments(dom, page, true, isReload);
+                });
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics($(document));
@@ -994,11 +992,9 @@ var ModuleDefinition;
                     parent.find('.endless_badge_new').remove();
                     $this.remove();
                 });
-                if ("EndlessScrollDiscussion" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems', function (event, dom, page, isReload) {
-                        _this.markTopics(dom);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussion", 'beforeAddItems', function (event, dom, page, isReload) {
+                    _this.markTopics(dom);
+                });
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -1131,11 +1127,9 @@ var ModuleDefinition;
         };
         MessagesFilterTest.prototype.render = function () {
             var _this = this;
-            if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
-                $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('addItem', function (event, el) {
-                    _this.filterItem(el);
-                });
-            }
+            SGPP.on("EndlessScrollDiscussionReplies", 'addItem', function (event, el) {
+                _this.filterItem(el);
+            });
             var m = this;
             this._filterElement = $('<span class="message-filters"></span>');
             this._filterElement.append('<span class="message-filter hideread"><i class="fa fa-square-o"></i> Hide Read</span>').click(function () {
@@ -1724,6 +1718,7 @@ var ModuleDefinition;
         EndlessScrollGiveaways.prototype.init = function () {
         };
         EndlessScrollGiveaways.prototype.render = function () {
+            var _this = this;
             this.preparePage();
             $(this).on('afterAddItems', function (event, pageContainer, page, isReload) {
                 pageContainer.find(".giveaway__hide").click(function () {
@@ -1738,6 +1733,24 @@ var ModuleDefinition;
                         modalColor: "#3c424d"
                     });
                 });
+            });
+            $('.popup--hide-games .js__submit-form').after('<div class="form__submit-button ajax_submit-form"><i class="fa fa-check-circle"></i> Yes</div>');
+            $('.popup--hide-games .js__submit-form').hide();
+            $('.popup--hide-games .ajax_submit-form').click(function (event) {
+                var form = $('.popup--hide-games form').first();
+                $.post('/', form.serialize(), function (data) {
+                    $('.popup--hide-games').bPopup().close();
+                    _this.hideGiveawaysByGameID($(".popup--hide-games input[name=game_id]").val());
+                });
+                return false;
+            });
+        };
+        EndlessScrollGiveaways.prototype.hideGiveawaysByGameID = function (game) {
+            $('.giveaway__row-outer-wrap').each(function (i, e) {
+                var $e = $(e);
+                if ($e.find('.giveaway__hide').data('game-id') == game) {
+                    $e.hide();
+                }
             });
         };
         EndlessScrollGiveaways.prototype.createPageContainerElement = function () {
@@ -1775,9 +1788,8 @@ var ModuleDefinition;
                 return SGPP.location.subpage == 'entries' || SGPP.location.subpage == 'winners' || SGPP.location.subpage == 'groups';
             }
             else if (SGPP.location.pageKind == 'account') {
-                return SGPP.location.subpage == 'manage' || SGPP.location.subpage == 'feedback' || SGPP.location.subpage == 'steam';
+                return SGPP.location.subpage == 'manage' || SGPP.location.subpage == 'trades' || SGPP.location.subpage == 'steam' || SGPP.location.subpage == 'settings';
             }
-            console.log(SGPP.location);
             return false;
         };
         EndlessScrollLists.prototype.init = function () {
