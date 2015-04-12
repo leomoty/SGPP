@@ -976,9 +976,11 @@ var ModuleDefinition;
                     var comment_id = parseInt(parent.data('comment-id'));
                     m.topicInfo.setCommentState(comment_id, false);
                 });
-                SGPP.on("EndlessScrollDiscussionReplies", 'beforeAddItems', function (event, dom, page, isReload) {
-                    _this.markComments(dom, page, true, isReload);
-                });
+                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems', function (event, dom, page, isReload) {
+                        _this.markComments(dom, page, true, isReload);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics($(document));
@@ -992,9 +994,11 @@ var ModuleDefinition;
                     parent.find('.endless_badge_new').remove();
                     $this.remove();
                 });
-                SGPP.on("EndlessScrollDiscussion", 'beforeAddItems', function (event, dom, page, isReload) {
-                    _this.markTopics(dom);
-                });
+                if ("EndlessScrollDiscussion" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems', function (event, dom, page, isReload) {
+                        _this.markTopics(dom);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -1086,6 +1090,45 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
+    var MarkOwnedGames = (function () {
+        function MarkOwnedGames() {
+            this.style = "";
+            this.userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
+        }
+        MarkOwnedGames.prototype.shouldRun = function () {
+            return true;
+        };
+        MarkOwnedGames.prototype.init = function () {
+        };
+        MarkOwnedGames.prototype.render = function () {
+            if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshGamesFromSteam();
+            }
+            else {
+                this.userdata = JSON.parse(SGPP.storage.getItem("steam_userdata"));
+            }
+        };
+        MarkOwnedGames.prototype.refreshGamesFromSteam = function () {
+            var _this = this;
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: "http://store.steampowered.com/dynamicstore/userdata/",
+                onload: function (response) {
+                    _this.userdata = JSON.parse(response.responseText);
+                    SGPP.storage.setItem("steam_usedata", _this.userdata);
+                    SGPP.storage.setItem("steam_userdata_date", Date.now());
+                }
+            });
+        };
+        MarkOwnedGames.prototype.name = function () {
+            return "Mark Games testing";
+        };
+        return MarkOwnedGames;
+    })();
+    ModuleDefinition.MarkOwnedGames = MarkOwnedGames;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
     var MessagesFilterTest = (function () {
         function MessagesFilterTest() {
             this.style = ".message_filter_hidden { display: none; }\n" + ".message_filter_visible { }\n" + ".filterdrop { position: absolute; }\n" + ".filterdrop a { display: block; }\n" + ".message-filters { margin-left: 5px; }\n" + ".message-filter { cursor: pointer; }\n" + ".message-filter i { margin: 0; }";
@@ -1127,9 +1170,11 @@ var ModuleDefinition;
         };
         MessagesFilterTest.prototype.render = function () {
             var _this = this;
-            SGPP.on("EndlessScrollDiscussionReplies", 'addItem', function (event, el) {
-                _this.filterItem(el);
-            });
+            if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
+                $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('addItem', function (event, el) {
+                    _this.filterItem(el);
+                });
+            }
             var m = this;
             this._filterElement = $('<span class="message-filters"></span>');
             this._filterElement.append('<span class="message-filter hideread"><i class="fa fa-square-o"></i> Hide Read</span>').click(function () {
@@ -1718,7 +1763,6 @@ var ModuleDefinition;
         EndlessScrollGiveaways.prototype.init = function () {
         };
         EndlessScrollGiveaways.prototype.render = function () {
-            var _this = this;
             this.preparePage();
             $(this).on('afterAddItems', function (event, pageContainer, page, isReload) {
                 pageContainer.find(".giveaway__hide").click(function () {
@@ -1733,24 +1777,6 @@ var ModuleDefinition;
                         modalColor: "#3c424d"
                     });
                 });
-            });
-            $('.popup--hide-games .js__submit-form').after('<div class="form__submit-button ajax_submit-form"><i class="fa fa-check-circle"></i> Yes</div>');
-            $('.popup--hide-games .js__submit-form').hide();
-            $('.popup--hide-games .ajax_submit-form').click(function (event) {
-                var form = $('.popup--hide-games form').first();
-                $.post('/', form.serialize(), function (data) {
-                    $('.popup--hide-games').bPopup().close();
-                    _this.hideGiveawaysByGameID($(".popup--hide-games input[name=game_id]").val());
-                });
-                return false;
-            });
-        };
-        EndlessScrollGiveaways.prototype.hideGiveawaysByGameID = function (game) {
-            $('.giveaway__row-outer-wrap').each(function (i, e) {
-                var $e = $(e);
-                if ($e.find('.giveaway__hide').data('game-id') == game) {
-                    $e.hide();
-                }
             });
         };
         EndlessScrollGiveaways.prototype.createPageContainerElement = function () {
@@ -1835,7 +1861,7 @@ var ModuleDefinition;
     ModuleDefinition.EndlessScrollLists = EndlessScrollLists;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var SGPP = new ModuleDefinition.Core();
-var modulesNames = new Array("CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
+var modulesNames = new Array("CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MarkOwnedGames", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
 var defaultModules = {
     "FixedNavbar": { "enabled": true },
     "ScrollingSidebar": { "enabled": true }
