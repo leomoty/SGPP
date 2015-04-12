@@ -29,10 +29,16 @@ module ModuleDefinition {
                 url: "http://store.steampowered.com/dynamicstore/userdata/",
                 onload: (response) => {
 
-                    this.userdata = JSON.parse(response.responseText);
+                    var userdata = JSON.parse(response.responseText);
 
-                    SGPP.storage.setItem("steam_usedata", this.userdata);
+                    if (userdata.rgOwnedApps.length == 0) {
+                        alert('You are not logged in to Steam.');
+                    }
+
+                    SGPP.storage.setItem("steam_usedata", userdata);
                     SGPP.storage.setItem("steam_userdata_date", Date.now());
+
+                    this.userdata = userdata;
                 }
             });
         }

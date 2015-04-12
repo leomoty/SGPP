@@ -1114,9 +1114,13 @@ var ModuleDefinition;
                 method: "GET",
                 url: "http://store.steampowered.com/dynamicstore/userdata/",
                 onload: function (response) {
-                    _this.userdata = JSON.parse(response.responseText);
-                    SGPP.storage.setItem("steam_usedata", _this.userdata);
+                    var userdata = JSON.parse(response.responseText);
+                    if (userdata.rgOwnedApps.length == 0) {
+                        alert('You are not logged in to Steam.');
+                    }
+                    SGPP.storage.setItem("steam_usedata", userdata);
                     SGPP.storage.setItem("steam_userdata_date", Date.now());
+                    _this.userdata = userdata;
                 }
             });
         };
