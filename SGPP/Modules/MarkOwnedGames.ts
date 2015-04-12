@@ -15,12 +15,33 @@ module ModuleDefinition {
         init(): void {
         }
 
+        owns(link: string): boolean {
+            var l = this.parseAppLink(link);
+
+            if (!l)
+                return null;
+
+            if (l[0] == 'app')
+                return this.ownsApp(l[1]);
+            else if (l[0] == 'sub')
+                return this.ownsApp(l[1]);
+        }
+
         ownsApp(appid: number): boolean {
             return this.userdata.rgOwnedApps.indexOf(appid) !== -1;
         }
 
         ownsPackage(packageid: number): boolean {
             return this.userdata.rgOwnedPackages.indexOf(packageid) !== -1;
+        }
+
+        ignores(link: string): boolean {
+            var l = this.parseAppLink(link);
+
+            if (l[0] == 'app')
+                return this.ignoresApp(l[1]);
+            else if (l[0] == 'sub')
+                return this.ignoresPackage(l[1]);
         }
 
         ignoresApp(appid: number): boolean {
@@ -35,6 +56,15 @@ module ModuleDefinition {
             return this.userdata.rgWishlist.indexOf(appid) !== -1;
         }
 
+        parseAppLink(url: string): any {
+            var m = url.match(/\/(app|sub)\/(\d+)\//);
+
+            if (!m)
+                return false;
+
+            return [m[1], parseInt(m[2])];
+        }
+
         render(): void {
             if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
                 this.refreshGamesFromSteam();
@@ -44,24 +74,15 @@ module ModuleDefinition {
                 this.userdata = SGPP.storage.getItem("steam_userdata");
             }
 
-            console.log(this.userdata);
-
             if (SGPP.location.pageKind == 'giveaway') {
                 var link = $('a.global__image-outer-wrap--game-large').first().attr('href');
                 var owned = false;
                 var ignored = false;
-                var appid = -1;
+                var linkInfo = this.parseAppLink(link);
 
-                var m = link.match(/\/app\/(\d+)\//);
-
-                if (m) {
-                    appid = parseInt(m[1]);
-                    owned = this.ownsApp(appid);
-                    ignored = this.ignoresApp(appid);
-
-                    console.log(owned);
-                    console.log(ignored);
-                    console.log(appid);
+                if (linkInfo) {
+                    owned = this.owns(link);
+                    ignored = this.ignores(link);
                 }
 
                 var sidebar = $('.sidebar').last();
@@ -72,9 +93,42 @@ module ModuleDefinition {
                         $('.sidebar__entry-insert').hide();
                     }
                 }
+
                 if (ignored) {
                     sidebar.prepend('<div>Ignored</div>');
                 }
+
+            } else if (SGPP.location.pageKind == 'giveaways') {
+                this.filterGames();
+
+                SGPP.on("EndlessScrollGiveaways", "addItem",(event: JQueryEventObject, el: Element) => {
+                    this.filterGame(el);
+                });
+            }
+        }
+
+        filterGames(): void {
+            $('.giveaway__row-outer-wrap').each((i, el) => {
+                this.filterGame(el);
+            });
+        }
+
+        filterGame(el: Element): void {
+            var show = true;
+            var $el = $(el);
+
+            var link = $el.find('a.giveaway__icon').attr('href');
+
+            var linkInfo = this.parseAppLink(link);
+
+            show = !this.owns(link);
+
+            if (show) {
+                $el.show();
+            } else {
+                console.log('Hiding');
+                console.log(linkInfo);
+                $el.hide();
             }
         }
 

@@ -1100,11 +1100,27 @@ var ModuleDefinition;
         };
         MarkOwnedGames.prototype.init = function () {
         };
+        MarkOwnedGames.prototype.owns = function (link) {
+            var l = this.parseAppLink(link);
+            if (!l)
+                return null;
+            if (l[0] == 'app')
+                return this.ownsApp(l[1]);
+            else if (l[0] == 'sub')
+                return this.ownsApp(l[1]);
+        };
         MarkOwnedGames.prototype.ownsApp = function (appid) {
             return this.userdata.rgOwnedApps.indexOf(appid) !== -1;
         };
         MarkOwnedGames.prototype.ownsPackage = function (packageid) {
             return this.userdata.rgOwnedPackages.indexOf(packageid) !== -1;
+        };
+        MarkOwnedGames.prototype.ignores = function (link) {
+            var l = this.parseAppLink(link);
+            if (l[0] == 'app')
+                return this.ignoresApp(l[1]);
+            else if (l[0] == 'sub')
+                return this.ignoresPackage(l[1]);
         };
         MarkOwnedGames.prototype.ignoresApp = function (appid) {
             return this.userdata.rgIgnoredApps.indexOf(appid) !== -1;
@@ -1115,27 +1131,28 @@ var ModuleDefinition;
         MarkOwnedGames.prototype.isWishlisted = function (appid) {
             return this.userdata.rgWishlist.indexOf(appid) !== -1;
         };
+        MarkOwnedGames.prototype.parseAppLink = function (url) {
+            var m = url.match(/\/(app|sub)\/(\d+)\//);
+            if (!m)
+                return false;
+            return [m[1], parseInt(m[2])];
+        };
         MarkOwnedGames.prototype.render = function () {
+            var _this = this;
             if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
                 this.refreshGamesFromSteam();
             }
             if (SGPP.storage.containsItem("steam_userdata")) {
                 this.userdata = SGPP.storage.getItem("steam_userdata");
             }
-            console.log(this.userdata);
             if (SGPP.location.pageKind == 'giveaway') {
                 var link = $('a.global__image-outer-wrap--game-large').first().attr('href');
                 var owned = false;
                 var ignored = false;
-                var appid = -1;
-                var m = link.match(/\/app\/(\d+)\//);
-                if (m) {
-                    appid = parseInt(m[1]);
-                    owned = this.ownsApp(appid);
-                    ignored = this.ignoresApp(appid);
-                    console.log(owned);
-                    console.log(ignored);
-                    console.log(appid);
+                var linkInfo = this.parseAppLink(link);
+                if (linkInfo) {
+                    owned = this.owns(link);
+                    ignored = this.ignores(link);
                 }
                 var sidebar = $('.sidebar').last();
                 if (owned) {
@@ -1147,6 +1164,33 @@ var ModuleDefinition;
                 if (ignored) {
                     sidebar.prepend('<div>Ignored</div>');
                 }
+            }
+            else if (SGPP.location.pageKind == 'giveaways') {
+                this.filterGames();
+                SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
+                    _this.filterGame(el);
+                });
+            }
+        };
+        MarkOwnedGames.prototype.filterGames = function () {
+            var _this = this;
+            $('.giveaway__row-outer-wrap').each(function (i, el) {
+                _this.filterGame(el);
+            });
+        };
+        MarkOwnedGames.prototype.filterGame = function (el) {
+            var show = true;
+            var $el = $(el);
+            var link = $el.find('a.giveaway__icon').attr('href');
+            var linkInfo = this.parseAppLink(link);
+            show = !this.owns(link);
+            if (show) {
+                $el.show();
+            }
+            else {
+                console.log('Hiding');
+                console.log(linkInfo);
+                $el.hide();
             }
         };
         MarkOwnedGames.prototype.refreshGamesFromSteam = function () {
