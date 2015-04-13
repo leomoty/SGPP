@@ -8,11 +8,29 @@ module ModuleDefinition {
 
         private userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
 
+        private elFilterOwns: JQuery;
+
         shouldRun(): boolean {
             return true;
         }
 
         init(): void {
+        }
+
+        private _hideOwned = false;
+
+        get hideOwned(): boolean {
+            return this._hideOwned;
+        }
+
+        set hideOwned(v: boolean) {
+            this._hideOwned = v;
+
+            this.elFilterOwns.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
+
+            SGPP.storage.setItem("games_filter_owned", v);
+
+            this.filterGames();
         }
 
         owns(link: string): boolean {
@@ -101,6 +119,17 @@ module ModuleDefinition {
             } else if (SGPP.location.pageKind == 'giveaways') {
                 this.filterGames();
 
+                $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
+
+                this.elFilterOwns = $('<div><span class="fa fa-square-o"></span> Hide Owned</div>');
+                this.elFilterOwns.click(() => {
+                    this.hideOwned = !this.hideOwned;
+                });
+
+                $('#sidebar_sgpp_filters').append(this.elFilterOwns);
+
+                this.hideOwned = SGPP.storage.getItem("games_filter_owned", true);
+
                 SGPP.on("EndlessScrollGiveaways", "addItem",(event: JQueryEventObject, el: Element) => {
                     this.filterGame(el);
                 });
@@ -121,7 +150,7 @@ module ModuleDefinition {
 
             var linkInfo = this.parseAppLink(link);
 
-            show = !this.owns(link);
+            show = show && (!this.hideOwned || !this.owns(link));
 
             if (show) {
                 $el.show();

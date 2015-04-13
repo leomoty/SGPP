@@ -1094,12 +1094,26 @@ var ModuleDefinition;
         function MarkOwnedGames() {
             this.style = "";
             this.userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
+            this._hideOwned = false;
         }
         MarkOwnedGames.prototype.shouldRun = function () {
             return true;
         };
         MarkOwnedGames.prototype.init = function () {
         };
+        Object.defineProperty(MarkOwnedGames.prototype, "hideOwned", {
+            get: function () {
+                return this._hideOwned;
+            },
+            set: function (v) {
+                this._hideOwned = v;
+                this.elFilterOwns.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
+                SGPP.storage.setItem("games_filter_owned", v);
+                this.filterGames();
+            },
+            enumerable: true,
+            configurable: true
+        });
         MarkOwnedGames.prototype.owns = function (link) {
             var l = this.parseAppLink(link);
             if (!l)
@@ -1167,6 +1181,13 @@ var ModuleDefinition;
             }
             else if (SGPP.location.pageKind == 'giveaways') {
                 this.filterGames();
+                $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
+                this.elFilterOwns = $('<div><span class="fa fa-square-o"></span> Hide Owned</div>');
+                this.elFilterOwns.click(function () {
+                    _this.hideOwned = !_this.hideOwned;
+                });
+                $('#sidebar_sgpp_filters').append(this.elFilterOwns);
+                this.hideOwned = SGPP.storage.getItem("games_filter_owned", true);
                 SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
                     _this.filterGame(el);
                 });
@@ -1183,7 +1204,7 @@ var ModuleDefinition;
             var $el = $(el);
             var link = $el.find('a.giveaway__icon').attr('href');
             var linkInfo = this.parseAppLink(link);
-            show = !this.owns(link);
+            show = show && (!this.hideOwned || !this.owns(link));
             if (show) {
                 $el.show();
             }
