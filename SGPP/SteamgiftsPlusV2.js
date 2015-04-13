@@ -1209,8 +1209,6 @@ var ModuleDefinition;
                 $el.show();
             }
             else {
-                console.log('Hiding');
-                console.log(linkInfo);
                 $el.hide();
             }
         };

@@ -155,8 +155,6 @@ module ModuleDefinition {
             if (show) {
                 $el.show();
             } else {
-                console.log('Hiding');
-                console.log(linkInfo);
                 $el.hide();
             }
         }
