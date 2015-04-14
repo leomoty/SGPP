@@ -105,7 +105,7 @@ module ModuleDefinition {
 
                 var sidebar = $('.sidebar').last();
 
-                if (owned && (SGPP.settings.getSettingForModule("MarkOwnedGames", "reversedGiveawayComments") || false)) {
+                if (owned && (SGPP.settings.getSettingForModule("MarkOwnedGames", "hideEntryButton") || false)) {
                     if ($('.sidebar__entry-insert').length != 0) {
                         $('.sidebar__entry-insert').before('<div class="sidebar__error is-disabled"><i class="fa fa-exclamation-circle"></i> Exists in Account</div>');
                         $('.sidebar__entry-insert').hide();
