@@ -119,14 +119,11 @@ module ModuleDefinition {
             } else {
                 this._nextPage = page + 1;
             }
+
+            this.createPageContainer(this._nextPage);
         }
 
-        loadPage(page: number, force_reload: boolean = false): void {
-
-            if (!(page in this._pagesUrl)) {
-                throw 'No URL for page ' + this._currentPage;
-            }
-
+        createPageContainer(page: number): void {
             if (!(page in this._pages)) {
 
                 var diff = -1;
@@ -143,14 +140,13 @@ module ModuleDefinition {
                 });
 
                 var pageContainer = this.createPageContainerElement();
-                var loadingElement = this.createLoadingElement();
                 var pageHeaderElement = this.createPageElement(page);
-
-                pageHeaderElement.find('p').first().append(loadingElement);
+                
                 pageContainer.append(pageHeaderElement);
 
                 this._pages[page] = {
                     element: pageContainer,
+                    headerElement: pageHeaderElement,
                     loaded: false,
                     loading: false,
                     visible: true
@@ -164,6 +160,15 @@ module ModuleDefinition {
                     elPage.before(pageContainer);
                 }
             }
+        }
+
+        loadPage(page: number, force_reload: boolean = false): void {
+
+            if (!(page in this._pagesUrl)) {
+                throw 'No URL for page ' + this._currentPage;
+            }
+
+            this.createPageContainer(page);
 
             var pg = this._pages[page];
 
@@ -184,6 +189,10 @@ module ModuleDefinition {
                 this._pages[page].loading = true;
 
                 var isReload = this._pages[page].loaded;
+                var pageContainer = this._pages[page].element;
+                var pageHeaderElement = this._pages[page].headerElement;
+                var loadingElement = this.createLoadingElement();
+                pageHeaderElement.find('p').first().append(loadingElement);
 
                 $.get(url,(data) => {
 
@@ -322,6 +331,8 @@ module ModuleDefinition {
                 this._nextPage = this._currentPage + 1;
             }
 
+            this.createPageContainer(this._nextPage);
+
             itemsElement.prepend(pageHeader);
 
             if (isCommentLink) {
@@ -333,9 +344,15 @@ module ModuleDefinition {
             $(window).scroll((event) => {
                 var scrollPos = $(window).scrollTop() + $(window).height();
 
-                if (scrollPos > $('div.pagination').position().top - 200) {
-                    this.loadNextPage();
+                if (this._nextPage in this._pages) {
+
+                    var nextPage = this._pages[this._nextPage];
+
+                    if (scrollPos > $(nextPage.headerElement).position().top - 200) {
+                        this.loadNextPage();
+                    }
                 }
+                
             });
 
             // Ensure second page, when page fits the screen
