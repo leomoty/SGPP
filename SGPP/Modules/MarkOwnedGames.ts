@@ -105,7 +105,7 @@ module ModuleDefinition {
 
                 var sidebar = $('.sidebar').last();
 
-                if (owned) {
+                if (owned && (SGPP.settings.getSettingForModule("MarkOwnedGames", "reversedGiveawayComments") || false)) {
                     if ($('.sidebar__entry-insert').length != 0) {
                         $('.sidebar__entry-insert').before('<div class="sidebar__error is-disabled"><i class="fa fa-exclamation-circle"></i> Exists in Account</div>');
                         $('.sidebar__entry-insert').hide();
@@ -180,7 +180,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "Mark Games testing";
+            return "Filter Owned Games";
         }
 
     }
