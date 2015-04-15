@@ -976,9 +976,11 @@ var ModuleDefinition;
                     var comment_id = parseInt(parent.data('comment-id'));
                     m.topicInfo.setCommentState(comment_id, false);
                 });
-                SGPP.on("EndlessScrollDiscussionReplies", 'beforeAddItems', function (event, dom, page, isReload) {
-                    _this.markComments(dom, page, true, isReload);
-                });
+                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems', function (event, dom, page, isReload) {
+                        _this.markComments(dom, page, true, isReload);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics($(document));
@@ -992,9 +994,11 @@ var ModuleDefinition;
                     parent.find('.endless_badge_new').remove();
                     $this.remove();
                 });
-                SGPP.on("EndlessScrollDiscussion", 'beforeAddItems', function (event, dom, page, isReload) {
-                    _this.markTopics(dom);
-                });
+                if ("EndlessScrollDiscussion" in SGPP.modules) {
+                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems', function (event, dom, page, isReload) {
+                        _this.markTopics(dom);
+                    });
+                }
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -1086,6 +1090,243 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
+    var MarkOwnedGames = (function () {
+        function MarkOwnedGames() {
+            this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
+            this.userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
+            this.blacklistData = { apps: [], subs: [] };
+            this._hideOwned = false;
+            this._hideIgnored = false;
+        }
+        MarkOwnedGames.prototype.shouldRun = function () {
+            return true;
+        };
+        MarkOwnedGames.prototype.init = function () {
+        };
+        Object.defineProperty(MarkOwnedGames.prototype, "hideOwned", {
+            get: function () {
+                return this._hideOwned;
+            },
+            set: function (v) {
+                this._hideOwned = v;
+                this.elFilterOwns.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
+                SGPP.storage.setItem("games_filter_owned", v);
+                this.filterGames();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(MarkOwnedGames.prototype, "hideIgnored", {
+            get: function () {
+                return this._hideIgnored;
+            },
+            set: function (v) {
+                this._hideIgnored = v;
+                this.elFilterIgnored.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
+                SGPP.storage.setItem("games_filter_ignored", v);
+                this.filterGames();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        MarkOwnedGames.prototype.owns = function (link) {
+            var l = this.parseAppLink(link);
+            if (!l)
+                return null;
+            if (l[0] == 'app')
+                return this.ownsApp(l[1]);
+            else if (l[0] == 'sub')
+                return this.ownsApp(l[1]);
+        };
+        MarkOwnedGames.prototype.ownsApp = function (appid) {
+            return this.userdata.rgOwnedApps.indexOf(appid) !== -1;
+        };
+        MarkOwnedGames.prototype.ownsPackage = function (packageid) {
+            return this.userdata.rgOwnedPackages.indexOf(packageid) !== -1;
+        };
+        MarkOwnedGames.prototype.ignores = function (link) {
+            var l = this.parseAppLink(link);
+            if (l[0] == 'app')
+                return this.ignoresApp(l[1]);
+            else if (l[0] == 'sub')
+                return this.ignoresPackage(l[1]);
+        };
+        MarkOwnedGames.prototype.blacklisted = function (link) {
+            var l = this.parseAppLink(link);
+            if (l[0] == 'app')
+                return this.blacklistedApp(l[1]);
+            else if (l[0] == 'sub')
+                return this.blacklistedSub(l[1]);
+        };
+        MarkOwnedGames.prototype.blacklistedApp = function (appid) {
+            return this.blacklistData.apps.indexOf(appid) !== -1;
+        };
+        MarkOwnedGames.prototype.blacklistedSub = function (packageid) {
+            return this.blacklistData.subs.indexOf(packageid) !== -1;
+        };
+        MarkOwnedGames.prototype.ignoresApp = function (appid) {
+            return this.userdata.rgIgnoredApps.indexOf(appid) !== -1;
+        };
+        MarkOwnedGames.prototype.ignoresPackage = function (packageid) {
+            return this.userdata.rgIgnoredPackages.indexOf(packageid) !== -1;
+        };
+        MarkOwnedGames.prototype.isWishlisted = function (appid) {
+            return this.userdata.rgWishlist.indexOf(appid) !== -1;
+        };
+        MarkOwnedGames.prototype.parseAppLink = function (url) {
+            var m = url.match(/\/(app|sub)\/(\d+)\//);
+            if (!m)
+                return false;
+            return [m[1], parseInt(m[2])];
+        };
+        MarkOwnedGames.prototype.render = function () {
+            var _this = this;
+            if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshGamesFromSteam();
+            }
+            if (!SGPP.storage.containsItem("blacklist_data") || !SGPP.storage.containsItem("blacklist_date") || SGPP.storage.getItem("blacklist_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshBlacklistFromSG();
+            }
+            if (SGPP.storage.containsItem("steam_userdata")) {
+                this.userdata = SGPP.storage.getItem("steam_userdata");
+            }
+            if (SGPP.storage.containsItem("steam_userdata")) {
+                this.blacklistData = SGPP.storage.getItem("blacklist_data");
+            }
+            if (SGPP.location.pageKind == 'giveaway') {
+                var link = $('a.global__image-outer-wrap--game-large').first().attr('href');
+                var owned = false;
+                var ignored = false;
+                var blacklisted = false;
+                var linkInfo = this.parseAppLink(link);
+                if (linkInfo) {
+                    owned = this.owns(link);
+                    ignored = this.ignores(link);
+                    blacklisted = this.blacklisted(link);
+                }
+                var sidebar = $('.sidebar').last();
+                if (owned) {
+                    if ($('.sidebar__entry-insert').length != 0) {
+                        $('.sidebar__entry-insert').before('<div class="sidebar__ignored sidebar__error"><i class="fa fa-exclamation-circle"></i> Owned in Steam</div>');
+                        $('.sidebar__entry-insert').hide();
+                    }
+                }
+                if (ignored) {
+                    if ($('.sidebar__entry-insert').length != 0) {
+                        $('.sidebar__entry-insert').before('<div class="sidebar__ignored sidebar__error"><i class="fa fa-exclamation-circle"></i> Not Interested</div>');
+                        $('.sidebar__entry-insert').hide();
+                    }
+                }
+                if (blacklisted) {
+                    if ($('.sidebar__entry-insert').length != 0) {
+                        $('.sidebar__entry-insert').before('<div class="sidebar__ignored sidebar__error"><i class="fa fa-exclamation-circle"></i> Game Hidden</div>');
+                        $('.sidebar__entry-insert').hide();
+                    }
+                }
+                $('.sidebar__ignored').click(function () {
+                    $('.sidebar__entry-insert').show();
+                    $('.sidebar__ignored').hide();
+                });
+            }
+            else if (SGPP.location.pageKind == 'giveaways') {
+                this.filterGames();
+                $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
+                this.elFilterOwns = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Owned</div>');
+                this.elFilterOwns.click(function () {
+                    _this.hideOwned = !_this.hideOwned;
+                });
+                this.elFilterIgnored = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Not Interested</div>');
+                this.elFilterIgnored.click(function () {
+                    _this.hideIgnored = !_this.hideIgnored;
+                });
+                $('#sidebar_sgpp_filters').append(this.elFilterOwns);
+                $('#sidebar_sgpp_filters').append(this.elFilterIgnored);
+                this.hideOwned = SGPP.storage.getItem("games_filter_owned", true);
+                this.hideIgnored = SGPP.storage.getItem("games_filter_ignored", true);
+                SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
+                    _this.filterGame(el);
+                });
+            }
+        };
+        MarkOwnedGames.prototype.filterGames = function () {
+            var _this = this;
+            $('.giveaway__row-outer-wrap').each(function (i, el) {
+                _this.filterGame(el);
+            });
+        };
+        MarkOwnedGames.prototype.filterGame = function (el) {
+            var hide = false;
+            var $el = $(el);
+            var link = $el.find('a.giveaway__icon').attr('href');
+            var linkInfo = this.parseAppLink(link);
+            if (this.hideOwned && this.owns(link))
+                hide = true;
+            if (this.hideIgnored && this.ignores(link))
+                hide = true;
+            if (!hide) {
+                $el.show();
+            }
+            else {
+                $el.hide();
+            }
+        };
+        MarkOwnedGames.prototype.refreshGamesFromSteam = function () {
+            var _this = this;
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: "http://store.steampowered.com/dynamicstore/userdata/",
+                onload: function (response) {
+                    var userdata = JSON.parse(response.responseText);
+                    if (userdata.rgOwnedApps.length == 0) {
+                        alert('You are not logged in to Steam.');
+                    }
+                    SGPP.storage.setItem("steam_userdata", userdata);
+                    SGPP.storage.setItem("steam_userdata_date", Date.now());
+                    _this.userdata = userdata;
+                }
+            });
+        };
+        MarkOwnedGames.prototype.loadBlacklistPage = function (page, callback, blacklistData) {
+            var _this = this;
+            $.get("http://www.steamgifts.com/account/settings/giveaways/filters/search?page=" + page, function (data) {
+                var dom = $($.parseHTML(data));
+                $(dom).find('.table__rows').children().each(function (i, el) {
+                    console.log(el);
+                    var $el = $(el);
+                    var link = $el.find('a.table__column__secondary-link');
+                    if (!link.length)
+                        return;
+                    var a = _this.parseAppLink(link.attr('href'));
+                    if (a) {
+                        if (a[0] == 'app')
+                            blacklistData.apps.push(a[1]);
+                        else if (a[0] == 'sub')
+                            blacklistData.subs.push(a[1]);
+                    }
+                });
+                var elLastPage = dom.find('.pagination a').last();
+                if (elLastPage.length && page < parseInt(elLastPage.data('page-number')))
+                    _this.loadBlacklistPage(page + 1, callback, blacklistData);
+                else
+                    callback(blacklistData);
+            });
+        };
+        MarkOwnedGames.prototype.refreshBlacklistFromSG = function () {
+            var data = { apps: [], subs: [] };
+            this.loadBlacklistPage(1, function (blacklist) {
+                SGPP.storage.setItem("blacklist_data", blacklist);
+                SGPP.storage.setItem("blacklist_date", Date.now());
+            }, data);
+        };
+        MarkOwnedGames.prototype.name = function () {
+            return "Filter Owned Games";
+        };
+        return MarkOwnedGames;
+    })();
+    ModuleDefinition.MarkOwnedGames = MarkOwnedGames;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
     var MessagesFilterTest = (function () {
         function MessagesFilterTest() {
             this.style = ".message_filter_hidden { display: none; }\n" + ".message_filter_visible { }\n" + ".filterdrop { position: absolute; }\n" + ".filterdrop a { display: block; }\n" + ".message-filters { margin-left: 5px; }\n" + ".message-filter { cursor: pointer; }\n" + ".message-filter i { margin: 0; }";
@@ -1127,9 +1368,11 @@ var ModuleDefinition;
         };
         MessagesFilterTest.prototype.render = function () {
             var _this = this;
-            SGPP.on("EndlessScrollDiscussionReplies", 'addItem', function (event, el) {
-                _this.filterItem(el);
-            });
+            if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
+                $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('addItem', function (event, el) {
+                    _this.filterItem(el);
+                });
+            }
             var m = this;
             this._filterElement = $('<span class="message-filters"></span>');
             this._filterElement.append('<span class="message-filter hideread"><i class="fa fa-square-o"></i> Hide Read</span>').click(function () {
@@ -1267,6 +1510,8 @@ var ModuleDefinition;
     var EndlessScroll = (function () {
         function EndlessScroll() {
             this._maxPage = 31337;
+            this._pageInView = -1;
+            this._prevPage = -1;
             this._nextPage = -1;
             this._currentPage = 1;
             this._lastPage = 1;
@@ -1338,19 +1583,25 @@ var ModuleDefinition;
             var $p = el.find('p');
             this.updatePageElement(el, page);
             var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
+            var controlReload = $('<a>').attr('href', '#').append('<i class="fa fa-refresh"></i>').attr('title', 'Reload this page');
             var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
-            controlStartStop.click(function () {
-                _this.stopped = !_this.stopped;
-                $('.endless_control_element a i.fa').toggleClass('fa-pause').toggleClass('fa-play');
+            controlReload.click(function () {
+                _this.loadPage(page, true);
                 return false;
             });
+            controlStartStop.click(function () {
+                _this.stopped = !_this.stopped;
+                $('.endless_control_element a i.fa').toggleClass('fa-pause', !_this.stopped).toggleClass('fa-play', _this.stopped);
+                return false;
+            });
+            controlContainer.append(controlReload);
             controlContainer.append(controlStartStop);
             $p.append(controlContainer);
             return el;
         };
         EndlessScroll.prototype.updatePageElement = function (el, page) {
             var text = '';
-            if (page > 0) {
+            if (page > 0 && page <= this._maxPage) {
                 if (this._numberOfPages > 0)
                     text = 'Page ' + page + ' of ' + this._numberOfPages;
                 else
@@ -1376,14 +1627,21 @@ var ModuleDefinition;
             else {
                 this._nextPage = page + 1;
             }
+            this.createPageContainer(this._nextPage);
         };
-        EndlessScroll.prototype.loadPage = function (page, force_reload) {
-            var _this = this;
-            if (force_reload === void 0) { force_reload = false; }
-            if (!(page in this._pagesUrl)) {
-                throw 'No URL for page ' + this._currentPage;
+        EndlessScroll.prototype.updatePrevPage = function (page) {
+            if (this.reverseItems) {
+                this._prevPage = page + 1;
             }
+            else {
+                this._prevPage = page - 1;
+            }
+            this.createPageContainer(this._prevPage);
+        };
+        EndlessScroll.prototype.createPageContainer = function (page) {
             if (!(page in this._pages)) {
+                if (page < 1 || page > this._lastPage)
+                    return;
                 var diff = -1;
                 var target = -1;
                 $.each(this._pages, function (i, el) {
@@ -1394,12 +1652,11 @@ var ModuleDefinition;
                     }
                 });
                 var pageContainer = this.createPageContainerElement();
-                var loadingElement = this.createLoadingElement();
                 var pageHeaderElement = this.createPageElement(page);
-                pageHeaderElement.find('p').first().append(loadingElement);
                 pageContainer.append(pageHeaderElement);
                 this._pages[page] = {
                     element: pageContainer,
+                    headerElement: pageHeaderElement,
                     loaded: false,
                     loading: false,
                     visible: true
@@ -1412,6 +1669,14 @@ var ModuleDefinition;
                     elPage.before(pageContainer);
                 }
             }
+        };
+        EndlessScroll.prototype.loadPage = function (page, force_reload) {
+            var _this = this;
+            if (force_reload === void 0) { force_reload = false; }
+            if (!(page in this._pagesUrl)) {
+                throw 'No URL for page ' + this._currentPage;
+            }
+            this.createPageContainer(page);
             var pg = this._pages[page];
             if (pg.loading) {
                 return;
@@ -1429,36 +1694,49 @@ var ModuleDefinition;
                 var url = this._pagesUrl[page];
                 this._pages[page].loading = true;
                 var isReload = this._pages[page].loaded;
+                var pageContainer = this._pages[page].element;
+                var pageHeaderElement = this._pages[page].headerElement;
+                var loadingElement = this.createLoadingElement();
+                pageHeaderElement.find('p').first().append(loadingElement);
+                if (isReload) {
+                    $(this).trigger('beforeReloadPage', [page]);
+                    pageContainer.children().remove();
+                    pageContainer.prepend(pageHeaderElement);
+                }
                 $.get(url, function (data) {
                     var dom = $.parseHTML(data);
-                    if (isReload)
-                        pageContainer.children().remove();
                     var newPagination = _this.getNavigationElement(dom);
                     var actualPage = parseInt(newPagination.find('a.is-selected').data('page-number'));
                     var $dom = $(dom);
                     $(_this).trigger('beforeAddItems', [$dom, actualPage, isReload]);
                     var itemsContainer = _this.getItemsElement(dom);
                     _this.parseNavigation(newPagination);
-                    _this.addItems(itemsContainer, pageContainer, page);
+                    _this.addItems(itemsContainer, pageContainer, actualPage);
                     pageContainer.prepend(pageHeaderElement);
                     _this.getNavigationElement(document).html(newPagination.html());
                     $(_this).trigger('afterAddItems', [pageContainer, actualPage, isReload]);
+                    _this._pages[page].loading = false;
                     _this._pages[page].loaded = true;
                     loadingElement.remove();
                     if (_this._nextPage == page || _this._nextPage == -1) {
                         _this.updateNextPage(actualPage);
+                    }
+                    else if (_this._prevPage == page) {
+                        _this.updatePrevPage(actualPage);
                     }
                     if (actualPage != page) {
                         _this.updatePageElement(pageHeaderElement, actualPage);
                         _this._pages[actualPage] = _this._pages[page];
                         delete _this._pages[page];
                     }
+                    _this.updatePageInView();
                 });
             }
         };
         EndlessScroll.prototype.addItems = function (dom, pageContainer, page) {
             var _this = this;
             this.getItems(dom).each(function (i, el) {
+                $(el).data('original-page', page);
                 $(_this).trigger('addItem', [el]);
                 if (_this.reverseItems) {
                     pageContainer.prepend(el);
@@ -1483,6 +1761,25 @@ var ModuleDefinition;
                     _this._lastPage = page;
             });
         };
+        EndlessScroll.prototype.updatePageInView = function () {
+            var nearestPage = -1;
+            var nearestPageDiff = -1;
+            $.each(this._pages, function (i, page) {
+                var diff = $(window).scrollTop() - $(page.headerElement).offset().top;
+                if (nearestPage == -1 || (diff > 0 && diff < nearestPageDiff)) {
+                    nearestPage = i;
+                    nearestPageDiff = diff;
+                }
+            });
+            if (nearestPage == -1) {
+                nearestPage = this._pageInView;
+            }
+            if (this._pageInView != nearestPage) {
+                this._pageInView = nearestPage;
+                console.log("page in view changed to " + nearestPage);
+                history.pushState(null, null, this._pagesUrl[nearestPage]);
+            }
+        };
         EndlessScroll.prototype.preparePage = function () {
             var _this = this;
             var nav = this.getNavigationElement(document);
@@ -1495,6 +1792,7 @@ var ModuleDefinition;
             }
             else {
                 this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
+                this._pageInView = this._currentPage;
                 this.parseNavigation(nav);
             }
             var itemsElement = this.getItemsElement(document);
@@ -1502,6 +1800,7 @@ var ModuleDefinition;
             var isCommentLink = SGPP.location.hash != '';
             this._pages[this.currentPage] = {
                 element: itemsElement,
+                headerElement: pageHeader,
                 loaded: true,
                 loading: false,
                 visible: true
@@ -1523,21 +1822,30 @@ var ModuleDefinition;
                     this.loadPage(this._maxPage);
                 }
                 else {
-                    this._nextPage = this._lastPage - 1;
+                    this._prevPage = this.currentPage + 1;
+                    this._nextPage = this.currentPage - 1;
                 }
             }
             else {
+                this._prevPage = this._currentPage - 1;
                 this._nextPage = this._currentPage + 1;
             }
+            if (this._prevPage > 0)
+                this.createPageContainer(this._prevPage);
+            this.createPageContainer(this._nextPage);
             itemsElement.prepend(pageHeader);
             if (isCommentLink) {
                 var linkedComment = $("#" + SGPP.location.hash);
                 $(window).scrollTop(linkedComment.offset().top);
             }
             $(window).scroll(function (event) {
+                _this.updatePageInView();
                 var scrollPos = $(window).scrollTop() + $(window).height();
-                if (scrollPos > $('div.pagination').position().top - 200) {
-                    _this.loadNextPage();
+                if (_this._nextPage in _this._pages) {
+                    var nextPage = _this._pages[_this._nextPage];
+                    if (scrollPos > $(nextPage.headerElement).position().top - 200) {
+                        _this.loadNextPage();
+                    }
                 }
             });
             $(window).scroll();
@@ -1718,7 +2026,6 @@ var ModuleDefinition;
         EndlessScrollGiveaways.prototype.init = function () {
         };
         EndlessScrollGiveaways.prototype.render = function () {
-            var _this = this;
             this.preparePage();
             $(this).on('afterAddItems', function (event, pageContainer, page, isReload) {
                 pageContainer.find(".giveaway__hide").click(function () {
@@ -1733,24 +2040,6 @@ var ModuleDefinition;
                         modalColor: "#3c424d"
                     });
                 });
-            });
-            $('.popup--hide-games .js__submit-form').after('<div class="form__submit-button ajax_submit-form"><i class="fa fa-check-circle"></i> Yes</div>');
-            $('.popup--hide-games .js__submit-form').hide();
-            $('.popup--hide-games .ajax_submit-form').click(function (event) {
-                var form = $('.popup--hide-games form').first();
-                $.post('/', form.serialize(), function (data) {
-                    $('.popup--hide-games').bPopup().close();
-                    _this.hideGiveawaysByGameID($(".popup--hide-games input[name=game_id]").val());
-                });
-                return false;
-            });
-        };
-        EndlessScrollGiveaways.prototype.hideGiveawaysByGameID = function (game) {
-            $('.giveaway__row-outer-wrap').each(function (i, e) {
-                var $e = $(e);
-                if ($e.find('.giveaway__hide').data('game-id') == game) {
-                    $e.hide();
-                }
             });
         };
         EndlessScrollGiveaways.prototype.createPageContainerElement = function () {
@@ -1835,7 +2124,7 @@ var ModuleDefinition;
     ModuleDefinition.EndlessScrollLists = EndlessScrollLists;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var SGPP = new ModuleDefinition.Core();
-var modulesNames = new Array("CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
+var modulesNames = new Array("CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MarkOwnedGames", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
 var defaultModules = {
     "FixedNavbar": { "enabled": true },
     "ScrollingSidebar": { "enabled": true }

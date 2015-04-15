@@ -17,6 +17,7 @@
 /// <reference path="Modules/UserHoverInfo.ts" />
 /// <reference path="Modules/UserTags.ts" />
 /// <reference path="Modules/MarkComments.ts" />
+/// <reference path="Modules/MarkOwnedGames.ts" />
 /// <reference path="Modules/MessagesFilterTest.ts" />
 /// <reference path="Modules/PopupGiveaway.ts" />
 
@@ -39,6 +40,7 @@ var modulesNames: Array<string> = new Array<string>(
     "UserHoverInfo",
     "UserTags",
     "MarkComments",
+    "MarkOwnedGames",
     "MessagesFilterTest",
     "PopupGiveaway",
     "EndlessScrollDiscussion",

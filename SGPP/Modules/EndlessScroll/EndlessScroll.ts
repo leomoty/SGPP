@@ -4,8 +4,10 @@ module ModuleDefinition {
 
     export class EndlessScroll {
 
-        private _maxPage:number = 31337;
+        private _maxPage: number = 31337;
 
+        private _pageInView: number = -1;
+        private _prevPage: number = -1;
         private _nextPage: number = -1;
         private _currentPage: number = 1;
         private _lastPage: number = 1;
@@ -71,16 +73,24 @@ module ModuleDefinition {
             this.updatePageElement(el, page);
 
             var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
+            var controlReload = $('<a>').attr('href', '#').append('<i class="fa fa-refresh"></i>').attr('title', 'Reload this page');
             var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
 
-            controlStartStop.click(() => {
-                this.stopped = !this.stopped;
-
-                $('.endless_control_element a i.fa').toggleClass('fa-pause').toggleClass('fa-play');
+            controlReload.click(() => {
+                this.loadPage(page, true);
 
                 return false;
             });
 
+            controlStartStop.click(() => {
+                this.stopped = !this.stopped;
+
+                $('.endless_control_element a i.fa').toggleClass('fa-pause', !this.stopped).toggleClass('fa-play', this.stopped);
+
+                return false;
+            });
+
+            controlContainer.append(controlReload);
             controlContainer.append(controlStartStop);
 
             $p.append(controlContainer);
@@ -90,7 +100,7 @@ module ModuleDefinition {
 
         updatePageElement(el: JQuery, page: number) {
             var text = '';
-            if (page > 0) {
+            if (page > 0 && page <= this._maxPage) {
                 if (this._numberOfPages > 0)
                     text = 'Page ' + page + ' of ' + this._numberOfPages;
                 else
@@ -119,15 +129,25 @@ module ModuleDefinition {
             } else {
                 this._nextPage = page + 1;
             }
+
+            this.createPageContainer(this._nextPage);
         }
 
-        loadPage(page: number, force_reload: boolean = false): void {
-
-            if (!(page in this._pagesUrl)) {
-                throw 'No URL for page ' + this._currentPage;
+        updatePrevPage(page: number): void {
+            if (this.reverseItems) {
+                this._prevPage = page + 1;
+            } else {
+                this._prevPage = page - 1;
             }
 
+            this.createPageContainer(this._prevPage);
+        }
+
+        createPageContainer(page: number): void {
             if (!(page in this._pages)) {
+
+                if (page < 1 || page > this._lastPage)
+                    return;
 
                 var diff = -1;
                 var target = -1;
@@ -143,14 +163,13 @@ module ModuleDefinition {
                 });
 
                 var pageContainer = this.createPageContainerElement();
-                var loadingElement = this.createLoadingElement();
                 var pageHeaderElement = this.createPageElement(page);
-
-                pageHeaderElement.find('p').first().append(loadingElement);
+                
                 pageContainer.append(pageHeaderElement);
 
                 this._pages[page] = {
                     element: pageContainer,
+                    headerElement: pageHeaderElement,
                     loaded: false,
                     loading: false,
                     visible: true
@@ -164,6 +183,15 @@ module ModuleDefinition {
                     elPage.before(pageContainer);
                 }
             }
+        }
+
+        loadPage(page: number, force_reload: boolean = false): void {
+
+            if (!(page in this._pagesUrl)) {
+                throw 'No URL for page ' + this._currentPage;
+            }
+
+            this.createPageContainer(page);
 
             var pg = this._pages[page];
 
@@ -184,13 +212,20 @@ module ModuleDefinition {
                 this._pages[page].loading = true;
 
                 var isReload = this._pages[page].loaded;
+                var pageContainer = this._pages[page].element;
+                var pageHeaderElement = this._pages[page].headerElement;
+                var loadingElement = this.createLoadingElement();
+                pageHeaderElement.find('p').first().append(loadingElement);
+
+                if (isReload) {
+                    $(this).trigger('beforeReloadPage', [page]);
+                    pageContainer.children().remove();
+                    pageContainer.prepend(pageHeaderElement);
+                }
 
                 $.get(url,(data) => {
 
                     var dom = $.parseHTML(data);
-
-                    if (isReload)
-                        pageContainer.children().remove();
 
                     //
                     var newPagination = this.getNavigationElement(dom);
@@ -206,7 +241,7 @@ module ModuleDefinition {
                     // Cache urls for pages
                     this.parseNavigation(newPagination);
 
-                    this.addItems(itemsContainer, pageContainer, page);
+                    this.addItems(itemsContainer, pageContainer, actualPage);
 
                     // Ensure correct position for page header
                     pageContainer.prepend(pageHeaderElement);
@@ -217,6 +252,7 @@ module ModuleDefinition {
                     // afterAddItems(event: JQueryEventObject, pageContainer: JQuery, page: number, isReload: boolean)
                     $(this).trigger('afterAddItems', [pageContainer, actualPage, isReload]);
 
+                    this._pages[page].loading = false;
                     this._pages[page].loaded = true;
 
                     loadingElement.remove();
@@ -224,6 +260,8 @@ module ModuleDefinition {
                     // Update next page. Done here to prevent falsely loading multiple pages at same time.
                     if (this._nextPage == page || this._nextPage == -1) {
                         this.updateNextPage(actualPage);
+                    } else if (this._prevPage == page) {
+                        this.updatePrevPage(actualPage);
                     }
 
                     if (actualPage != page) {
@@ -231,12 +269,16 @@ module ModuleDefinition {
                         this._pages[actualPage] = this._pages[page];  
                         delete this._pages[page];
                     }
+
+                    this.updatePageInView();
                 });
             }
         }
 
         addItems(dom, pageContainer: JQuery, page: number): void {
             this.getItems(dom).each((i: number, el: Element) => {
+
+                $(el).data('original-page', page);
 
                 // addItem(el: element)
                 $(this).trigger('addItem', [el]);
@@ -270,6 +312,33 @@ module ModuleDefinition {
             });
         }
 
+        updatePageInView(): void {
+            var nearestPage = -1;
+            var nearestPageDiff = -1;
+
+            $.each(this._pages,(i, page) => {
+
+                var diff = $(window).scrollTop() - $(page.headerElement).offset().top;
+
+                if (nearestPage == -1 || (diff > 0 && diff < nearestPageDiff) ) {
+                    nearestPage = i;
+                    nearestPageDiff = diff;
+                }
+            });
+
+            if (nearestPage == -1) {
+                nearestPage = this._pageInView;
+            }
+            
+            if (this._pageInView != nearestPage) {
+                this._pageInView = nearestPage;
+
+                console.log("page in view changed to " + nearestPage);
+
+                history.pushState(null, null, this._pagesUrl[nearestPage]);
+            }
+        }
+
         preparePage(): void {
             var nav = this.getNavigationElement(document);
 
@@ -283,7 +352,7 @@ module ModuleDefinition {
                 this._numberOfPages = 1;
             } else {
                 this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
-
+                this._pageInView = this._currentPage;
                 this.parseNavigation(nav);
             }
 
@@ -293,6 +362,7 @@ module ModuleDefinition {
 
             this._pages[this.currentPage] = {
                 element: itemsElement,
+                headerElement: pageHeader,
                 loaded: true,
                 loading: false,
                 visible: true
@@ -316,11 +386,19 @@ module ModuleDefinition {
                     itemsElement.hide();
                     this.loadPage(this._maxPage);
                 } else {
-                    this._nextPage = this._lastPage - 1;
+                    this._prevPage = this.currentPage + 1;
+                    this._nextPage = this.currentPage - 1;
                 }
+                
             } else {
+                this._prevPage = this._currentPage - 1;
                 this._nextPage = this._currentPage + 1;
             }
+
+            if (this._prevPage > 0)
+                this.createPageContainer(this._prevPage);
+
+            this.createPageContainer(this._nextPage);
 
             itemsElement.prepend(pageHeader);
 
@@ -331,11 +409,20 @@ module ModuleDefinition {
             }
 
             $(window).scroll((event) => {
+
+                this.updatePageInView();
+
                 var scrollPos = $(window).scrollTop() + $(window).height();
 
-                if (scrollPos > $('div.pagination').position().top - 200) {
-                    this.loadNextPage();
+                if (this._nextPage in this._pages) {
+
+                    var nextPage = this._pages[this._nextPage];
+
+                    if (scrollPos > $(nextPage.headerElement).position().top - 200) {
+                        this.loadNextPage();
+                    }
                 }
+                
             });
 
             // Ensure second page, when page fits the screen
