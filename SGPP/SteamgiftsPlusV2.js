@@ -1118,10 +1118,10 @@ var ModuleDefinition;
         });
         Object.defineProperty(MarkOwnedGames.prototype, "hideIgnored", {
             get: function () {
-                return this._hideOwned;
+                return this._hideIgnored;
             },
             set: function (v) {
-                this._hideOwned = v;
+                this._hideIgnored = v;
                 this.elFilterIgnored.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
                 SGPP.storage.setItem("games_filter_ignored", v);
                 this.filterGames();

@@ -38,11 +38,11 @@ module ModuleDefinition {
         private _hideIgnored = false;
 
         get hideIgnored(): boolean {
-            return this._hideOwned;
+            return this._hideIgnored;
         }
 
         set hideIgnored(v: boolean) {
-            this._hideOwned = v;
+            this._hideIgnored = v;
 
             this.elFilterIgnored.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
 
