@@ -330,6 +330,7 @@ module ModuleDefinition {
 
             this._pages[this.currentPage] = {
                 element: itemsElement,
+                headerElement: pageHeader,
                 loaded: true,
                 loading: false,
                 visible: true
