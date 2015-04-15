@@ -4,8 +4,9 @@ module ModuleDefinition {
 
     export class EndlessScroll {
 
-        private _maxPage:number = 31337;
+        private _maxPage: number = 31337;
 
+        private _prevPage: number = -1;
         private _nextPage: number = -1;
         private _currentPage: number = 1;
         private _lastPage: number = 1;
@@ -71,16 +72,24 @@ module ModuleDefinition {
             this.updatePageElement(el, page);
 
             var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
+            var controlReload = $('<a>').attr('href', '#').append('<i class="fa fa-refresh"></i>').attr('title', 'Reload this page');
             var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
 
-            controlStartStop.click(() => {
-                this.stopped = !this.stopped;
-
-                $('.endless_control_element a i.fa').toggleClass('fa-pause').toggleClass('fa-play');
+            controlReload.click(() => {
+                this.loadPage(page, true);
 
                 return false;
             });
 
+            controlStartStop.click(() => {
+                this.stopped = !this.stopped;
+
+                $('.endless_control_element a i.fa').toggleClass('fa-pause', !this.stopped).toggleClass('fa-play', this.stopped);
+
+                return false;
+            });
+
+            controlContainer.append(controlReload);
             controlContainer.append(controlStartStop);
 
             $p.append(controlContainer);
@@ -90,7 +99,7 @@ module ModuleDefinition {
 
         updatePageElement(el: JQuery, page: number) {
             var text = '';
-            if (page > 0) {
+            if (page > 0 && page <= this._maxPage) {
                 if (this._numberOfPages > 0)
                     text = 'Page ' + page + ' of ' + this._numberOfPages;
                 else
@@ -121,6 +130,17 @@ module ModuleDefinition {
             }
 
             this.createPageContainer(this._nextPage);
+        }
+
+        updatePrevPage(page: number): void {
+            if (this.reverseItems) {
+                this._prevPage = page + 1;
+            } else {
+                this._prevPage = page - 1;
+            }
+
+            if (this._prevPage > 0 && this._prevPage < this._lastPage)
+                this.createPageContainer(this._prevPage);
         }
 
         createPageContainer(page: number): void {
@@ -194,12 +214,14 @@ module ModuleDefinition {
                 var loadingElement = this.createLoadingElement();
                 pageHeaderElement.find('p').first().append(loadingElement);
 
+                if (isReload) {
+                    pageContainer.children().remove();
+                    pageContainer.prepend(pageHeaderElement);
+                }
+
                 $.get(url,(data) => {
 
                     var dom = $.parseHTML(data);
-
-                    if (isReload)
-                        pageContainer.children().remove();
 
                     //
                     var newPagination = this.getNavigationElement(dom);
@@ -226,6 +248,7 @@ module ModuleDefinition {
                     // afterAddItems(event: JQueryEventObject, pageContainer: JQuery, page: number, isReload: boolean)
                     $(this).trigger('afterAddItems', [pageContainer, actualPage, isReload]);
 
+                    this._pages[page].loading = false;
                     this._pages[page].loaded = true;
 
                     loadingElement.remove();
@@ -233,6 +256,8 @@ module ModuleDefinition {
                     // Update next page. Done here to prevent falsely loading multiple pages at same time.
                     if (this._nextPage == page || this._nextPage == -1) {
                         this.updateNextPage(actualPage);
+                    } else if (this._prevPage == page) {
+                        this.updatePrevPage(actualPage);
                     }
 
                     if (actualPage != page) {
@@ -325,11 +350,18 @@ module ModuleDefinition {
                     itemsElement.hide();
                     this.loadPage(this._maxPage);
                 } else {
+                    this._prevPage = this.currentPage + 1;
                     this._nextPage = this._lastPage - 1;
                 }
+
+                
             } else {
+                this._prevPage = this._currentPage - 1;
                 this._nextPage = this._currentPage + 1;
             }
+
+            if (this._prevPage > 0)
+                this.createPageContainer(this._prevPage);
 
             this.createPageContainer(this._nextPage);
 

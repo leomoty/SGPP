@@ -1420,6 +1420,7 @@ var ModuleDefinition;
     var EndlessScroll = (function () {
         function EndlessScroll() {
             this._maxPage = 31337;
+            this._prevPage = -1;
             this._nextPage = -1;
             this._currentPage = 1;
             this._lastPage = 1;
@@ -1491,19 +1492,25 @@ var ModuleDefinition;
             var $p = el.find('p');
             this.updatePageElement(el, page);
             var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
+            var controlReload = $('<a>').attr('href', '#').append('<i class="fa fa-refresh"></i>').attr('title', 'Reload this page');
             var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
-            controlStartStop.click(function () {
-                _this.stopped = !_this.stopped;
-                $('.endless_control_element a i.fa').toggleClass('fa-pause').toggleClass('fa-play');
+            controlReload.click(function () {
+                _this.loadPage(page, true);
                 return false;
             });
+            controlStartStop.click(function () {
+                _this.stopped = !_this.stopped;
+                $('.endless_control_element a i.fa').toggleClass('fa-pause', !_this.stopped).toggleClass('fa-play', _this.stopped);
+                return false;
+            });
+            controlContainer.append(controlReload);
             controlContainer.append(controlStartStop);
             $p.append(controlContainer);
             return el;
         };
         EndlessScroll.prototype.updatePageElement = function (el, page) {
             var text = '';
-            if (page > 0) {
+            if (page > 0 && page <= this._maxPage) {
                 if (this._numberOfPages > 0)
                     text = 'Page ' + page + ' of ' + this._numberOfPages;
                 else
@@ -1529,13 +1536,19 @@ var ModuleDefinition;
             else {
                 this._nextPage = page + 1;
             }
+            this.createPageContainer(this._nextPage);
         };
-        EndlessScroll.prototype.loadPage = function (page, force_reload) {
-            var _this = this;
-            if (force_reload === void 0) { force_reload = false; }
-            if (!(page in this._pagesUrl)) {
-                throw 'No URL for page ' + this._currentPage;
+        EndlessScroll.prototype.updatePrevPage = function (page) {
+            if (this.reverseItems) {
+                this._prevPage = page + 1;
             }
+            else {
+                this._prevPage = page - 1;
+            }
+            if (this._prevPage > 0 && this._prevPage < this._lastPage)
+                this.createPageContainer(this._prevPage);
+        };
+        EndlessScroll.prototype.createPageContainer = function (page) {
             if (!(page in this._pages)) {
                 var diff = -1;
                 var target = -1;
@@ -1547,12 +1560,11 @@ var ModuleDefinition;
                     }
                 });
                 var pageContainer = this.createPageContainerElement();
-                var loadingElement = this.createLoadingElement();
                 var pageHeaderElement = this.createPageElement(page);
-                pageHeaderElement.find('p').first().append(loadingElement);
                 pageContainer.append(pageHeaderElement);
                 this._pages[page] = {
                     element: pageContainer,
+                    headerElement: pageHeaderElement,
                     loaded: false,
                     loading: false,
                     visible: true
@@ -1565,6 +1577,14 @@ var ModuleDefinition;
                     elPage.before(pageContainer);
                 }
             }
+        };
+        EndlessScroll.prototype.loadPage = function (page, force_reload) {
+            var _this = this;
+            if (force_reload === void 0) { force_reload = false; }
+            if (!(page in this._pagesUrl)) {
+                throw 'No URL for page ' + this._currentPage;
+            }
+            this.createPageContainer(page);
             var pg = this._pages[page];
             if (pg.loading) {
                 return;
@@ -1582,10 +1602,16 @@ var ModuleDefinition;
                 var url = this._pagesUrl[page];
                 this._pages[page].loading = true;
                 var isReload = this._pages[page].loaded;
+                var pageContainer = this._pages[page].element;
+                var pageHeaderElement = this._pages[page].headerElement;
+                var loadingElement = this.createLoadingElement();
+                pageHeaderElement.find('p').first().append(loadingElement);
+                if (isReload) {
+                    pageContainer.children().remove();
+                    pageContainer.prepend(pageHeaderElement);
+                }
                 $.get(url, function (data) {
                     var dom = $.parseHTML(data);
-                    if (isReload)
-                        pageContainer.children().remove();
                     var newPagination = _this.getNavigationElement(dom);
                     var actualPage = parseInt(newPagination.find('a.is-selected').data('page-number'));
                     var $dom = $(dom);
@@ -1596,10 +1622,14 @@ var ModuleDefinition;
                     pageContainer.prepend(pageHeaderElement);
                     _this.getNavigationElement(document).html(newPagination.html());
                     $(_this).trigger('afterAddItems', [pageContainer, actualPage, isReload]);
+                    _this._pages[page].loading = false;
                     _this._pages[page].loaded = true;
                     loadingElement.remove();
                     if (_this._nextPage == page || _this._nextPage == -1) {
                         _this.updateNextPage(actualPage);
+                    }
+                    else if (_this._prevPage == page) {
+                        _this.updatePrevPage(actualPage);
                     }
                     if (actualPage != page) {
                         _this.updatePageElement(pageHeaderElement, actualPage);
@@ -1676,12 +1706,17 @@ var ModuleDefinition;
                     this.loadPage(this._maxPage);
                 }
                 else {
+                    this._prevPage = this.currentPage + 1;
                     this._nextPage = this._lastPage - 1;
                 }
             }
             else {
+                this._prevPage = this._currentPage - 1;
                 this._nextPage = this._currentPage + 1;
             }
+            if (this._prevPage > 0)
+                this.createPageContainer(this._prevPage);
+            this.createPageContainer(this._nextPage);
             itemsElement.prepend(pageHeader);
             if (isCommentLink) {
                 var linkedComment = $("#" + SGPP.location.hash);
@@ -1689,8 +1724,11 @@ var ModuleDefinition;
             }
             $(window).scroll(function (event) {
                 var scrollPos = $(window).scrollTop() + $(window).height();
-                if (scrollPos > $('div.pagination').position().top - 200) {
-                    _this.loadNextPage();
+                if (_this._nextPage in _this._pages) {
+                    var nextPage = _this._pages[_this._nextPage];
+                    if (scrollPos > $(nextPage.headerElement).position().top - 200) {
+                        _this.loadNextPage();
+                    }
                 }
             });
             $(window).scroll();
