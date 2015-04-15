@@ -1169,15 +1169,22 @@ var ModuleDefinition;
                     ignored = this.ignores(link);
                 }
                 var sidebar = $('.sidebar').last();
-                if (owned && (SGPP.settings.getSettingForModule("MarkOwnedGames", "hideEntryButton") || false)) {
+                if (owned) {
                     if ($('.sidebar__entry-insert').length != 0) {
-                        $('.sidebar__entry-insert').before('<div class="sidebar__error is-disabled"><i class="fa fa-exclamation-circle"></i> Exists in Account</div>');
+                        $('.sidebar__entry-insert').before('<div class="sidebar__ignored sidebar__error"><i class="fa fa-exclamation-circle"></i> Owned in Steam</div>');
                         $('.sidebar__entry-insert').hide();
                     }
                 }
                 if (ignored) {
-                    sidebar.prepend('<div>Ignored</div>');
+                    if ($('.sidebar__entry-insert').length != 0) {
+                        $('.sidebar__entry-insert').before('<div class="sidebar__ignored sidebar__error"><i class="fa fa-exclamation-circle"></i> Not Interested</div>');
+                        $('.sidebar__entry-insert').hide();
+                    }
                 }
+                $('.sidebar__ignored').click(function () {
+                    $('.sidebar__entry-insert').show();
+                    $('.sidebar__ignored').hide();
+                });
             }
             else if (SGPP.location.pageKind == 'giveaways') {
                 this.filterGames();
