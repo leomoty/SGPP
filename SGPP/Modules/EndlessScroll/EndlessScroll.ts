@@ -215,6 +215,7 @@ module ModuleDefinition {
                 pageHeaderElement.find('p').first().append(loadingElement);
 
                 if (isReload) {
+                    $(this).trigger('beforeReloadPage', [page]);
                     pageContainer.children().remove();
                     pageContainer.prepend(pageHeaderElement);
                 }
@@ -237,7 +238,7 @@ module ModuleDefinition {
                     // Cache urls for pages
                     this.parseNavigation(newPagination);
 
-                    this.addItems(itemsContainer, pageContainer, page);
+                    this.addItems(itemsContainer, pageContainer, actualPage);
 
                     // Ensure correct position for page header
                     pageContainer.prepend(pageHeaderElement);
@@ -271,6 +272,8 @@ module ModuleDefinition {
 
         addItems(dom, pageContainer: JQuery, page: number): void {
             this.getItems(dom).each((i: number, el: Element) => {
+
+                $(el).data('original-page', page);
 
                 // addItem(el: element)
                 $(this).trigger('addItem', [el]);

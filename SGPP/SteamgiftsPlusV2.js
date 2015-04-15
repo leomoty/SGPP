@@ -1607,6 +1607,7 @@ var ModuleDefinition;
                 var loadingElement = this.createLoadingElement();
                 pageHeaderElement.find('p').first().append(loadingElement);
                 if (isReload) {
+                    $(this).trigger('beforeReloadPage', [page]);
                     pageContainer.children().remove();
                     pageContainer.prepend(pageHeaderElement);
                 }
@@ -1618,7 +1619,7 @@ var ModuleDefinition;
                     $(_this).trigger('beforeAddItems', [$dom, actualPage, isReload]);
                     var itemsContainer = _this.getItemsElement(dom);
                     _this.parseNavigation(newPagination);
-                    _this.addItems(itemsContainer, pageContainer, page);
+                    _this.addItems(itemsContainer, pageContainer, actualPage);
                     pageContainer.prepend(pageHeaderElement);
                     _this.getNavigationElement(document).html(newPagination.html());
                     $(_this).trigger('afterAddItems', [pageContainer, actualPage, isReload]);
@@ -1642,6 +1643,7 @@ var ModuleDefinition;
         EndlessScroll.prototype.addItems = function (dom, pageContainer, page) {
             var _this = this;
             this.getItems(dom).each(function (i, el) {
+                $(el).data('original-page', page);
                 $(_this).trigger('addItem', [el]);
                 if (_this.reverseItems) {
                     pageContainer.prepend(el);
