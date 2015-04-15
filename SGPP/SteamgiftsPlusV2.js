@@ -1545,11 +1545,12 @@ var ModuleDefinition;
             else {
                 this._prevPage = page - 1;
             }
-            if (this._prevPage > 0 && this._prevPage < this._lastPage)
-                this.createPageContainer(this._prevPage);
+            this.createPageContainer(this._prevPage);
         };
         EndlessScroll.prototype.createPageContainer = function (page) {
             if (!(page in this._pages)) {
+                if (page < 1 || page > this._lastPage)
+                    return;
                 var diff = -1;
                 var target = -1;
                 $.each(this._pages, function (i, el) {
