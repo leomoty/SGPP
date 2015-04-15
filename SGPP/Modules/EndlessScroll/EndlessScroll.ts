@@ -6,6 +6,7 @@ module ModuleDefinition {
 
         private _maxPage: number = 31337;
 
+        private _pageInView: number = -1;
         private _prevPage: number = -1;
         private _nextPage: number = -1;
         private _currentPage: number = 1;
@@ -268,6 +269,8 @@ module ModuleDefinition {
                         this._pages[actualPage] = this._pages[page];  
                         delete this._pages[page];
                     }
+
+                    this.updatePageInView();
                 });
             }
         }
@@ -309,6 +312,33 @@ module ModuleDefinition {
             });
         }
 
+        updatePageInView(): void {
+            var nearestPage = -1;
+            var nearestPageDiff = -1;
+
+            $.each(this._pages,(i, page) => {
+
+                var diff = $(window).scrollTop() - $(page.headerElement).offset().top;
+
+                if (nearestPage == -1 || (diff > 0 && diff < nearestPageDiff) ) {
+                    nearestPage = i;
+                    nearestPageDiff = diff;
+                }
+            });
+
+            if (nearestPage == -1) {
+                nearestPage = this._pageInView;
+            }
+            
+            if (this._pageInView != nearestPage) {
+                this._pageInView = nearestPage;
+
+                console.log("page in view changed to " + nearestPage);
+
+                history.pushState(null, null, this._pagesUrl[nearestPage]);
+            }
+        }
+
         preparePage(): void {
             var nav = this.getNavigationElement(document);
 
@@ -322,7 +352,7 @@ module ModuleDefinition {
                 this._numberOfPages = 1;
             } else {
                 this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
-
+                this._pageInView = this._currentPage;
                 this.parseNavigation(nav);
             }
 
@@ -359,7 +389,6 @@ module ModuleDefinition {
                     this._prevPage = this.currentPage + 1;
                     this._nextPage = this.currentPage - 1;
                 }
-
                 
             } else {
                 this._prevPage = this._currentPage - 1;
@@ -380,6 +409,9 @@ module ModuleDefinition {
             }
 
             $(window).scroll((event) => {
+
+                this.updatePageInView();
+
                 var scrollPos = $(window).scrollTop() + $(window).height();
 
                 if (this._nextPage in this._pages) {

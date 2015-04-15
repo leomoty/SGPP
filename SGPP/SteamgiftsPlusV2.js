@@ -1420,6 +1420,7 @@ var ModuleDefinition;
     var EndlessScroll = (function () {
         function EndlessScroll() {
             this._maxPage = 31337;
+            this._pageInView = -1;
             this._prevPage = -1;
             this._nextPage = -1;
             this._currentPage = 1;
@@ -1638,6 +1639,7 @@ var ModuleDefinition;
                         _this._pages[actualPage] = _this._pages[page];
                         delete _this._pages[page];
                     }
+                    _this.updatePageInView();
                 });
             }
         };
@@ -1669,6 +1671,25 @@ var ModuleDefinition;
                     _this._lastPage = page;
             });
         };
+        EndlessScroll.prototype.updatePageInView = function () {
+            var nearestPage = -1;
+            var nearestPageDiff = -1;
+            $.each(this._pages, function (i, page) {
+                var diff = $(window).scrollTop() - $(page.headerElement).offset().top;
+                if (nearestPage == -1 || (diff > 0 && diff < nearestPageDiff)) {
+                    nearestPage = i;
+                    nearestPageDiff = diff;
+                }
+            });
+            if (nearestPage == -1) {
+                nearestPage = this._pageInView;
+            }
+            if (this._pageInView != nearestPage) {
+                this._pageInView = nearestPage;
+                console.log("page in view changed to " + nearestPage);
+                history.pushState(null, null, this._pagesUrl[nearestPage]);
+            }
+        };
         EndlessScroll.prototype.preparePage = function () {
             var _this = this;
             var nav = this.getNavigationElement(document);
@@ -1681,6 +1702,7 @@ var ModuleDefinition;
             }
             else {
                 this._currentPage = parseInt(nav.find('a.is-selected').data('page-number'));
+                this._pageInView = this._currentPage;
                 this.parseNavigation(nav);
             }
             var itemsElement = this.getItemsElement(document);
@@ -1727,6 +1749,7 @@ var ModuleDefinition;
                 $(window).scrollTop(linkedComment.offset().top);
             }
             $(window).scroll(function (event) {
+                _this.updatePageInView();
                 var scrollPos = $(window).scrollTop() + $(window).height();
                 if (_this._nextPage in _this._pages) {
                     var nextPage = _this._pages[_this._nextPage];
