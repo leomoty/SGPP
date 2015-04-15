@@ -4,11 +4,13 @@ module ModuleDefinition {
 
     export class MarkOwnedGames implements SteamGiftsModule {
 
-        style = "";
+        style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
 
         private userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
+        private blacklistData = { apps: [], subs: [] };
 
         private elFilterOwns: JQuery;
+        private elFilterIgnored: JQuery;
 
         shouldRun(): boolean {
             return true;
@@ -29,6 +31,22 @@ module ModuleDefinition {
             this.elFilterOwns.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
 
             SGPP.storage.setItem("games_filter_owned", v);
+
+            this.filterGames();
+        }
+
+        private _hideIgnored = false;
+
+        get hideIgnored(): boolean {
+            return this._hideOwned;
+        }
+
+        set hideIgnored(v: boolean) {
+            this._hideOwned = v;
+
+            this.elFilterIgnored.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
+
+            SGPP.storage.setItem("games_filter_ignored", v);
 
             this.filterGames();
         }
@@ -62,6 +80,24 @@ module ModuleDefinition {
                 return this.ignoresPackage(l[1]);
         }
 
+        blacklisted(link: string): boolean {
+            var l = this.parseAppLink(link);
+
+            if (l[0] == 'app')
+                return this.blacklistedApp(l[1]);
+            else if (l[0] == 'sub')
+                return this.blacklistedSub(l[1]);
+        }
+
+
+        blacklistedApp(appid: number): boolean {
+            return this.blacklistData.apps.indexOf(appid) !== -1;
+        }
+
+        blacklistedSub(packageid: number): boolean {
+            return this.blacklistData.subs.indexOf(packageid) !== -1;
+        }
+
         ignoresApp(appid: number): boolean {
             return this.userdata.rgIgnoredApps.indexOf(appid) !== -1;
         }
@@ -88,19 +124,29 @@ module ModuleDefinition {
                 this.refreshGamesFromSteam();
             }
 
+            if (!SGPP.storage.containsItem("blacklist_data") || !SGPP.storage.containsItem("blacklist_date") || SGPP.storage.getItem("blacklist_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshBlacklistFromSG();
+            }
+
             if (SGPP.storage.containsItem("steam_userdata")) {
                 this.userdata = SGPP.storage.getItem("steam_userdata");
+            }
+
+            if (SGPP.storage.containsItem("steam_userdata")) {
+                this.blacklistData = SGPP.storage.getItem("blacklist_data");
             }
 
             if (SGPP.location.pageKind == 'giveaway') {
                 var link = $('a.global__image-outer-wrap--game-large').first().attr('href');
                 var owned = false;
                 var ignored = false;
+                var blacklisted = false;
                 var linkInfo = this.parseAppLink(link);
 
                 if (linkInfo) {
                     owned = this.owns(link);
                     ignored = this.ignores(link);
+                    blacklisted = this.blacklisted(link);
                 }
 
                 var sidebar = $('.sidebar').last();
@@ -119,6 +165,13 @@ module ModuleDefinition {
                     }
                 }
 
+                if (blacklisted) {
+                    if ($('.sidebar__entry-insert').length != 0) {
+                        $('.sidebar__entry-insert').before('<div class="sidebar__ignored sidebar__error"><i class="fa fa-exclamation-circle"></i> Game Hidden</div>');
+                        $('.sidebar__entry-insert').hide();
+                    }
+                }
+
                 $('.sidebar__ignored').click(() => { $('.sidebar__entry-insert').show(); $('.sidebar__ignored').hide(); });
 
             } else if (SGPP.location.pageKind == 'giveaways') {
@@ -126,14 +179,21 @@ module ModuleDefinition {
 
                 $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
 
-                this.elFilterOwns = $('<div><span class="fa fa-square-o"></span> Hide Owned</div>');
+                this.elFilterOwns = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Owned</div>');
                 this.elFilterOwns.click(() => {
                     this.hideOwned = !this.hideOwned;
                 });
 
+                this.elFilterIgnored = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Not Interested</div>');
+                this.elFilterIgnored.click(() => {
+                    this.hideIgnored = !this.hideIgnored;
+                });
+
                 $('#sidebar_sgpp_filters').append(this.elFilterOwns);
+                $('#sidebar_sgpp_filters').append(this.elFilterIgnored);
 
                 this.hideOwned = SGPP.storage.getItem("games_filter_owned", true);
+                this.hideIgnored = SGPP.storage.getItem("games_filter_ignored", true);
 
                 SGPP.on("EndlessScrollGiveaways", "addItem",(event: JQueryEventObject, el: Element) => {
                     this.filterGame(el);
@@ -148,16 +208,20 @@ module ModuleDefinition {
         }
 
         filterGame(el: Element): void {
-            var show = true;
+            var hide = false;
             var $el = $(el);
 
             var link = $el.find('a.giveaway__icon').attr('href');
 
             var linkInfo = this.parseAppLink(link);
 
-            show = show && (!this.hideOwned || !this.owns(link));
+            if (this.hideOwned && this.owns(link))
+                hide = true;
 
-            if (show) {
+            if (this.hideIgnored && this.ignores(link))
+                hide = true;
+
+            if (!hide) {
                 $el.show();
             } else {
                 $el.hide();
@@ -182,6 +246,51 @@ module ModuleDefinition {
                     this.userdata = userdata;
                 }
             });
+        }
+
+        loadBlacklistPage(page: number, callback, blacklistData): void {
+
+            $.get("http://www.steamgifts.com/account/settings/giveaways/filters/search?page=" + page,(data) => {
+
+                var dom = $($.parseHTML(data));
+
+                $(dom).find('.table__rows').children().each((i, el) => {
+                    console.log(el);
+
+                    var $el = $(el);
+
+                    var link = $el.find('a.table__column__secondary-link');
+
+                    if (!link.length)
+                        return;
+
+                    var a = this.parseAppLink(link.attr('href'));
+
+                    if (a) {
+                        if (a[0] == 'app')
+                            blacklistData.apps.push(a[1]);
+                        else if (a[0] == 'sub')
+                            blacklistData.subs.push(a[1]);
+                    }
+                });
+
+                var elLastPage = dom.find('.pagination a').last();
+
+                if (elLastPage.length && page < parseInt(elLastPage.data('page-number')))
+                    this.loadBlacklistPage(page + 1, callback, blacklistData);
+                else
+                    callback(blacklistData);
+
+            });
+        }
+
+        refreshBlacklistFromSG(): void {
+            var data = { apps: [], subs: [] };
+            this.loadBlacklistPage(1,(blacklist) => {
+
+                SGPP.storage.setItem("blacklist_data", blacklist);
+                SGPP.storage.setItem("blacklist_date", Date.now());
+            }, data);
         }
 
         name(): string {
