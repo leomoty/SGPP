@@ -357,7 +357,7 @@ module ModuleDefinition {
                     this.loadPage(this._maxPage);
                 } else {
                     this._prevPage = this.currentPage + 1;
-                    this._nextPage = this._lastPage - 1;
+                    this._nextPage = this.currentPage - 1;
                 }
 
                 
