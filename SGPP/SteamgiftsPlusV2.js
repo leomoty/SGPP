@@ -1097,6 +1097,7 @@ var ModuleDefinition;
             this.blacklistData = { apps: [], subs: [] };
             this._hideOwned = false;
             this._hideIgnored = false;
+            this._hideEntered = false;
         }
         MarkOwnedGames.prototype.shouldRun = function () {
             return true;
@@ -1124,6 +1125,19 @@ var ModuleDefinition;
                 this._hideIgnored = v;
                 this.elFilterIgnored.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
                 SGPP.storage.setItem("games_filter_ignored", v);
+                this.filterGames();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(MarkOwnedGames.prototype, "hideEntered", {
+            get: function () {
+                return this._hideEntered;
+            },
+            set: function (v) {
+                this._hideEntered = v;
+                this.elFilterEntered.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
+                SGPP.storage.setItem("games_filter_entered", v);
                 this.filterGames();
             },
             enumerable: true,
@@ -1239,10 +1253,16 @@ var ModuleDefinition;
                 this.elFilterIgnored.click(function () {
                     _this.hideIgnored = !_this.hideIgnored;
                 });
+                this.elFilterEntered = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Entered</div>');
+                this.elFilterEntered.click(function () {
+                    _this.hideEntered = !_this.hideEntered;
+                });
                 $('#sidebar_sgpp_filters').append(this.elFilterOwns);
                 $('#sidebar_sgpp_filters').append(this.elFilterIgnored);
+                $('#sidebar_sgpp_filters').append(this.elFilterEntered);
                 this.hideOwned = SGPP.storage.getItem("games_filter_owned", true);
                 this.hideIgnored = SGPP.storage.getItem("games_filter_ignored", true);
+                this.hideEntered = SGPP.storage.getItem("games_filter_entered", false);
                 SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
                     _this.filterGame(el);
                 });
@@ -1262,6 +1282,8 @@ var ModuleDefinition;
             if (this.hideOwned && this.owns(link))
                 hide = true;
             if (this.hideIgnored && this.ignores(link))
+                hide = true;
+            if (this.hideEntered && $el.children('.giveaway__row-inner-wrap').hasClass('is-faded'))
                 hide = true;
             if (!hide) {
                 $el.show();
@@ -1319,7 +1341,7 @@ var ModuleDefinition;
             }, data);
         };
         MarkOwnedGames.prototype.name = function () {
-            return "Filter Owned Games";
+            return "Filter Games";
         };
         return MarkOwnedGames;
     })();

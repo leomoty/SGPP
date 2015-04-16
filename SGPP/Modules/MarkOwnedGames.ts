@@ -11,6 +11,7 @@ module ModuleDefinition {
 
         private elFilterOwns: JQuery;
         private elFilterIgnored: JQuery;
+        private elFilterEntered: JQuery;
 
         shouldRun(): boolean {
             return true;
@@ -47,6 +48,22 @@ module ModuleDefinition {
             this.elFilterIgnored.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
 
             SGPP.storage.setItem("games_filter_ignored", v);
+
+            this.filterGames();
+        }
+
+        private _hideEntered = false;
+
+        get hideEntered(): boolean {
+            return this._hideEntered;
+        }
+
+        set hideEntered(v: boolean) {
+            this._hideEntered = v;
+
+            this.elFilterEntered.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
+
+            SGPP.storage.setItem("games_filter_entered", v);
 
             this.filterGames();
         }
@@ -189,11 +206,18 @@ module ModuleDefinition {
                     this.hideIgnored = !this.hideIgnored;
                 });
 
+                this.elFilterEntered = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Entered</div>');
+                this.elFilterEntered.click(() => {
+                    this.hideEntered = !this.hideEntered;
+                });
+
                 $('#sidebar_sgpp_filters').append(this.elFilterOwns);
                 $('#sidebar_sgpp_filters').append(this.elFilterIgnored);
+                $('#sidebar_sgpp_filters').append(this.elFilterEntered);
 
                 this.hideOwned = SGPP.storage.getItem("games_filter_owned", true);
                 this.hideIgnored = SGPP.storage.getItem("games_filter_ignored", true);
+                this.hideEntered = SGPP.storage.getItem("games_filter_entered", false);
 
                 SGPP.on("EndlessScrollGiveaways", "addItem",(event: JQueryEventObject, el: Element) => {
                     this.filterGame(el);
@@ -219,6 +243,9 @@ module ModuleDefinition {
                 hide = true;
 
             if (this.hideIgnored && this.ignores(link))
+                hide = true;
+
+            if (this.hideEntered && $el.children('.giveaway__row-inner-wrap').hasClass('is-faded'))
                 hide = true;
 
             if (!hide) {
@@ -294,7 +321,7 @@ module ModuleDefinition {
         }
 
         name(): string {
-            return "Filter Owned Games";
+            return "Filter Games";
         }
 
     }
