@@ -312,22 +312,26 @@ module ModuleDefinition {
             });
         }
 
+        pushHistoryState(page): void {
+            history.replaceState(null, null, this._pagesUrl[page]);
+        }
+
         updatePageInView(): void {
             var nearestPage = -1;
             var nearestPageDiff = -1;
 
             $.each(this._pages,(i, page) => {
 
-                var diff = $(window).scrollTop() - $(page.headerElement).offset().top;
+                var diff = Math.abs($(window).scrollTop() - $(page.headerElement).offset().top);
 
-                if (nearestPage == -1 || (diff > 0 && diff < nearestPageDiff) ) {
+                if (nearestPage == -1 || (diff < nearestPageDiff) ) {
                     nearestPage = i;
                     nearestPageDiff = diff;
                 }
             });
 
             if (nearestPage == -1) {
-                nearestPage = this._pageInView;
+                nearestPage = 1;
             }
             
             if (this._pageInView != nearestPage) {
@@ -335,7 +339,7 @@ module ModuleDefinition {
 
                 console.log("page in view changed to " + nearestPage);
 
-                history.pushState(null, null, this._pagesUrl[nearestPage]);
+                this.pushHistoryState(nearestPage);
             }
         }
 
@@ -397,6 +401,8 @@ module ModuleDefinition {
 
             if (this._prevPage > 0)
                 this.createPageContainer(this._prevPage);
+
+            this.pushHistoryState(this.currentPage);
 
             this.createPageContainer(this._nextPage);
 

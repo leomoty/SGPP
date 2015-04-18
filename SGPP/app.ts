@@ -6,6 +6,9 @@
 /// <reference path="Core.ts" />
 /// <reference path="ModuleDefinition.ts" />
 
+/// <reference path="Modules/GiveawaysFilter.ts" />
+/// <reference path="Modules/GiveawaysFilterExample.ts" />
+
 /// <reference path="Modules/CommentAndEnter.ts" />
 /// <reference path="Modules/EntryCommenters.ts" />
 /// <reference path="Modules/FixedNavbar.ts" />
@@ -31,6 +34,9 @@ var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
 //list of available modules
 var modulesNames: Array<string> = new Array<string>(
+    "GiveawaysFilterBase",
+    "GiveawaysFilterExample",
+
     "CommentAndEnter",
     "EntryCommenters",
     "FixedNavbar",
@@ -48,6 +54,7 @@ var modulesNames: Array<string> = new Array<string>(
     "EndlessScrollGiveaways",
     "EndlessScrollGiveawayComments",
     "EndlessScrollLists"
+
     );
 
 var defaultModules = {
