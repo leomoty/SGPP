@@ -4,6 +4,11 @@
 module ModuleDefinition {
 
     export class HideEnteredFilter implements GiveawaysFilter {
+        public renderControl(el: Element): void {
+            var $el = $(el);
+
+            $el.append("<strong>Test</strong>");
+        }
     }
 
     export class GiveawaysFilterExample implements SteamGiftsModule {

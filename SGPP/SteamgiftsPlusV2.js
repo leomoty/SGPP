@@ -160,6 +160,7 @@ var ModuleDefinition;
     var GiveawaysFilterBase = (function () {
         function GiveawaysFilterBase() {
             this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
+            this.filters = new Array();
         }
         GiveawaysFilterBase.prototype.shouldRun = function () {
             return SGPP.location.pageKind == 'giveaways';
@@ -167,11 +168,18 @@ var ModuleDefinition;
         GiveawaysFilterBase.prototype.init = function () {
         };
         GiveawaysFilterBase.prototype.addFilter = function (filter) {
+            this.filters.push(filter);
         };
         GiveawaysFilterBase.prototype.render = function () {
             var _this = this;
             this.filterGames();
             $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
+            var sidebar = $('#sidebar_sgpp_filters');
+            $.each(this.filters, function (index, filter) {
+                var el = document.createElement('div');
+                filter.renderControl(el);
+                sidebar.append(el);
+            });
             SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
                 _this.filterGame(el);
             });
@@ -198,6 +206,10 @@ var ModuleDefinition;
     var HideEnteredFilter = (function () {
         function HideEnteredFilter() {
         }
+        HideEnteredFilter.prototype.renderControl = function (el) {
+            var $el = $(el);
+            $el.append("<strong>Test</strong>");
+        };
         return HideEnteredFilter;
     })();
     ModuleDefinition.HideEnteredFilter = HideEnteredFilter;
