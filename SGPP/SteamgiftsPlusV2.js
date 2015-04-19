@@ -221,7 +221,7 @@ var ModuleDefinition;
             return SGPP.location.pageKind == 'giveaways';
         };
         GiveawaysFilterExample.prototype.init = function () {
-            var GiveawaysFilter = SGPP.modules["GiveawaysFilter"];
+            var GiveawaysFilter = SGPP.modules["GiveawaysFilterBase"];
             GiveawaysFilter.addFilter(new HideEnteredFilter());
         };
         GiveawaysFilterExample.prototype.render = function () {

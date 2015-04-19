@@ -20,7 +20,7 @@ module ModuleDefinition {
         }
 
         init(): void {
-            var GiveawaysFilter = <GiveawaysFilterBase> SGPP.modules["GiveawaysFilter"];
+            var GiveawaysFilter = <GiveawaysFilterBase> SGPP.modules["GiveawaysFilterBase"];
             
             GiveawaysFilter.addFilter(new HideEnteredFilter());
         }
