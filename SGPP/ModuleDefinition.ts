@@ -16,4 +16,9 @@
         shouldRun(location: SGLocation): boolean;
         style: string;
     }
+
+    export interface GiveawaysFilter {
+        renderControl(element: Element): void;
+    }
+
 }

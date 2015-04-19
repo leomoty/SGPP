@@ -52,6 +52,13 @@ var ModuleDefinition;
                     }
                 }
             };
+            this.addGiveawayFilter = function (filter) {
+                if ("GiveawaysFilterBase" in SGPP.modules) {
+                    SGPP.modules["GiveawaysFilterBase"].addFilter(filter);
+                    return true;
+                }
+                return false;
+            };
             this.style = "";
             this.init = function () {
                 _this.log("Steamgifts++ plugin started.");
@@ -221,8 +228,7 @@ var ModuleDefinition;
             return SGPP.location.pageKind == 'giveaways';
         };
         GiveawaysFilterExample.prototype.init = function () {
-            var GiveawaysFilter = SGPP.modules["GiveawaysFilterBase"];
-            GiveawaysFilter.addFilter(new HideEnteredFilter());
+            SGPP.addGiveawayFilter(new HideEnteredFilter());
         };
         GiveawaysFilterExample.prototype.render = function () {
         };

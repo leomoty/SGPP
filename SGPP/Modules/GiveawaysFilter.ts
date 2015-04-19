@@ -2,10 +2,6 @@
 
 module ModuleDefinition {
 
-    export interface GiveawaysFilter {
-        renderControl(element: Element): void;
-    }
-
     export class GiveawaysFilterBase implements SteamGiftsModule {
 
         style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";

@@ -62,6 +62,16 @@ module ModuleDefinition{
             }
         }
 
+        addGiveawayFilter = (filter: GiveawaysFilter): boolean => {
+            if ("GiveawaysFilterBase" in SGPP.modules) {
+                (<GiveawaysFilterBase> SGPP.modules["GiveawaysFilterBase"]).addFilter(filter);
+
+                return true;
+            }
+
+            return false;
+        }
+
         //core module section
 
         name(): string {
