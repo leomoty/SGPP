@@ -17,7 +17,7 @@
         style: string;
     }
 
-    export interface GiveawaysFilter {
+    export interface GiveawayFilter {
         id: string;
         renderControl(el: Element): void;
         shouldHide(el: Element): boolean;

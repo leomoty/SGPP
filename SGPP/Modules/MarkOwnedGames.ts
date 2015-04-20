@@ -2,7 +2,7 @@
 
 module ModuleDefinition {
 
-    export class HideIgnored implements GiveawaysFilter {
+    export class HideIgnored implements GiveawayFilter {
 
         id = "HideIgnored";
 
@@ -53,7 +53,7 @@ module ModuleDefinition {
         }
     }
 
-    export class HideOwned implements GiveawaysFilter {
+    export class HideOwned implements GiveawayFilter {
 
         id = "HideOwned";
 

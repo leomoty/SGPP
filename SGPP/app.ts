@@ -7,7 +7,6 @@
 /// <reference path="ModuleDefinition.ts" />
 
 /// <reference path="Modules/GiveawaysFilter.ts" />
-/// <reference path="Modules/GiveawaysFilterExample.ts" />
 
 /// <reference path="Modules/CommentAndEnter.ts" />
 /// <reference path="Modules/EntryCommenters.ts" />
@@ -34,9 +33,7 @@ var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
 //list of available modules
 var modulesNames: Array<string> = new Array<string>(
-    "GiveawaysFilterBase",
-    "GiveawaysFilterExample",
-
+    "GiveawaysFilter", // Needs to be before any modules containing giveaway filters
     "CommentAndEnter",
     "EntryCommenters",
     "FixedNavbar",

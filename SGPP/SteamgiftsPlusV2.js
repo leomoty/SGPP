@@ -53,8 +53,8 @@ var ModuleDefinition;
                 }
             };
             this.addGiveawayFilter = function (filter) {
-                if ("GiveawaysFilterBase" in SGPP.modules) {
-                    SGPP.modules["GiveawaysFilterBase"].addFilter(filter);
+                if ("GiveawaysFilter" in SGPP.modules) {
+                    SGPP.modules["GiveawaysFilter"].addFilter(filter);
                     return true;
                 }
                 return false;
@@ -164,71 +164,6 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
-    var GiveawaysFilterBase = (function () {
-        function GiveawaysFilterBase() {
-            this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
-            this.filters = {};
-        }
-        GiveawaysFilterBase.prototype.shouldRun = function () {
-            return SGPP.location.pageKind == 'giveaways';
-        };
-        GiveawaysFilterBase.prototype.init = function () {
-        };
-        GiveawaysFilterBase.prototype.addFilter = function (filter) {
-            var _this = this;
-            this.filters[filter.id] = filter;
-            $(filter).on('filterChanged', function (event, state) {
-                _this.filterGames();
-                SGPP.storage.setItem("giveaway_filter_" + filter.id, state);
-            });
-            if (SGPP.storage.containsItem("giveaway_filter_" + filter.id)) {
-                filter.setState(SGPP.storage.getItem("giveaway_filter_" + filter.id));
-            }
-        };
-        GiveawaysFilterBase.prototype.render = function () {
-            var _this = this;
-            this.filterGames();
-            $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
-            var sidebar = $('#sidebar_sgpp_filters');
-            $.each(this.filters, function (index, filter) {
-                var el = document.createElement('div');
-                filter.renderControl(el);
-                sidebar.append(el);
-            });
-            SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
-                _this.filterGame(el);
-            });
-        };
-        GiveawaysFilterBase.prototype.filterGames = function () {
-            var _this = this;
-            $('.giveaway__row-outer-wrap').each(function (i, el) {
-                _this.filterGame(el);
-            });
-        };
-        GiveawaysFilterBase.prototype.filterGame = function (el) {
-            var hide = false;
-            var $el = $(el);
-            for (var id in this.filters) {
-                var filter = this.filters[id];
-                if (filter.shouldHide(el))
-                    hide = true;
-            }
-            if (hide) {
-                $el.hide();
-            }
-            else {
-                $el.show();
-            }
-        };
-        GiveawaysFilterBase.prototype.name = function () {
-            return "Giveaways Filter";
-        };
-        return GiveawaysFilterBase;
-    })();
-    ModuleDefinition.GiveawaysFilterBase = GiveawaysFilterBase;
-})(ModuleDefinition || (ModuleDefinition = {}));
-var ModuleDefinition;
-(function (ModuleDefinition) {
     var HideEnteredFilter = (function () {
         function HideEnteredFilter() {
             this.id = "HideEntered";
@@ -263,24 +198,69 @@ var ModuleDefinition;
         return HideEnteredFilter;
     })();
     ModuleDefinition.HideEnteredFilter = HideEnteredFilter;
-    var GiveawaysFilterExample = (function () {
-        function GiveawaysFilterExample() {
-            this.style = "";
+    var GiveawaysFilter = (function () {
+        function GiveawaysFilter() {
+            this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
+            this.filters = {};
         }
-        GiveawaysFilterExample.prototype.shouldRun = function () {
+        GiveawaysFilter.prototype.shouldRun = function () {
             return SGPP.location.pageKind == 'giveaways';
         };
-        GiveawaysFilterExample.prototype.init = function () {
-            SGPP.addGiveawayFilter(new HideEnteredFilter());
+        GiveawaysFilter.prototype.init = function () {
+            this.addFilter(new HideEnteredFilter());
         };
-        GiveawaysFilterExample.prototype.render = function () {
+        GiveawaysFilter.prototype.addFilter = function (filter) {
+            var _this = this;
+            this.filters[filter.id] = filter;
+            $(filter).on('filterChanged', function (event, state) {
+                _this.filterGames();
+                SGPP.storage.setItem("giveaway_filter_" + filter.id, state);
+            });
+            if (SGPP.storage.containsItem("giveaway_filter_" + filter.id)) {
+                filter.setState(SGPP.storage.getItem("giveaway_filter_" + filter.id));
+            }
         };
-        GiveawaysFilterExample.prototype.name = function () {
+        GiveawaysFilter.prototype.render = function () {
+            var _this = this;
+            this.filterGames();
+            $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
+            var sidebar = $('#sidebar_sgpp_filters');
+            $.each(this.filters, function (index, filter) {
+                var el = document.createElement('div');
+                filter.renderControl(el);
+                sidebar.append(el);
+            });
+            SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
+                _this.filterGame(el);
+            });
+        };
+        GiveawaysFilter.prototype.filterGames = function () {
+            var _this = this;
+            $('.giveaway__row-outer-wrap').each(function (i, el) {
+                _this.filterGame(el);
+            });
+        };
+        GiveawaysFilter.prototype.filterGame = function (el) {
+            var hide = false;
+            var $el = $(el);
+            for (var id in this.filters) {
+                var filter = this.filters[id];
+                if (filter.shouldHide(el))
+                    hide = true;
+            }
+            if (hide) {
+                $el.hide();
+            }
+            else {
+                $el.show();
+            }
+        };
+        GiveawaysFilter.prototype.name = function () {
             return "Giveaways Filter";
         };
-        return GiveawaysFilterExample;
+        return GiveawaysFilter;
     })();
-    ModuleDefinition.GiveawaysFilterExample = GiveawaysFilterExample;
+    ModuleDefinition.GiveawaysFilter = GiveawaysFilter;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -2261,7 +2241,7 @@ var ModuleDefinition;
     ModuleDefinition.EndlessScrollLists = EndlessScrollLists;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var SGPP = new ModuleDefinition.Core();
-var modulesNames = new Array("GiveawaysFilterBase", "GiveawaysFilterExample", "CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MarkOwnedGames", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
+var modulesNames = new Array("GiveawaysFilter", "CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MarkOwnedGames", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
 var defaultModules = {
     "FixedNavbar": { "enabled": true },
     "ScrollingSidebar": { "enabled": true }

@@ -2,20 +2,63 @@
 
 module ModuleDefinition {
 
-    export class GiveawaysFilterBase implements SteamGiftsModule {
+    export class HideEnteredFilter implements GiveawayFilter {
+
+        id = "HideEntered";
+
+        private element;
+
+        private settings = {
+            hideEntered: false,
+        };
+
+        public renderControl(el: Element): void {
+            var $el = $(el);
+
+            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Entered</div>');
+
+            this.element.click(() => {
+                this.settings.hideEntered = !this.settings.hideEntered;
+                this.updateElement();
+                $(this).trigger('filterChanged', [this.settings]);
+            });
+
+            this.updateElement();
+            $el.append(this.element);
+        }
+
+        private updateElement(): void {
+            if (this.element)
+                this.element.find('span').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
+        }
+
+        public shouldHide(el: Element): boolean {
+            var $el = $(el);
+
+            return this.settings.hideEntered && $el.children('.giveaway__row-inner-wrap').hasClass('is-faded');
+        }
+
+        public setState(state): void {
+            this.settings = state;
+            this.updateElement();
+        }
+    }
+
+    export class GiveawaysFilter implements SteamGiftsModule {
 
         style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
 
-        private filters: { [s: string]: ModuleDefinition.GiveawaysFilter; } = {};
+        private filters: { [s: string]: ModuleDefinition.GiveawayFilter; } = {};
 
         shouldRun(): boolean {
             return SGPP.location.pageKind == 'giveaways';
         }
 
         init(): void {
+            this.addFilter(new HideEnteredFilter());
         }
 
-        addFilter(filter: GiveawaysFilter): void {
+        addFilter(filter: GiveawayFilter): void {
             this.filters[filter.id] = filter;
 
             $(filter).on('filterChanged',(event, state) => {
@@ -60,7 +103,7 @@ module ModuleDefinition {
             var $el = $(el);
 
             for (var id in this.filters) {
-                var filter: ModuleDefinition.GiveawaysFilter = this.filters[id];
+                var filter: ModuleDefinition.GiveawayFilter = this.filters[id];
 
                 if (filter.shouldHide(el))
                     hide = true;
