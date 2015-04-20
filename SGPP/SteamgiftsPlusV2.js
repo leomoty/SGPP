@@ -177,9 +177,13 @@ var ModuleDefinition;
         GiveawaysFilterBase.prototype.addFilter = function (filter) {
             var _this = this;
             this.filters[filter.id] = filter;
-            $(filter).on('filterChanged', function () {
+            $(filter).on('filterChanged', function (event, state) {
                 _this.filterGames();
+                SGPP.storage.setItem("giveaway_filter_" + filter.id, state);
             });
+            if (SGPP.storage.containsItem("giveaway_filter_" + filter.id)) {
+                filter.setState(SGPP.storage.getItem("giveaway_filter_" + filter.id));
+            }
         };
         GiveawaysFilterBase.prototype.render = function () {
             var _this = this;
@@ -239,16 +243,22 @@ var ModuleDefinition;
             this.element.click(function () {
                 _this.settings.hideEntered = !_this.settings.hideEntered;
                 _this.updateElement();
-                $(_this).trigger('filterChanged');
+                $(_this).trigger('filterChanged', [_this.settings]);
             });
+            this.updateElement();
             $el.append(this.element);
         };
         HideEnteredFilter.prototype.updateElement = function () {
-            this.element.find('span').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
+            if (this.element)
+                this.element.find('span').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
         };
         HideEnteredFilter.prototype.shouldHide = function (el) {
             var $el = $(el);
             return this.settings.hideEntered && $el.children('.giveaway__row-inner-wrap').hasClass('is-faded');
+        };
+        HideEnteredFilter.prototype.setState = function (state) {
+            this.settings = state;
+            this.updateElement();
         };
         return HideEnteredFilter;
     })();
@@ -1222,18 +1232,24 @@ var ModuleDefinition;
             this.element.click(function () {
                 _this.settings.hide = !_this.settings.hide;
                 _this.updateElement();
-                $(_this).trigger('filterChanged');
+                $(_this).trigger('filterChanged', [_this.settings]);
             });
+            this.updateElement();
             $el.append(this.element);
         };
         HideIgnored.prototype.updateElement = function () {
-            this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+            if (this.element)
+                this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
         };
         HideIgnored.prototype.shouldHide = function (el) {
             var $el = $(el);
             var link = $el.find('a.giveaway__icon').attr('href');
             var linkInfo = this.module.parseAppLink(link);
             return this.settings.hide && this.module.ignores(link);
+        };
+        HideIgnored.prototype.setState = function (state) {
+            this.settings = state;
+            this.updateElement();
         };
         return HideIgnored;
     })();
@@ -1253,18 +1269,24 @@ var ModuleDefinition;
             this.element.click(function () {
                 _this.settings.hide = !_this.settings.hide;
                 _this.updateElement();
-                $(_this).trigger('filterChanged');
+                $(_this).trigger('filterChanged', [_this.settings]);
             });
+            this.updateElement();
             $el.append(this.element);
         };
         HideOwned.prototype.updateElement = function () {
-            this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+            if (this.element)
+                this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
         };
         HideOwned.prototype.shouldHide = function (el) {
             var $el = $(el);
             var link = $el.find('a.giveaway__icon').attr('href');
             var linkInfo = this.module.parseAppLink(link);
             return this.settings.hide && this.module.owns(link);
+        };
+        HideOwned.prototype.setState = function (state) {
+            this.settings = state;
+            this.updateElement();
         };
         return HideOwned;
     })();

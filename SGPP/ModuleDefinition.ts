@@ -21,6 +21,7 @@
         id: string;
         renderControl(el: Element): void;
         shouldHide(el: Element): boolean;
+        setState(state): void;
     }
 
 }

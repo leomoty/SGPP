@@ -17,23 +17,31 @@ module ModuleDefinition {
             var $el = $(el);
 
             this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Entered</div>');
+
             this.element.click(() => {
                 this.settings.hideEntered = !this.settings.hideEntered;
                 this.updateElement();
-                $(this).trigger('filterChanged');
+                $(this).trigger('filterChanged', [this.settings]);
             });
 
+            this.updateElement();
             $el.append(this.element);
         }
 
-        private updateElement() {
-            this.element.find('span').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
+        private updateElement(): void {
+            if (this.element)
+                this.element.find('span').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
         }
 
-        public shouldHide(el: Element) {
+        public shouldHide(el: Element): boolean {
             var $el = $(el);
 
             return this.settings.hideEntered && $el.children('.giveaway__row-inner-wrap').hasClass('is-faded');
+        }
+
+        public setState(state): void {
+            this.settings = state;
+            this.updateElement();
         }
     }
 

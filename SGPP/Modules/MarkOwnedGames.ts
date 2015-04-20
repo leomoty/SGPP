@@ -25,14 +25,16 @@ module ModuleDefinition {
             this.element.click(() => {
                 this.settings.hide = !this.settings.hide;
                 this.updateElement();
-                $(this).trigger('filterChanged');
+                $(this).trigger('filterChanged', [this.settings]);
             });
 
+            this.updateElement();
             $el.append(this.element);
         }
 
         private updateElement() {
-            this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+            if (this.element)
+                this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
         }
 
         public shouldHide(el: Element) {
@@ -43,6 +45,11 @@ module ModuleDefinition {
             var linkInfo = this.module.parseAppLink(link);
 
             return this.settings.hide && this.module.ignores(link);
+        }
+
+        public setState(state): void {
+            this.settings = state;
+            this.updateElement();
         }
     }
 
@@ -69,14 +76,16 @@ module ModuleDefinition {
             this.element.click(() => {
                 this.settings.hide = !this.settings.hide;
                 this.updateElement();
-                $(this).trigger('filterChanged');
+                $(this).trigger('filterChanged', [this.settings]);
             });
 
+            this.updateElement();
             $el.append(this.element);
         }
 
         private updateElement() {
-            this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+            if (this.element)
+                this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
         }
 
         public shouldHide(el: Element) {
@@ -87,6 +96,11 @@ module ModuleDefinition {
             var linkInfo = this.module.parseAppLink(link);
 
             return this.settings.hide && this.module.owns(link);
+        }
+
+        public setState(state): void {
+            this.settings = state;
+            this.updateElement();
         }
     }
 

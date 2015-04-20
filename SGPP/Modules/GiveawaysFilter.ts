@@ -18,9 +18,15 @@ module ModuleDefinition {
         addFilter(filter: GiveawaysFilter): void {
             this.filters[filter.id] = filter;
 
-            $(filter).on('filterChanged',() => {
+            $(filter).on('filterChanged',(event, state) => {
                 this.filterGames();
+
+                SGPP.storage.setItem("giveaway_filter_" + filter.id, state);
             });
+
+            if (SGPP.storage.containsItem("giveaway_filter_" + filter.id)) {
+                filter.setState(SGPP.storage.getItem("giveaway_filter_" + filter.id));
+            }
         }
 
         render(): void {
