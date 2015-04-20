@@ -6,7 +6,7 @@ module ModuleDefinition {
 
         style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
 
-        private filters: Array<GiveawaysFilter> = new Array<GiveawaysFilter>();
+        private filters: { [s: string]: ModuleDefinition.GiveawaysFilter; } = {};
 
         shouldRun(): boolean {
             return SGPP.location.pageKind == 'giveaways';
@@ -16,7 +16,11 @@ module ModuleDefinition {
         }
 
         addFilter(filter: GiveawaysFilter): void {
-            this.filters.push(filter);
+            this.filters[filter.id] = filter;
+
+            $(filter).on('filterChanged',() => {
+                this.filterGames();
+            });
         }
 
         render(): void {
@@ -49,24 +53,18 @@ module ModuleDefinition {
             var hide = false;
             var $el = $(el);
 
-            /*var link = $el.find('a.giveaway__icon').attr('href');
+            for (var id in this.filters) {
+                var filter: ModuleDefinition.GiveawaysFilter = this.filters[id];
 
-            var linkInfo = this.parseAppLink(link);
+                if (filter.shouldHide(el))
+                    hide = true;
+            }
 
-            if (this.hideOwned && this.owns(link))
-                hide = true;
-
-            if (this.hideIgnored && this.ignores(link))
-                hide = true;
-
-            if (this.hideEntered && $el.children('.giveaway__row-inner-wrap').hasClass('is-faded'))
-                hide = true;
-
-            if (!hide) {
-                $el.show();
-            } else {
+            if (hide) {
                 $el.hide();
-            }*/
+            } else {
+                $el.show();
+            }
         }
 
         name(): string {

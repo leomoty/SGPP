@@ -14,4 +14,5 @@
 // @resource settings   https://raw.githubusercontent.com/nikop/SGPPSettings/gamesfilter/settings.html
 // @grant           GM_addStyle
 // @grant           GM_getResourceText
+// @grant           GM_xmlhttpRequest
 // ==/UserScript==

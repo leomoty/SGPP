@@ -14,6 +14,7 @@
 // @resource settings   https://raw.githubusercontent.com/nikop/SGPPSettings/gamesfilter/settings.html
 // @grant           GM_addStyle
 // @grant           GM_getResourceText
+// @grant           GM_xmlhttpRequest
 // ==/UserScript==
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -68,6 +69,13 @@ var ModuleDefinition;
                         _this.addOnCallbackHelper(moduleName[pos], event, callback);
                     }
                 }
+            };
+            this.addGiveawayFilter = function (filter) {
+                if ("GiveawaysFilterBase" in SGPP.modules) {
+                    SGPP.modules["GiveawaysFilterBase"].addFilter(filter);
+                    return true;
+                }
+                return false;
             };
             this.style = "";
             this.init = function () {
@@ -177,7 +185,7 @@ var ModuleDefinition;
     var GiveawaysFilterBase = (function () {
         function GiveawaysFilterBase() {
             this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
-            this.filters = new Array();
+            this.filters = {};
         }
         GiveawaysFilterBase.prototype.shouldRun = function () {
             return SGPP.location.pageKind == 'giveaways';
@@ -185,7 +193,11 @@ var ModuleDefinition;
         GiveawaysFilterBase.prototype.init = function () {
         };
         GiveawaysFilterBase.prototype.addFilter = function (filter) {
-            this.filters.push(filter);
+            var _this = this;
+            this.filters[filter.id] = filter;
+            $(filter).on('filterChanged', function () {
+                _this.filterGames();
+            });
         };
         GiveawaysFilterBase.prototype.render = function () {
             var _this = this;
@@ -210,6 +222,17 @@ var ModuleDefinition;
         GiveawaysFilterBase.prototype.filterGame = function (el) {
             var hide = false;
             var $el = $(el);
+            for (var id in this.filters) {
+                var filter = this.filters[id];
+                if (filter.shouldHide(el))
+                    hide = true;
+            }
+            if (hide) {
+                $el.hide();
+            }
+            else {
+                $el.show();
+            }
         };
         GiveawaysFilterBase.prototype.name = function () {
             return "Giveaways Filter";
@@ -222,24 +245,41 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var HideEnteredFilter = (function () {
         function HideEnteredFilter() {
+            this.id = "HideEntered";
+            this.settings = {
+                hideEntered: false,
+            };
         }
         HideEnteredFilter.prototype.renderControl = function (el) {
+            var _this = this;
             var $el = $(el);
-            $el.append("<strong>Test</strong>");
+            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Entered</div>');
+            this.element.click(function () {
+                _this.settings.hideEntered = !_this.settings.hideEntered;
+                _this.updateElement();
+                $(_this).trigger('filterChanged');
+            });
+            $el.append(this.element);
+        };
+        HideEnteredFilter.prototype.updateElement = function () {
+            this.element.find('span').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
+        };
+        HideEnteredFilter.prototype.shouldHide = function (el) {
+            var $el = $(el);
+            return this.settings.hideEntered && $el.children('.giveaway__row-inner-wrap').hasClass('is-faded');
         };
         return HideEnteredFilter;
     })();
     ModuleDefinition.HideEnteredFilter = HideEnteredFilter;
     var GiveawaysFilterExample = (function () {
         function GiveawaysFilterExample() {
-            this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
+            this.style = "";
         }
         GiveawaysFilterExample.prototype.shouldRun = function () {
             return SGPP.location.pageKind == 'giveaways';
         };
         GiveawaysFilterExample.prototype.init = function () {
-            var GiveawaysFilter = SGPP.modules["GiveawaysFilterBase"];
-            GiveawaysFilter.addFilter(new HideEnteredFilter());
+            SGPP.addGiveawayFilter(new HideEnteredFilter());
         };
         GiveawaysFilterExample.prototype.render = function () {
         };
@@ -1185,59 +1225,81 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
+    var HideIgnored = (function () {
+        function HideIgnored(module) {
+            this.id = "HideIgnored";
+            this.settings = {
+                hide: false,
+            };
+            this.module = module;
+        }
+        HideIgnored.prototype.renderControl = function (el) {
+            var _this = this;
+            var $el = $(el);
+            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Not Interested</div>');
+            this.element.click(function () {
+                _this.settings.hide = !_this.settings.hide;
+                _this.updateElement();
+                $(_this).trigger('filterChanged');
+            });
+            $el.append(this.element);
+        };
+        HideIgnored.prototype.updateElement = function () {
+            this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+        };
+        HideIgnored.prototype.shouldHide = function (el) {
+            var $el = $(el);
+            var link = $el.find('a.giveaway__icon').attr('href');
+            var linkInfo = this.module.parseAppLink(link);
+            return this.settings.hide && this.module.ignores(link);
+        };
+        return HideIgnored;
+    })();
+    ModuleDefinition.HideIgnored = HideIgnored;
+    var HideOwned = (function () {
+        function HideOwned(module) {
+            this.id = "HideOwned";
+            this.settings = {
+                hide: false,
+            };
+            this.module = module;
+        }
+        HideOwned.prototype.renderControl = function (el) {
+            var _this = this;
+            var $el = $(el);
+            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Owned</div>');
+            this.element.click(function () {
+                _this.settings.hide = !_this.settings.hide;
+                _this.updateElement();
+                $(_this).trigger('filterChanged');
+            });
+            $el.append(this.element);
+        };
+        HideOwned.prototype.updateElement = function () {
+            this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+        };
+        HideOwned.prototype.shouldHide = function (el) {
+            var $el = $(el);
+            var link = $el.find('a.giveaway__icon').attr('href');
+            var linkInfo = this.module.parseAppLink(link);
+            return this.settings.hide && this.module.owns(link);
+        };
+        return HideOwned;
+    })();
+    ModuleDefinition.HideOwned = HideOwned;
     var MarkOwnedGames = (function () {
         function MarkOwnedGames() {
-            this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
+            this.style = "";
             this.userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
             this.blacklistData = { apps: [], subs: [] };
-            this._hideOwned = false;
-            this._hideIgnored = false;
-            this._hideEntered = false;
         }
         MarkOwnedGames.prototype.shouldRun = function () {
             return true;
         };
         MarkOwnedGames.prototype.init = function () {
+            SGPP.addGiveawayFilter(new HideIgnored(this));
+            SGPP.addGiveawayFilter(new HideOwned(this));
         };
-        Object.defineProperty(MarkOwnedGames.prototype, "hideOwned", {
-            get: function () {
-                return this._hideOwned;
-            },
-            set: function (v) {
-                this._hideOwned = v;
-                this.elFilterOwns.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
-                SGPP.storage.setItem("games_filter_owned", v);
-                this.filterGames();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(MarkOwnedGames.prototype, "hideIgnored", {
-            get: function () {
-                return this._hideIgnored;
-            },
-            set: function (v) {
-                this._hideIgnored = v;
-                this.elFilterIgnored.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
-                SGPP.storage.setItem("games_filter_ignored", v);
-                this.filterGames();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(MarkOwnedGames.prototype, "hideEntered", {
-            get: function () {
-                return this._hideEntered;
-            },
-            set: function (v) {
-                this._hideEntered = v;
-                this.elFilterEntered.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
-                SGPP.storage.setItem("games_filter_entered", v);
-                this.filterGames();
-            },
-            enumerable: true,
-            configurable: true
-        });
         MarkOwnedGames.prototype.owns = function (link) {
             var l = this.parseAppLink(link);
             if (!l)
@@ -1289,7 +1351,6 @@ var ModuleDefinition;
             return [m[1], parseInt(m[2])];
         };
         MarkOwnedGames.prototype.render = function () {
-            var _this = this;
             if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
                 this.refreshGamesFromSteam();
             }
@@ -1336,55 +1397,6 @@ var ModuleDefinition;
                     $('.sidebar__entry-insert').show();
                     $('.sidebar__ignored').hide();
                 });
-            }
-            else if (SGPP.location.pageKind == 'giveaways') {
-                this.filterGames();
-                $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
-                this.elFilterOwns = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Owned</div>');
-                this.elFilterOwns.click(function () {
-                    _this.hideOwned = !_this.hideOwned;
-                });
-                this.elFilterIgnored = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Not Interested</div>');
-                this.elFilterIgnored.click(function () {
-                    _this.hideIgnored = !_this.hideIgnored;
-                });
-                this.elFilterEntered = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Entered</div>');
-                this.elFilterEntered.click(function () {
-                    _this.hideEntered = !_this.hideEntered;
-                });
-                $('#sidebar_sgpp_filters').append(this.elFilterOwns);
-                $('#sidebar_sgpp_filters').append(this.elFilterIgnored);
-                $('#sidebar_sgpp_filters').append(this.elFilterEntered);
-                this.hideOwned = SGPP.storage.getItem("games_filter_owned", true);
-                this.hideIgnored = SGPP.storage.getItem("games_filter_ignored", true);
-                this.hideEntered = SGPP.storage.getItem("games_filter_entered", false);
-                SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
-                    _this.filterGame(el);
-                });
-            }
-        };
-        MarkOwnedGames.prototype.filterGames = function () {
-            var _this = this;
-            $('.giveaway__row-outer-wrap').each(function (i, el) {
-                _this.filterGame(el);
-            });
-        };
-        MarkOwnedGames.prototype.filterGame = function (el) {
-            var hide = false;
-            var $el = $(el);
-            var link = $el.find('a.giveaway__icon').attr('href');
-            var linkInfo = this.parseAppLink(link);
-            if (this.hideOwned && this.owns(link))
-                hide = true;
-            if (this.hideIgnored && this.ignores(link))
-                hide = true;
-            if (this.hideEntered && $el.children('.giveaway__row-inner-wrap').hasClass('is-faded'))
-                hide = true;
-            if (!hide) {
-                $el.show();
-            }
-            else {
-                $el.hide();
             }
         };
         MarkOwnedGames.prototype.refreshGamesFromSteam = function () {

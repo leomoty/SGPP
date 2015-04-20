@@ -18,7 +18,9 @@
     }
 
     export interface GiveawaysFilter {
-        renderControl(element: Element): void;
+        id: string;
+        renderControl(el: Element): void;
+        shouldHide(el: Element): boolean;
     }
 
 }
