@@ -46,7 +46,8 @@ module ModuleDefinition {
 
     export class GiveawaysFilter implements SteamGiftsModule {
 
-        style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
+        style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }\n" + 
+            ".giveaway-filtered { display:none; }";
 
         private filters: { [s: string]: ModuleDefinition.GiveawayFilter; } = {};
 
@@ -90,6 +91,8 @@ module ModuleDefinition {
             SGPP.on("EndlessScrollGiveaways", "addItem",(event: JQueryEventObject, el: Element) => {
                 this.filterGame(el);
             });
+
+            this.filterGames();
         }
 
         filterGames(): void {
@@ -109,11 +112,7 @@ module ModuleDefinition {
                     hide = true;
             }
 
-            if (hide) {
-                $el.hide();
-            } else {
-                $el.show();
-            }
+            $el.toggleClass('giveaway-filtered', hide);
         }
 
         name(): string {

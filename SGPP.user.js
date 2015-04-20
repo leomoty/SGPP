@@ -218,7 +218,7 @@ var ModuleDefinition;
     ModuleDefinition.HideEnteredFilter = HideEnteredFilter;
     var GiveawaysFilter = (function () {
         function GiveawaysFilter() {
-            this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
+            this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }\n" + ".giveaway-filtered { display:none; }";
             this.filters = {};
         }
         GiveawaysFilter.prototype.shouldRun = function () {
@@ -251,6 +251,7 @@ var ModuleDefinition;
             SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
                 _this.filterGame(el);
             });
+            this.filterGames();
         };
         GiveawaysFilter.prototype.filterGames = function () {
             var _this = this;
@@ -266,12 +267,7 @@ var ModuleDefinition;
                 if (filter.shouldHide(el))
                     hide = true;
             }
-            if (hide) {
-                $el.hide();
-            }
-            else {
-                $el.show();
-            }
+            $el.toggleClass('giveaway-filtered', hide);
         };
         GiveawaysFilter.prototype.name = function () {
             return "Giveaways Filter";
