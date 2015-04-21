@@ -104,9 +104,60 @@ module ModuleDefinition {
         }
     }
 
+    export class HighlightWishlist implements GiveawayFilter {
+
+        id = "HighlightWishlist";
+
+        private element;
+
+        private settings = {
+            highlight: false,
+        };
+
+        private module: MarkOwnedGames;
+
+        constructor(module: MarkOwnedGames) {
+            this.module = module;
+        }
+
+        public renderControl(el: Element): void {
+            var $el = $(el);
+
+            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Highlight Wishlist</div>');
+            this.element.click(() => {
+                this.settings.highlight = !this.settings.highlight;
+                this.updateElement();
+                $(this).trigger('filterChanged', [this.settings]);
+            });
+
+            this.updateElement();
+            $el.append(this.element);
+        }
+
+        private updateElement() {
+            if (this.element)
+                this.element.find('span').toggleClass('fa-square-o', !this.settings.highlight).toggleClass('fa-check-square', this.settings.highlight);
+        }
+
+        public shouldHide(el: Element) {
+            var $el = $(el);
+
+            var link = $el.find('a.giveaway__icon').attr('href');
+
+            $el.toggleClass('wishlisted-giveaway', this.settings.highlight && this.module.wishlisted(link));
+
+            return false;
+        }
+
+        public setState(state): void {
+            this.settings = state;
+            this.updateElement();
+        }
+    }
+
     export class MarkOwnedGames implements SteamGiftsModule {
 
-        style = "";
+        style = ".wishlisted-giveaway .giveaway__heading__name { color: #54A24C; }";
 
         private userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
         private blacklistData = { apps: [], subs: [] };
@@ -122,6 +173,23 @@ module ModuleDefinition {
         init(): void {
             SGPP.addGiveawayFilter(new HideIgnored(this));
             SGPP.addGiveawayFilter(new HideOwned(this));
+            SGPP.addGiveawayFilter(new HighlightWishlist(this));
+
+            if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshGamesFromSteam();
+            }
+
+            if (!SGPP.storage.containsItem("blacklist_data") || !SGPP.storage.containsItem("blacklist_date") || SGPP.storage.getItem("blacklist_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshBlacklistFromSG();
+            }
+
+            if (SGPP.storage.containsItem("steam_userdata")) {
+                this.userdata = SGPP.storage.getItem("steam_userdata");
+            }
+
+            if (SGPP.storage.containsItem("steam_userdata")) {
+                this.blacklistData = SGPP.storage.getItem("blacklist_data");
+            }
         }
 
         owns(link: string): boolean {
@@ -179,6 +247,15 @@ module ModuleDefinition {
             return this.userdata.rgIgnoredPackages.indexOf(packageid) !== -1;
         }
 
+        wishlisted(link: string): boolean {
+            var l = this.parseAppLink(link);
+
+            if (l[0] == 'app')
+                return this.isWishlisted(l[1]);
+            else if (l[0] == 'sub')
+                return false;
+        }
+
         isWishlisted(appid: number): boolean {
             return this.userdata.rgWishlist.indexOf(appid) !== -1;
         }
@@ -193,22 +270,6 @@ module ModuleDefinition {
         }
 
         render(): void {
-            if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
-                this.refreshGamesFromSteam();
-            }
-
-            if (!SGPP.storage.containsItem("blacklist_data") || !SGPP.storage.containsItem("blacklist_date") || SGPP.storage.getItem("blacklist_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
-                this.refreshBlacklistFromSG();
-            }
-
-            if (SGPP.storage.containsItem("steam_userdata")) {
-                this.userdata = SGPP.storage.getItem("steam_userdata");
-            }
-
-            if (SGPP.storage.containsItem("steam_userdata")) {
-                this.blacklistData = SGPP.storage.getItem("blacklist_data");
-            }
-
             if (SGPP.location.pageKind == 'giveaway') {
                 var link = $('a.global__image-outer-wrap--game-large').first().attr('href');
                 var owned = false;

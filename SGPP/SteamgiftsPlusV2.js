@@ -222,7 +222,6 @@ var ModuleDefinition;
         };
         GiveawaysFilter.prototype.render = function () {
             var _this = this;
-            this.filterGames();
             $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
             var sidebar = $('#sidebar_sgpp_filters');
             $.each(this.filters, function (index, filter) {
@@ -1267,9 +1266,46 @@ var ModuleDefinition;
         return HideOwned;
     })();
     ModuleDefinition.HideOwned = HideOwned;
+    var HighlightWishlist = (function () {
+        function HighlightWishlist(module) {
+            this.id = "HighlightWishlist";
+            this.settings = {
+                highlight: false,
+            };
+            this.module = module;
+        }
+        HighlightWishlist.prototype.renderControl = function (el) {
+            var _this = this;
+            var $el = $(el);
+            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Highlight Wishlist</div>');
+            this.element.click(function () {
+                _this.settings.highlight = !_this.settings.highlight;
+                _this.updateElement();
+                $(_this).trigger('filterChanged', [_this.settings]);
+            });
+            this.updateElement();
+            $el.append(this.element);
+        };
+        HighlightWishlist.prototype.updateElement = function () {
+            if (this.element)
+                this.element.find('span').toggleClass('fa-square-o', !this.settings.highlight).toggleClass('fa-check-square', this.settings.highlight);
+        };
+        HighlightWishlist.prototype.shouldHide = function (el) {
+            var $el = $(el);
+            var link = $el.find('a.giveaway__icon').attr('href');
+            $el.toggleClass('wishlisted-giveaway', this.settings.highlight && this.module.wishlisted(link));
+            return false;
+        };
+        HighlightWishlist.prototype.setState = function (state) {
+            this.settings = state;
+            this.updateElement();
+        };
+        return HighlightWishlist;
+    })();
+    ModuleDefinition.HighlightWishlist = HighlightWishlist;
     var MarkOwnedGames = (function () {
         function MarkOwnedGames() {
-            this.style = "";
+            this.style = ".wishlisted-giveaway .giveaway__heading__name { color: #54A24C; }";
             this.userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
             this.blacklistData = { apps: [], subs: [] };
         }
@@ -1279,6 +1315,19 @@ var ModuleDefinition;
         MarkOwnedGames.prototype.init = function () {
             SGPP.addGiveawayFilter(new HideIgnored(this));
             SGPP.addGiveawayFilter(new HideOwned(this));
+            SGPP.addGiveawayFilter(new HighlightWishlist(this));
+            if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshGamesFromSteam();
+            }
+            if (!SGPP.storage.containsItem("blacklist_data") || !SGPP.storage.containsItem("blacklist_date") || SGPP.storage.getItem("blacklist_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshBlacklistFromSG();
+            }
+            if (SGPP.storage.containsItem("steam_userdata")) {
+                this.userdata = SGPP.storage.getItem("steam_userdata");
+            }
+            if (SGPP.storage.containsItem("steam_userdata")) {
+                this.blacklistData = SGPP.storage.getItem("blacklist_data");
+            }
         };
         MarkOwnedGames.prototype.owns = function (link) {
             var l = this.parseAppLink(link);
@@ -1321,6 +1370,13 @@ var ModuleDefinition;
         MarkOwnedGames.prototype.ignoresPackage = function (packageid) {
             return this.userdata.rgIgnoredPackages.indexOf(packageid) !== -1;
         };
+        MarkOwnedGames.prototype.wishlisted = function (link) {
+            var l = this.parseAppLink(link);
+            if (l[0] == 'app')
+                return this.isWishlisted(l[1]);
+            else if (l[0] == 'sub')
+                return false;
+        };
         MarkOwnedGames.prototype.isWishlisted = function (appid) {
             return this.userdata.rgWishlist.indexOf(appid) !== -1;
         };
@@ -1331,18 +1387,6 @@ var ModuleDefinition;
             return [m[1], parseInt(m[2])];
         };
         MarkOwnedGames.prototype.render = function () {
-            if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
-                this.refreshGamesFromSteam();
-            }
-            if (!SGPP.storage.containsItem("blacklist_data") || !SGPP.storage.containsItem("blacklist_date") || SGPP.storage.getItem("blacklist_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
-                this.refreshBlacklistFromSG();
-            }
-            if (SGPP.storage.containsItem("steam_userdata")) {
-                this.userdata = SGPP.storage.getItem("steam_userdata");
-            }
-            if (SGPP.storage.containsItem("steam_userdata")) {
-                this.blacklistData = SGPP.storage.getItem("blacklist_data");
-            }
             if (SGPP.location.pageKind == 'giveaway') {
                 var link = $('a.global__image-outer-wrap--game-large').first().attr('href');
                 var owned = false;

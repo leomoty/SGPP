@@ -74,8 +74,6 @@ module ModuleDefinition {
         }
 
         render(): void {
-            this.filterGames();
-
             $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
 
             var sidebar = $('#sidebar_sgpp_filters');
