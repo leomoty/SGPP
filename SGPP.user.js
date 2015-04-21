@@ -192,7 +192,7 @@ var ModuleDefinition;
         HideEnteredFilter.prototype.renderControl = function (el) {
             var _this = this;
             var $el = $(el);
-            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Entered</div>');
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Hide Entered</span></span>');
             this.element.click(function () {
                 _this.settings.hideEntered = !_this.settings.hideEntered;
                 _this.updateElement();
@@ -203,7 +203,7 @@ var ModuleDefinition;
         };
         HideEnteredFilter.prototype.updateElement = function () {
             if (this.element)
-                this.element.find('span').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
         };
         HideEnteredFilter.prototype.shouldHide = function (el) {
             var $el = $(el);
@@ -218,7 +218,7 @@ var ModuleDefinition;
     ModuleDefinition.HideEnteredFilter = HideEnteredFilter;
     var GiveawaysFilter = (function () {
         function GiveawaysFilter() {
-            this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }\n" + ".giveaway-filtered { display:none; }";
+            this.style = "#sidebar_sgpp_filters { color: #4B72D4; font-size: 11px; padding-bottom: 15px; }\n" + "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 2px; padding-left: 10px; }\n" + "#sidebar_sgpp_filters .filter-name { font-weight: bold; } " + ".giveaway-filtered { display:none; }";
             this.filters = {};
         }
         GiveawaysFilter.prototype.shouldRun = function () {
@@ -242,8 +242,11 @@ var ModuleDefinition;
             var _this = this;
             $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
             var sidebar = $('#sidebar_sgpp_filters');
+            sidebar.append('<h3 class="sidebar__heading">Filter Giveaways</h3>');
             $.each(this.filters, function (index, filter) {
                 var el = document.createElement('div');
+                var $el = $(el);
+                $el.addClass('filter_row');
                 filter.renderControl(el);
                 sidebar.append(el);
             });
@@ -1221,7 +1224,7 @@ var ModuleDefinition;
         HideIgnored.prototype.renderControl = function (el) {
             var _this = this;
             var $el = $(el);
-            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Not Interested</div>');
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Hide Not Interested</span></span>');
             this.element.click(function () {
                 _this.settings.hide = !_this.settings.hide;
                 _this.updateElement();
@@ -1232,7 +1235,7 @@ var ModuleDefinition;
         };
         HideIgnored.prototype.updateElement = function () {
             if (this.element)
-                this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
         };
         HideIgnored.prototype.shouldHide = function (el) {
             var $el = $(el);
@@ -1258,7 +1261,7 @@ var ModuleDefinition;
         HideOwned.prototype.renderControl = function (el) {
             var _this = this;
             var $el = $(el);
-            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Owned</div>');
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Hide Owned</span></span>');
             this.element.click(function () {
                 _this.settings.hide = !_this.settings.hide;
                 _this.updateElement();
@@ -1269,7 +1272,7 @@ var ModuleDefinition;
         };
         HideOwned.prototype.updateElement = function () {
             if (this.element)
-                this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
         };
         HideOwned.prototype.shouldHide = function (el) {
             var $el = $(el);
@@ -1295,7 +1298,7 @@ var ModuleDefinition;
         HighlightWishlist.prototype.renderControl = function (el) {
             var _this = this;
             var $el = $(el);
-            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Highlight Wishlist</div>');
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Highlight Wishlist</span></span>');
             this.element.click(function () {
                 _this.settings.highlight = !_this.settings.highlight;
                 _this.updateElement();
@@ -1306,7 +1309,7 @@ var ModuleDefinition;
         };
         HighlightWishlist.prototype.updateElement = function () {
             if (this.element)
-                this.element.find('span').toggleClass('fa-square-o', !this.settings.highlight).toggleClass('fa-check-square', this.settings.highlight);
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.highlight).toggleClass('fa-check-square', this.settings.highlight);
         };
         HighlightWishlist.prototype.shouldHide = function (el) {
             var $el = $(el);

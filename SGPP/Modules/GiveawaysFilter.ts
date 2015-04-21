@@ -15,7 +15,7 @@ module ModuleDefinition {
         public renderControl(el: Element): void {
             var $el = $(el);
 
-            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Entered</div>');
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Hide Entered</span></span>');
 
             this.element.click(() => {
                 this.settings.hideEntered = !this.settings.hideEntered;
@@ -29,7 +29,7 @@ module ModuleDefinition {
 
         private updateElement(): void {
             if (this.element)
-                this.element.find('span').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
         }
 
         public shouldHide(el: Element): boolean {
@@ -46,8 +46,10 @@ module ModuleDefinition {
 
     export class GiveawaysFilter implements SteamGiftsModule {
 
-        style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }\n" + 
-            ".giveaway-filtered { display:none; }";
+        style = "#sidebar_sgpp_filters { color: #4B72D4; font-size: 11px; padding-bottom: 15px; }\n" +
+        "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 2px; padding-left: 10px; }\n" + 
+        "#sidebar_sgpp_filters .filter-name { font-weight: bold; } " +
+       ".giveaway-filtered { display:none; }";
 
         private filters: { [s: string]: ModuleDefinition.GiveawayFilter; } = {};
 
@@ -78,8 +80,13 @@ module ModuleDefinition {
 
             var sidebar = $('#sidebar_sgpp_filters');
 
+            sidebar.append('<h3 class="sidebar__heading">Filter Giveaways</h3>');
+
             $.each(this.filters,(index, filter) => {
                 var el = document.createElement('div');
+                var $el = $(el);
+
+                $el.addClass('filter_row');
 
                 filter.renderControl(el);
 

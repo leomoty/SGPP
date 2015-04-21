@@ -21,7 +21,7 @@ module ModuleDefinition {
         public renderControl(el: Element): void {
             var $el = $(el);
 
-            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Not Interested</div>');
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Hide Not Interested</span></span>');
             this.element.click(() => {
                 this.settings.hide = !this.settings.hide;
                 this.updateElement();
@@ -34,7 +34,7 @@ module ModuleDefinition {
 
         private updateElement() {
             if (this.element)
-                this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
         }
 
         public shouldHide(el: Element) {
@@ -72,7 +72,7 @@ module ModuleDefinition {
         public renderControl(el: Element): void {
             var $el = $(el);
 
-            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Owned</div>');
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Hide Owned</span></span>');
             this.element.click(() => {
                 this.settings.hide = !this.settings.hide;
                 this.updateElement();
@@ -85,7 +85,7 @@ module ModuleDefinition {
 
         private updateElement() {
             if (this.element)
-                this.element.find('span').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
         }
 
         public shouldHide(el: Element) {
@@ -123,7 +123,7 @@ module ModuleDefinition {
         public renderControl(el: Element): void {
             var $el = $(el);
 
-            this.element = $('<div class="filter_row"><span class="fa fa-square-o"></span> Highlight Wishlist</div>');
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Highlight Wishlist</span></span>');
             this.element.click(() => {
                 this.settings.highlight = !this.settings.highlight;
                 this.updateElement();
@@ -136,7 +136,7 @@ module ModuleDefinition {
 
         private updateElement() {
             if (this.element)
-                this.element.find('span').toggleClass('fa-square-o', !this.settings.highlight).toggleClass('fa-check-square', this.settings.highlight);
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.highlight).toggleClass('fa-check-square', this.settings.highlight);
         }
 
         public shouldHide(el: Element) {
@@ -161,10 +161,6 @@ module ModuleDefinition {
 
         private userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
         private blacklistData = { apps: [], subs: [] };
-
-        private elFilterOwns: JQuery;
-        private elFilterIgnored: JQuery;
-        private elFilterEntered: JQuery;
 
         shouldRun(): boolean {
             return true;
