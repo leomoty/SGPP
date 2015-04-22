@@ -1314,7 +1314,7 @@ var ModuleDefinition;
         HighlightWishlist.prototype.shouldHide = function (el) {
             var $el = $(el);
             var link = $el.find('a.giveaway__icon').attr('href');
-            return this.settings.highlight && !this.module.wishlisted(link);
+            return this.settings.highlight && !this.module.wishlisted(link, false);
         };
         HighlightWishlist.prototype.setState = function (state) {
             this.settings = state;
@@ -1390,12 +1390,13 @@ var ModuleDefinition;
         MarkOwnedGames.prototype.ignoresPackage = function (packageid) {
             return this.userdata.rgIgnoredPackages.indexOf(packageid) !== -1;
         };
-        MarkOwnedGames.prototype.wishlisted = function (link) {
+        MarkOwnedGames.prototype.wishlisted = function (link, ignore_packages) {
+            if (ignore_packages === void 0) { ignore_packages = true; }
             var l = this.parseAppLink(link);
             if (l[0] == 'app')
                 return this.isWishlisted(l[1]);
             else if (l[0] == 'sub')
-                return false;
+                return !ignore_packages;
         };
         MarkOwnedGames.prototype.isWishlisted = function (appid) {
             return this.userdata.rgWishlist.indexOf(appid) !== -1;

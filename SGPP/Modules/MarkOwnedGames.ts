@@ -144,7 +144,7 @@ module ModuleDefinition {
 
             var link = $el.find('a.giveaway__icon').attr('href');
 
-            return this.settings.highlight && !this.module.wishlisted(link);
+            return this.settings.highlight && !this.module.wishlisted(link, false);
         }
 
         public setState(state): void {
@@ -241,13 +241,13 @@ module ModuleDefinition {
             return this.userdata.rgIgnoredPackages.indexOf(packageid) !== -1;
         }
 
-        wishlisted(link: string): boolean {
+        wishlisted(link: string, ignore_packages: boolean = true): boolean {
             var l = this.parseAppLink(link);
 
             if (l[0] == 'app')
                 return this.isWishlisted(l[1]);
             else if (l[0] == 'sub')
-                return false;
+                return !ignore_packages;
         }
 
         isWishlisted(appid: number): boolean {
