@@ -123,7 +123,7 @@ module ModuleDefinition {
         public renderControl(el: Element): void {
             var $el = $(el);
 
-            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Highlight Wishlist</span></span>');
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Show only wishlisted</span></span>');
             this.element.click(() => {
                 this.settings.highlight = !this.settings.highlight;
                 this.updateElement();
@@ -144,9 +144,7 @@ module ModuleDefinition {
 
             var link = $el.find('a.giveaway__icon').attr('href');
 
-            $el.toggleClass('wishlisted-giveaway', this.settings.highlight && this.module.wishlisted(link));
-
-            return false;
+            return this.settings.highlight && !this.module.wishlisted(link);
         }
 
         public setState(state): void {
@@ -157,7 +155,7 @@ module ModuleDefinition {
 
     export class MarkOwnedGames implements SteamGiftsModule {
 
-        style = ".wishlisted-giveaway .giveaway__heading__name { color: #54A24C; }";
+        style = ".wishlisted-giveaway .giveaway__heading__name, .wishlisted-giveaway .featured__heading__medium { background: url(\"data: image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAKCAYAAABi8KSDAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/ IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8 + IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QTM3OEVDNTUyMUM0MTFFNDgxN0ZEN0MzNjYzNzcxOTYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTM3OEVDNTYyMUM0MTFFNDgxN0ZEN0MzNjYzNzcxOTYiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBMzc4RUM1MzIxQzQxMUU0ODE3RkQ3QzM2NjM3NzE5NiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBMzc4RUM1NDIxQzQxMUU0ODE3RkQ3QzM2NjM3NzE5NiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI / Ps9jzFQAAACPSURBVHjaYvz//z+DkJDQdQYGhpsMCMAKxMZAHPXu3bt9cFGQYkFBwQ0gGoaBfAEgzgfibUDsBxNnYsAOfgKxJBBvAeIZMEEWZBVA52xA5gOdUAEUc8NQDBTkBEoGMOAByCYLAjUsRzM5AKtioMQzIEW0ydjcHIBTMSE3M0Ij5RKQfQ6HGiOgIXogBkCAAQDGVT+0v+n6EQAAAABJRU5ErkJggg==\") no-repeat scroll 2px center; padding-left: 15px; }";
 
         private userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
         private blacklistData = { apps: [], subs: [] };
@@ -271,12 +269,14 @@ module ModuleDefinition {
                 var owned = false;
                 var ignored = false;
                 var blacklisted = false;
+                var wishlisted = false;
                 var linkInfo = this.parseAppLink(link);
 
                 if (linkInfo) {
                     owned = this.owns(link);
                     ignored = this.ignores(link);
                     blacklisted = this.blacklisted(link);
+                    wishlisted = this.wishlisted(link);
                 }
 
                 var sidebar = $('.sidebar').last();
@@ -302,9 +302,34 @@ module ModuleDefinition {
                     }
                 }
 
+                if (wishlisted) {
+                    $('div.featured__summary').addClass('wishlisted-giveaway');
+                }
+
                 $('.sidebar__ignored').click(() => { $('.sidebar__entry-insert').show(); $('.sidebar__ignored').hide(); });
 
+            } else if (SGPP.location.pageKind == 'giveaways') {
+                this.markGames();
+
+                SGPP.on("EndlessScrollGiveaways", "addItem",(event: JQueryEventObject, el: Element) => {
+                    this.markGame(el);
+                });
             }
+        }
+
+        markGames(): void {
+            $('.giveaway__row-outer-wrap').each((i, el) => {
+                this.markGame(el);
+            });
+        }
+
+        markGame(el: Element): void {
+            var hide = false;
+            var $el = $(el);
+
+            var link = $el.find('a.giveaway__icon').attr('href');
+
+            $el.toggleClass('wishlisted-giveaway', this.wishlisted(link));
         }
 
         refreshGamesFromSteam(): void {
