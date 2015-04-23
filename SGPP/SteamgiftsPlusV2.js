@@ -242,6 +242,14 @@ var ModuleDefinition;
             $('.giveaway__row-outer-wrap').each(function (i, el) {
                 _this.filterGame(el);
             });
+            var totalPinned = $('.pinned-giveaways__outer-wrap .giveaway__row-outer-wrap').length;
+            var hiddenPinned = $('.pinned-giveaways__outer-wrap .giveaway__row-outer-wrap.giveaway-filtered').length;
+            if (totalPinned == hiddenPinned) {
+                $('.pinned-giveaways__outer-wrap').hide();
+            }
+            else {
+                $('.pinned-giveaways__outer-wrap').show();
+            }
         };
         GiveawaysFilter.prototype.filterGame = function (el) {
             var hide = false;
