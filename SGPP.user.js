@@ -1790,14 +1790,14 @@ var ModuleDefinition;
             this.updatePageElement(el, page);
             var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
             var controlReload = $('<a>').attr('href', '#').append('<i class="fa fa-refresh"></i>').attr('title', 'Reload this page');
-            var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
+            var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause pausecontrol"></i>').attr('title', 'Pause/Resume endless scrolling');
             controlReload.click(function () {
                 _this.loadPage(page, true);
                 return false;
             });
             controlStartStop.click(function () {
                 _this.stopped = !_this.stopped;
-                $('.endless_control_element a i.fa').toggleClass('fa-pause', !_this.stopped).toggleClass('fa-play', _this.stopped);
+                $('.endless_control_element a i.pausecontrol').toggleClass('fa-pause', !_this.stopped).toggleClass('fa-play', _this.stopped);
                 return false;
             });
             controlContainer.append(controlReload);
@@ -1907,6 +1907,7 @@ var ModuleDefinition;
                 if (isReload) {
                     $(this).trigger('beforeReloadPage', [page]);
                     pageContainer.children().remove();
+                    this._pages[page].headerElement = pageHeaderElement = this.createPageElement(page);
                     pageContainer.prepend(pageHeaderElement);
                 }
                 $.get(url, function (data) {
