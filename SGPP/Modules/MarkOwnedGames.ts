@@ -209,6 +209,9 @@ module ModuleDefinition {
         ignores(link: string): boolean {
             var l = this.parseAppLink(link);
 
+            if (!l)
+                return false;
+
             if (l[0] == 'app')
                 return this.ignoresApp(l[1]);
             else if (l[0] == 'sub')
@@ -217,6 +220,9 @@ module ModuleDefinition {
 
         blacklisted(link: string): boolean {
             var l = this.parseAppLink(link);
+
+            if (!l)
+                return false;
 
             if (l[0] == 'app')
                 return this.blacklistedApp(l[1]);
@@ -244,6 +250,9 @@ module ModuleDefinition {
         wishlisted(link: string, ignore_packages: boolean = true): boolean {
             var l = this.parseAppLink(link);
 
+            if (!l)
+                return false;
+
             if (l[0] == 'app')
                 return this.isWishlisted(l[1]);
             else if (l[0] == 'sub')
@@ -255,6 +264,9 @@ module ModuleDefinition {
         }
 
         parseAppLink(url: string): any {
+            if (!url)
+                return false;
+
             var m = url.match(/\/(app|sub)\/(\d+)\//);
 
             if (!m)

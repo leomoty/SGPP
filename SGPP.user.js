@@ -1374,6 +1374,8 @@ var ModuleDefinition;
         };
         MarkOwnedGames.prototype.ignores = function (link) {
             var l = this.parseAppLink(link);
+            if (!l)
+                return false;
             if (l[0] == 'app')
                 return this.ignoresApp(l[1]);
             else if (l[0] == 'sub')
@@ -1381,6 +1383,8 @@ var ModuleDefinition;
         };
         MarkOwnedGames.prototype.blacklisted = function (link) {
             var l = this.parseAppLink(link);
+            if (!l)
+                return false;
             if (l[0] == 'app')
                 return this.blacklistedApp(l[1]);
             else if (l[0] == 'sub')
@@ -1401,6 +1405,8 @@ var ModuleDefinition;
         MarkOwnedGames.prototype.wishlisted = function (link, ignore_packages) {
             if (ignore_packages === void 0) { ignore_packages = true; }
             var l = this.parseAppLink(link);
+            if (!l)
+                return false;
             if (l[0] == 'app')
                 return this.isWishlisted(l[1]);
             else if (l[0] == 'sub')
@@ -1410,6 +1416,8 @@ var ModuleDefinition;
             return this.userdata.rgWishlist.indexOf(appid) !== -1;
         };
         MarkOwnedGames.prototype.parseAppLink = function (url) {
+            if (!url)
+                return false;
             var m = url.match(/\/(app|sub)\/(\d+)\//);
             if (!m)
                 return false;
