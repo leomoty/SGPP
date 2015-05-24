@@ -16,4 +16,12 @@
         shouldRun(location: SGLocation): boolean;
         style: string;
     }
+
+    export interface GiveawayFilter {
+        id: string;
+        renderControl(el: Element): void;
+        shouldHide(el: Element): boolean;
+        setState(state): void;
+    }
+
 }

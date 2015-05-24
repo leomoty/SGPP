@@ -176,11 +176,9 @@ module ModuleDefinition {
                     m.topicInfo.setCommentState(comment_id, false);
                 });
 
-                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems',(event: JQueryEventObject, dom:JQuery, page: number, isReload: boolean) => {
-                        this.markComments(dom, page, true, isReload);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussionReplies", 'beforeAddItems',(event: JQueryEventObject, dom:JQuery, page: number, isReload: boolean) => {
+                    this.markComments(dom, page, true, isReload);
+                });
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics($(document));
@@ -200,11 +198,9 @@ module ModuleDefinition {
                     $this.remove();
                 });
 
-                if ("EndlessScrollDiscussion" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems',(event: JQueryEventObject, dom: JQuery, page: number, isReload: boolean) => {
-                        this.markTopics(dom);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussion", 'beforeAddItems',(event: JQueryEventObject, dom: JQuery, page: number, isReload: boolean) => {
+                    this.markTopics(dom);
+                });
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -263,7 +259,7 @@ module ModuleDefinition {
             }
 
             if (markRead) {
-                var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0]);
+                var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0].replace(',', ''));
 
                 this.topicInfo.setLastCommentID(page, this.getLatestCommentID(dom), numComments);
             }
@@ -283,7 +279,7 @@ module ModuleDefinition {
 
                     // Only mark new comments for topics we have visited
                     if (tInfo.isDataStored) {
-                        var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text());
+                        var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text().replace(',', ''));
 
                         var lastComments = tInfo.getNumComments();
                         var newComments = numComments - lastComments;

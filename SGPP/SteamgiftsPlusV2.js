@@ -52,6 +52,13 @@ var ModuleDefinition;
                     }
                 }
             };
+            this.addGiveawayFilter = function (filter) {
+                if ("GiveawaysFilter" in SGPP.modules) {
+                    SGPP.modules["GiveawaysFilter"].addFilter(filter);
+                    return true;
+                }
+                return false;
+            };
             this.style = "";
             this.init = function () {
                 _this.log("Steamgifts++ plugin started.");
@@ -154,6 +161,112 @@ var ModuleDefinition;
         return Core;
     })();
     ModuleDefinition.Core = Core;
+})(ModuleDefinition || (ModuleDefinition = {}));
+var ModuleDefinition;
+(function (ModuleDefinition) {
+    var HideEnteredFilter = (function () {
+        function HideEnteredFilter() {
+            this.id = "HideEntered";
+            this.settings = {
+                hideEntered: false,
+            };
+        }
+        HideEnteredFilter.prototype.renderControl = function (el) {
+            var _this = this;
+            var $el = $(el);
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Hide Entered</span></span>');
+            this.element.click(function () {
+                _this.settings.hideEntered = !_this.settings.hideEntered;
+                _this.updateElement();
+                $(_this).trigger('filterChanged', [_this.settings]);
+            });
+            this.updateElement();
+            $el.append(this.element);
+        };
+        HideEnteredFilter.prototype.updateElement = function () {
+            if (this.element)
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.hideEntered).toggleClass('fa-check-square', this.settings.hideEntered);
+        };
+        HideEnteredFilter.prototype.shouldHide = function (el) {
+            var $el = $(el);
+            return this.settings.hideEntered && $el.children('.giveaway__row-inner-wrap').hasClass('is-faded');
+        };
+        HideEnteredFilter.prototype.setState = function (state) {
+            this.settings = state;
+            this.updateElement();
+        };
+        return HideEnteredFilter;
+    })();
+    ModuleDefinition.HideEnteredFilter = HideEnteredFilter;
+    var GiveawaysFilter = (function () {
+        function GiveawaysFilter() {
+            this.style = "#sidebar_sgpp_filters { color: #4B72D4; font-size: 11px; padding-bottom: 15px; }\n" + "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 2px; padding-left: 10px; }\n" + "#sidebar_sgpp_filters .filter-name { font-weight: bold; } " + ".giveaway-filtered { display:none; }";
+            this.filters = {};
+        }
+        GiveawaysFilter.prototype.shouldRun = function () {
+            return SGPP.location.pageKind == 'giveaways';
+        };
+        GiveawaysFilter.prototype.init = function () {
+            this.addFilter(new HideEnteredFilter());
+        };
+        GiveawaysFilter.prototype.addFilter = function (filter) {
+            var _this = this;
+            this.filters[filter.id] = filter;
+            $(filter).on('filterChanged', function (event, state) {
+                _this.filterGames();
+                SGPP.storage.setItem("giveaway_filter_" + filter.id, state);
+            });
+            if (SGPP.storage.containsItem("giveaway_filter_" + filter.id)) {
+                filter.setState(SGPP.storage.getItem("giveaway_filter_" + filter.id));
+            }
+        };
+        GiveawaysFilter.prototype.render = function () {
+            var _this = this;
+            $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
+            var sidebar = $('#sidebar_sgpp_filters');
+            sidebar.append('<h3 class="sidebar__heading">Filter Giveaways</h3>');
+            $.each(this.filters, function (index, filter) {
+                var el = document.createElement('div');
+                var $el = $(el);
+                $el.addClass('filter_row');
+                filter.renderControl(el);
+                sidebar.append(el);
+            });
+            SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
+                _this.filterGame(el);
+            });
+            this.filterGames();
+        };
+        GiveawaysFilter.prototype.filterGames = function () {
+            var _this = this;
+            $('.giveaway__row-outer-wrap').each(function (i, el) {
+                _this.filterGame(el);
+            });
+            var totalPinned = $('.pinned-giveaways__outer-wrap .giveaway__row-outer-wrap').length;
+            var hiddenPinned = $('.pinned-giveaways__outer-wrap .giveaway__row-outer-wrap.giveaway-filtered').length;
+            if (totalPinned == hiddenPinned) {
+                $('.pinned-giveaways__outer-wrap').hide();
+            }
+            else {
+                $('.pinned-giveaways__outer-wrap').show();
+            }
+        };
+        GiveawaysFilter.prototype.filterGame = function (el) {
+            var hide = false;
+            var $el = $(el);
+            for (var id in this.filters) {
+                var filter = this.filters[id];
+                if (filter.shouldHide(el))
+                    hide = true;
+            }
+            $el.toggleClass('giveaway-filtered', hide);
+        };
+        GiveawaysFilter.prototype.name = function () {
+            return "Giveaways Filter";
+        };
+        return GiveawaysFilter;
+    })();
+    ModuleDefinition.GiveawaysFilter = GiveawaysFilter;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
@@ -307,7 +420,7 @@ var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
         function FixedNavbar() {
-            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" + "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + ".comment__summary {margin-top: -44px !important; padding-top: 48px !important;}\n" + ".comment__actions__button {position: relative; z-index: 5;}\n" + ".page__heading__breadcrumbs {z-index: 5;}";
+            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" + "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + ".comment__summary {margin-top: -44px !important; padding-top: 48px !important;}\n" + ".comment__actions > div, .comment__actions__button {position: relative; z-index: 5;}\n" + ".page__heading__breadcrumbs {z-index: 5;}";
             this.shouldRun = function (location) { return true; };
         }
         FixedNavbar.prototype.init = function () {
@@ -1046,7 +1159,7 @@ var ModuleDefinition;
                 });
             }
             if (markRead) {
-                var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0]);
+                var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0].replace(',', ''));
                 this.topicInfo.setLastCommentID(page, this.getLatestCommentID(dom), numComments);
             }
         };
@@ -1060,7 +1173,7 @@ var ModuleDefinition;
                         link.attr('href', link.attr('href') + '/search?page=31337');
                     }
                     if (tInfo.isDataStored) {
-                        var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text());
+                        var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text().replace(',', ''));
                         var lastComments = tInfo.getNumComments();
                         var newComments = numComments - lastComments;
                         if (newComments > 0) {
@@ -1090,45 +1203,142 @@ var ModuleDefinition;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
 (function (ModuleDefinition) {
+    var HideIgnored = (function () {
+        function HideIgnored(module) {
+            this.id = "HideIgnored";
+            this.settings = {
+                hide: false,
+            };
+            this.module = module;
+        }
+        HideIgnored.prototype.renderControl = function (el) {
+            var _this = this;
+            var $el = $(el);
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Hide Not Interested</span></span>');
+            this.element.click(function () {
+                _this.settings.hide = !_this.settings.hide;
+                _this.updateElement();
+                $(_this).trigger('filterChanged', [_this.settings]);
+            });
+            this.updateElement();
+            $el.append(this.element);
+        };
+        HideIgnored.prototype.updateElement = function () {
+            if (this.element)
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+        };
+        HideIgnored.prototype.shouldHide = function (el) {
+            var $el = $(el);
+            var link = $el.find('a.giveaway__icon').attr('href');
+            var linkInfo = this.module.parseAppLink(link);
+            return this.settings.hide && this.module.ignores(link);
+        };
+        HideIgnored.prototype.setState = function (state) {
+            this.settings = state;
+            this.updateElement();
+        };
+        return HideIgnored;
+    })();
+    ModuleDefinition.HideIgnored = HideIgnored;
+    var HideOwned = (function () {
+        function HideOwned(module) {
+            this.id = "HideOwned";
+            this.settings = {
+                hide: false,
+            };
+            this.module = module;
+        }
+        HideOwned.prototype.renderControl = function (el) {
+            var _this = this;
+            var $el = $(el);
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Hide Owned</span></span>');
+            this.element.click(function () {
+                _this.settings.hide = !_this.settings.hide;
+                _this.updateElement();
+                $(_this).trigger('filterChanged', [_this.settings]);
+            });
+            this.updateElement();
+            $el.append(this.element);
+        };
+        HideOwned.prototype.updateElement = function () {
+            if (this.element)
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.hide).toggleClass('fa-check-square', this.settings.hide);
+        };
+        HideOwned.prototype.shouldHide = function (el) {
+            var $el = $(el);
+            var link = $el.find('a.giveaway__icon').attr('href');
+            var linkInfo = this.module.parseAppLink(link);
+            return this.settings.hide && this.module.owns(link);
+        };
+        HideOwned.prototype.setState = function (state) {
+            this.settings = state;
+            this.updateElement();
+        };
+        return HideOwned;
+    })();
+    ModuleDefinition.HideOwned = HideOwned;
+    var HighlightWishlist = (function () {
+        function HighlightWishlist(module) {
+            this.id = "HighlightWishlist";
+            this.settings = {
+                highlight: false,
+            };
+            this.module = module;
+        }
+        HighlightWishlist.prototype.renderControl = function (el) {
+            var _this = this;
+            var $el = $(el);
+            this.element = $('<span><span class="fa fa-square-o"></span> <span class="filter-name">Show only wishlisted</span></span>');
+            this.element.click(function () {
+                _this.settings.highlight = !_this.settings.highlight;
+                _this.updateElement();
+                $(_this).trigger('filterChanged', [_this.settings]);
+            });
+            this.updateElement();
+            $el.append(this.element);
+        };
+        HighlightWishlist.prototype.updateElement = function () {
+            if (this.element)
+                this.element.find('span.fa').toggleClass('fa-square-o', !this.settings.highlight).toggleClass('fa-check-square', this.settings.highlight);
+        };
+        HighlightWishlist.prototype.shouldHide = function (el) {
+            var $el = $(el);
+            var link = $el.find('a.giveaway__icon').attr('href');
+            return this.settings.highlight && !this.module.wishlisted(link, false);
+        };
+        HighlightWishlist.prototype.setState = function (state) {
+            this.settings = state;
+            this.updateElement();
+        };
+        return HighlightWishlist;
+    })();
+    ModuleDefinition.HighlightWishlist = HighlightWishlist;
     var MarkOwnedGames = (function () {
         function MarkOwnedGames() {
-            this.style = "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 5px; }";
+            this.style = ".wishlisted-giveaway .giveaway__heading__name, .wishlisted-giveaway .featured__heading__medium { background: url(\"data: image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAKCAYAAABi8KSDAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/ IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8 + IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QTM3OEVDNTUyMUM0MTFFNDgxN0ZEN0MzNjYzNzcxOTYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTM3OEVDNTYyMUM0MTFFNDgxN0ZEN0MzNjYzNzcxOTYiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBMzc4RUM1MzIxQzQxMUU0ODE3RkQ3QzM2NjM3NzE5NiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBMzc4RUM1NDIxQzQxMUU0ODE3RkQ3QzM2NjM3NzE5NiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI / Ps9jzFQAAACPSURBVHjaYvz//z+DkJDQdQYGhpsMCMAKxMZAHPXu3bt9cFGQYkFBwQ0gGoaBfAEgzgfibUDsBxNnYsAOfgKxJBBvAeIZMEEWZBVA52xA5gOdUAEUc8NQDBTkBEoGMOAByCYLAjUsRzM5AKtioMQzIEW0ydjcHIBTMSE3M0Ij5RKQfQ6HGiOgIXogBkCAAQDGVT+0v+n6EQAAAABJRU5ErkJggg==\") no-repeat scroll 2px center; padding-left: 15px; }";
             this.userdata = { rgWishlist: [], rgOwnedPackages: [], rgOwnedApps: [], rgPackagesInCart: [], rgAppsInCart: [], rgRecommendedTags: [], rgIgnoredApps: [], rgIgnoredPackages: [] };
             this.blacklistData = { apps: [], subs: [] };
-            this._hideOwned = false;
-            this._hideIgnored = false;
         }
         MarkOwnedGames.prototype.shouldRun = function () {
             return true;
         };
         MarkOwnedGames.prototype.init = function () {
+            SGPP.addGiveawayFilter(new HideIgnored(this));
+            SGPP.addGiveawayFilter(new HideOwned(this));
+            SGPP.addGiveawayFilter(new HighlightWishlist(this));
+            if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshGamesFromSteam();
+            }
+            if (!SGPP.storage.containsItem("blacklist_data") || !SGPP.storage.containsItem("blacklist_date") || SGPP.storage.getItem("blacklist_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
+                this.refreshBlacklistFromSG();
+            }
+            if (SGPP.storage.containsItem("steam_userdata")) {
+                this.userdata = SGPP.storage.getItem("steam_userdata");
+            }
+            if (SGPP.storage.containsItem("steam_userdata")) {
+                this.blacklistData = SGPP.storage.getItem("blacklist_data");
+            }
         };
-        Object.defineProperty(MarkOwnedGames.prototype, "hideOwned", {
-            get: function () {
-                return this._hideOwned;
-            },
-            set: function (v) {
-                this._hideOwned = v;
-                this.elFilterOwns.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
-                SGPP.storage.setItem("games_filter_owned", v);
-                this.filterGames();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(MarkOwnedGames.prototype, "hideIgnored", {
-            get: function () {
-                return this._hideIgnored;
-            },
-            set: function (v) {
-                this._hideIgnored = v;
-                this.elFilterIgnored.find('span').toggleClass('fa-square-o', !v).toggleClass('fa-check-square', v);
-                SGPP.storage.setItem("games_filter_ignored", v);
-                this.filterGames();
-            },
-            enumerable: true,
-            configurable: true
-        });
         MarkOwnedGames.prototype.owns = function (link) {
             var l = this.parseAppLink(link);
             if (!l)
@@ -1146,6 +1356,8 @@ var ModuleDefinition;
         };
         MarkOwnedGames.prototype.ignores = function (link) {
             var l = this.parseAppLink(link);
+            if (!l)
+                return false;
             if (l[0] == 'app')
                 return this.ignoresApp(l[1]);
             else if (l[0] == 'sub')
@@ -1153,6 +1365,8 @@ var ModuleDefinition;
         };
         MarkOwnedGames.prototype.blacklisted = function (link) {
             var l = this.parseAppLink(link);
+            if (!l)
+                return false;
             if (l[0] == 'app')
                 return this.blacklistedApp(l[1]);
             else if (l[0] == 'sub')
@@ -1170,10 +1384,22 @@ var ModuleDefinition;
         MarkOwnedGames.prototype.ignoresPackage = function (packageid) {
             return this.userdata.rgIgnoredPackages.indexOf(packageid) !== -1;
         };
+        MarkOwnedGames.prototype.wishlisted = function (link, ignore_packages) {
+            if (ignore_packages === void 0) { ignore_packages = true; }
+            var l = this.parseAppLink(link);
+            if (!l)
+                return false;
+            if (l[0] == 'app')
+                return this.isWishlisted(l[1]);
+            else if (l[0] == 'sub')
+                return !ignore_packages;
+        };
         MarkOwnedGames.prototype.isWishlisted = function (appid) {
             return this.userdata.rgWishlist.indexOf(appid) !== -1;
         };
         MarkOwnedGames.prototype.parseAppLink = function (url) {
+            if (!url)
+                return false;
             var m = url.match(/\/(app|sub)\/(\d+)\//);
             if (!m)
                 return false;
@@ -1181,28 +1407,18 @@ var ModuleDefinition;
         };
         MarkOwnedGames.prototype.render = function () {
             var _this = this;
-            if (!SGPP.storage.containsItem("steam_userdata") || !SGPP.storage.containsItem("steam_userdata_date") || SGPP.storage.getItem("steam_userdata_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
-                this.refreshGamesFromSteam();
-            }
-            if (!SGPP.storage.containsItem("blacklist_data") || !SGPP.storage.containsItem("blacklist_date") || SGPP.storage.getItem("blacklist_date") < (Date.now() - 12 * 60 * 60 * 1000)) {
-                this.refreshBlacklistFromSG();
-            }
-            if (SGPP.storage.containsItem("steam_userdata")) {
-                this.userdata = SGPP.storage.getItem("steam_userdata");
-            }
-            if (SGPP.storage.containsItem("steam_userdata")) {
-                this.blacklistData = SGPP.storage.getItem("blacklist_data");
-            }
             if (SGPP.location.pageKind == 'giveaway') {
                 var link = $('a.global__image-outer-wrap--game-large').first().attr('href');
                 var owned = false;
                 var ignored = false;
                 var blacklisted = false;
+                var wishlisted = false;
                 var linkInfo = this.parseAppLink(link);
                 if (linkInfo) {
                     owned = this.owns(link);
                     ignored = this.ignores(link);
                     blacklisted = this.blacklisted(link);
+                    wishlisted = this.wishlisted(link);
                 }
                 var sidebar = $('.sidebar').last();
                 if (owned) {
@@ -1223,52 +1439,32 @@ var ModuleDefinition;
                         $('.sidebar__entry-insert').hide();
                     }
                 }
+                if (wishlisted) {
+                    $('div.featured__summary').addClass('wishlisted-giveaway');
+                }
                 $('.sidebar__ignored').click(function () {
                     $('.sidebar__entry-insert').show();
                     $('.sidebar__ignored').hide();
                 });
             }
             else if (SGPP.location.pageKind == 'giveaways') {
-                this.filterGames();
-                $('.sidebar__search-container').after('<div id="sidebar_sgpp_filters"></div>');
-                this.elFilterOwns = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Owned</div>');
-                this.elFilterOwns.click(function () {
-                    _this.hideOwned = !_this.hideOwned;
-                });
-                this.elFilterIgnored = $('<div class="filter_row"><span class="fa fa-square-o"></span> Hide Not Interested</div>');
-                this.elFilterIgnored.click(function () {
-                    _this.hideIgnored = !_this.hideIgnored;
-                });
-                $('#sidebar_sgpp_filters').append(this.elFilterOwns);
-                $('#sidebar_sgpp_filters').append(this.elFilterIgnored);
-                this.hideOwned = SGPP.storage.getItem("games_filter_owned", true);
-                this.hideIgnored = SGPP.storage.getItem("games_filter_ignored", true);
+                this.markGames();
                 SGPP.on("EndlessScrollGiveaways", "addItem", function (event, el) {
-                    _this.filterGame(el);
+                    _this.markGame(el);
                 });
             }
         };
-        MarkOwnedGames.prototype.filterGames = function () {
+        MarkOwnedGames.prototype.markGames = function () {
             var _this = this;
             $('.giveaway__row-outer-wrap').each(function (i, el) {
-                _this.filterGame(el);
+                _this.markGame(el);
             });
         };
-        MarkOwnedGames.prototype.filterGame = function (el) {
+        MarkOwnedGames.prototype.markGame = function (el) {
             var hide = false;
             var $el = $(el);
             var link = $el.find('a.giveaway__icon').attr('href');
-            var linkInfo = this.parseAppLink(link);
-            if (this.hideOwned && this.owns(link))
-                hide = true;
-            if (this.hideIgnored && this.ignores(link))
-                hide = true;
-            if (!hide) {
-                $el.show();
-            }
-            else {
-                $el.hide();
-            }
+            $el.toggleClass('wishlisted-giveaway', this.wishlisted(link));
         };
         MarkOwnedGames.prototype.refreshGamesFromSteam = function () {
             var _this = this;
@@ -1319,7 +1515,7 @@ var ModuleDefinition;
             }, data);
         };
         MarkOwnedGames.prototype.name = function () {
-            return "Filter Owned Games";
+            return "Filter Games";
         };
         return MarkOwnedGames;
     })();
@@ -1584,14 +1780,14 @@ var ModuleDefinition;
             this.updatePageElement(el, page);
             var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
             var controlReload = $('<a>').attr('href', '#').append('<i class="fa fa-refresh"></i>').attr('title', 'Reload this page');
-            var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
+            var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause pausecontrol"></i>').attr('title', 'Pause/Resume endless scrolling');
             controlReload.click(function () {
                 _this.loadPage(page, true);
                 return false;
             });
             controlStartStop.click(function () {
                 _this.stopped = !_this.stopped;
-                $('.endless_control_element a i.fa').toggleClass('fa-pause', !_this.stopped).toggleClass('fa-play', _this.stopped);
+                $('.endless_control_element a i.pausecontrol').toggleClass('fa-pause', !_this.stopped).toggleClass('fa-play', _this.stopped);
                 return false;
             });
             controlContainer.append(controlReload);
@@ -1701,6 +1897,7 @@ var ModuleDefinition;
                 if (isReload) {
                     $(this).trigger('beforeReloadPage', [page]);
                     pageContainer.children().remove();
+                    this._pages[page].headerElement = pageHeaderElement = this.createPageElement(page);
                     pageContainer.prepend(pageHeaderElement);
                 }
                 $.get(url, function (data) {
@@ -1761,23 +1958,26 @@ var ModuleDefinition;
                     _this._lastPage = page;
             });
         };
+        EndlessScroll.prototype.pushHistoryState = function (page) {
+            history.replaceState(null, null, this._pagesUrl[page]);
+        };
         EndlessScroll.prototype.updatePageInView = function () {
             var nearestPage = -1;
             var nearestPageDiff = -1;
             $.each(this._pages, function (i, page) {
-                var diff = $(window).scrollTop() - $(page.headerElement).offset().top;
-                if (nearestPage == -1 || (diff > 0 && diff < nearestPageDiff)) {
+                var diff = Math.abs($(window).scrollTop() - $(page.headerElement).offset().top);
+                if (nearestPage == -1 || (diff < nearestPageDiff)) {
                     nearestPage = i;
                     nearestPageDiff = diff;
                 }
             });
             if (nearestPage == -1) {
-                nearestPage = this._pageInView;
+                nearestPage = 1;
             }
             if (this._pageInView != nearestPage) {
                 this._pageInView = nearestPage;
                 console.log("page in view changed to " + nearestPage);
-                history.pushState(null, null, this._pagesUrl[nearestPage]);
+                this.pushHistoryState(nearestPage);
             }
         };
         EndlessScroll.prototype.preparePage = function () {
@@ -1832,6 +2032,7 @@ var ModuleDefinition;
             }
             if (this._prevPage > 0)
                 this.createPageContainer(this._prevPage);
+            this.pushHistoryState(this.currentPage);
             this.createPageContainer(this._nextPage);
             itemsElement.prepend(pageHeader);
             if (isCommentLink) {
@@ -2124,7 +2325,7 @@ var ModuleDefinition;
     ModuleDefinition.EndlessScrollLists = EndlessScrollLists;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var SGPP = new ModuleDefinition.Core();
-var modulesNames = new Array("CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MarkOwnedGames", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
+var modulesNames = new Array("GiveawaysFilter", "CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MarkOwnedGames", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
 var defaultModules = {
     "FixedNavbar": { "enabled": true },
     "ScrollingSidebar": { "enabled": true }

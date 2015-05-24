@@ -74,7 +74,7 @@ module ModuleDefinition {
 
             var controlContainer = $('<div>').addClass('pull-right').addClass('endless_control_element');
             var controlReload = $('<a>').attr('href', '#').append('<i class="fa fa-refresh"></i>').attr('title', 'Reload this page');
-            var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause"></i>').attr('title', 'Pause/Resume endless scrolling');
+            var controlStartStop = $('<a>').attr('href', '#').append('<i class="fa fa-pause pausecontrol"></i>').attr('title', 'Pause/Resume endless scrolling');
 
             controlReload.click(() => {
                 this.loadPage(page, true);
@@ -85,7 +85,7 @@ module ModuleDefinition {
             controlStartStop.click(() => {
                 this.stopped = !this.stopped;
 
-                $('.endless_control_element a i.fa').toggleClass('fa-pause', !this.stopped).toggleClass('fa-play', this.stopped);
+                $('.endless_control_element a i.pausecontrol').toggleClass('fa-pause', !this.stopped).toggleClass('fa-play', this.stopped);
 
                 return false;
             });
@@ -220,6 +220,7 @@ module ModuleDefinition {
                 if (isReload) {
                     $(this).trigger('beforeReloadPage', [page]);
                     pageContainer.children().remove();
+                    this._pages[page].headerElement = pageHeaderElement = this.createPageElement(page);
                     pageContainer.prepend(pageHeaderElement);
                 }
 
@@ -312,22 +313,26 @@ module ModuleDefinition {
             });
         }
 
+        pushHistoryState(page): void {
+            history.replaceState(null, null, this._pagesUrl[page]);
+        }
+
         updatePageInView(): void {
             var nearestPage = -1;
             var nearestPageDiff = -1;
 
             $.each(this._pages,(i, page) => {
 
-                var diff = $(window).scrollTop() - $(page.headerElement).offset().top;
+                var diff = Math.abs($(window).scrollTop() - $(page.headerElement).offset().top);
 
-                if (nearestPage == -1 || (diff > 0 && diff < nearestPageDiff) ) {
+                if (nearestPage == -1 || (diff < nearestPageDiff) ) {
                     nearestPage = i;
                     nearestPageDiff = diff;
                 }
             });
 
             if (nearestPage == -1) {
-                nearestPage = this._pageInView;
+                nearestPage = 1;
             }
             
             if (this._pageInView != nearestPage) {
@@ -335,7 +340,7 @@ module ModuleDefinition {
 
                 console.log("page in view changed to " + nearestPage);
 
-                history.pushState(null, null, this._pagesUrl[nearestPage]);
+                this.pushHistoryState(nearestPage);
             }
         }
 
@@ -397,6 +402,8 @@ module ModuleDefinition {
 
             if (this._prevPage > 0)
                 this.createPageContainer(this._prevPage);
+
+            this.pushHistoryState(this.currentPage);
 
             this.createPageContainer(this._nextPage);
 

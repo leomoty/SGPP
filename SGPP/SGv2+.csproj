@@ -27,6 +27,7 @@
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollDiscussionReplies.ts" />
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollGiveawayComments.ts" />
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollGiveaways.ts" />
+    <TypeScriptCompile Include="Modules\GiveawaysFilter.ts" />
     <TypeScriptCompile Include="Modules\MarkOwnedGames.ts" />
     <TypeScriptCompile Include="Modules\MarkComments.ts" />
     <TypeScriptCompile Include="Modules\EndlessScroll\EndlessScrollLists.ts" />
