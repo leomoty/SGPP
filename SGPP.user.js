@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Steamgifts++
 // @namespace       https://github.com/leomoty/SGPP
-// @version         0.3.0 beta
+// @version         0.4.0 beta
 // @description     SG++ for Steamgifts.com
 // @author          Leomoty
 // @match           http://www.steamgifts.com/*
@@ -10,8 +10,8 @@
 // @updateURL       https://raw.githubusercontent.com/leomoty/SGPP/master/SGPP.meta.js
 // @require         http://code.jquery.com/jquery-2.1.3.min.js
 // @require         https://raw.githubusercontent.com/dinbror/bpopup/master/jquery.bpopup.min.js
-// @resource head   https://raw.githubusercontent.com/leomoty/SGPPSettings/4c83a645dcf111be2fb8b9e1da8b856fa510929c/head.html
-// @resource settings   https://raw.githubusercontent.com/leomoty/SGPPSettings/4c83a645dcf111be2fb8b9e1da8b856fa510929c/settings.html
+// @resource head   https://raw.githubusercontent.com/leomoty/SGPPSettings/0.4.0/head.html
+// @resource settings   https://raw.githubusercontent.com/leomoty/SGPPSettings/0.4.0/settings.html
 // @grant           GM_addStyle
 // @grant           GM_getResourceText
 // @grant           GM_xmlhttpRequest
@@ -1107,11 +1107,9 @@ var ModuleDefinition;
                     var comment_id = parseInt(parent.data('comment-id'));
                     m.topicInfo.setCommentState(comment_id, false);
                 });
-                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems', function (event, dom, page, isReload) {
-                        _this.markComments(dom, page, true, isReload);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussionReplies", 'beforeAddItems', function (event, dom, page, isReload) {
+                    _this.markComments(dom, page, true, isReload);
+                });
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics($(document));
@@ -1125,11 +1123,9 @@ var ModuleDefinition;
                     parent.find('.endless_badge_new').remove();
                     $this.remove();
                 });
-                if ("EndlessScrollDiscussion" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems', function (event, dom, page, isReload) {
-                        _this.markTopics(dom);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussion", 'beforeAddItems', function (event, dom, page, isReload) {
+                    _this.markTopics(dom);
+                });
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -1582,11 +1578,9 @@ var ModuleDefinition;
         };
         MessagesFilterTest.prototype.render = function () {
             var _this = this;
-            if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
-                $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('addItem', function (event, el) {
-                    _this.filterItem(el);
-                });
-            }
+            SGPP.on("EndlessScrollDiscussionReplies", 'addItem', function (event, el) {
+                _this.filterItem(el);
+            });
             var m = this;
             this._filterElement = $('<span class="message-filters"></span>');
             this._filterElement.append('<span class="message-filter hideread"><i class="fa fa-square-o"></i> Hide Read</span>').click(function () {
@@ -2245,6 +2239,7 @@ var ModuleDefinition;
         EndlessScrollGiveaways.prototype.init = function () {
         };
         EndlessScrollGiveaways.prototype.render = function () {
+            var _this = this;
             this.preparePage();
             $(this).on('afterAddItems', function (event, pageContainer, page, isReload) {
                 pageContainer.find(".giveaway__hide").click(function () {
@@ -2259,6 +2254,24 @@ var ModuleDefinition;
                         modalColor: "#3c424d"
                     });
                 });
+            });
+            $('.popup--hide-games .js__submit-form').after('<div class="form__submit-button ajax_submit-form"><i class="fa fa-check-circle"></i> Yes</div>');
+            $('.popup--hide-games .js__submit-form').hide();
+            $('.popup--hide-games .ajax_submit-form').click(function (event) {
+                var form = $('.popup--hide-games form').first();
+                $.post('/', form.serialize(), function (data) {
+                    $('.popup--hide-games').bPopup().close();
+                    _this.hideGiveawaysByGameID($(".popup--hide-games input[name=game_id]").val());
+                });
+                return false;
+            });
+        };
+        EndlessScrollGiveaways.prototype.hideGiveawaysByGameID = function (game) {
+            $('.giveaway__row-outer-wrap').each(function (i, e) {
+                var $e = $(e);
+                if ($e.find('.giveaway__hide').data('game-id') == game) {
+                    $e.hide();
+                }
             });
         };
         EndlessScrollGiveaways.prototype.createPageContainerElement = function () {
