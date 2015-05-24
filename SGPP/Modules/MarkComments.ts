@@ -263,7 +263,7 @@ module ModuleDefinition {
             }
 
             if (markRead) {
-                var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0]);
+                var numComments = parseInt($('.comments:eq(1)').prev().find('a').text().split(' ')[0].replace(',', ''));
 
                 this.topicInfo.setLastCommentID(page, this.getLatestCommentID(dom), numComments);
             }
@@ -283,7 +283,7 @@ module ModuleDefinition {
 
                     // Only mark new comments for topics we have visited
                     if (tInfo.isDataStored) {
-                        var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text());
+                        var numComments = parseInt($(el).find('.table__column--width-small a.table__column__secondary-link').text().replace(',', ''));
 
                         var lastComments = tInfo.getNumComments();
                         var newComments = numComments - lastComments;
