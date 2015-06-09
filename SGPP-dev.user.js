@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Steamgifts++
 // @namespace       https://github.com/leomoty/SGPP
-// @version         0.4.0 beta
+// @version         0.4.1 beta
 // @description     SG++ for Steamgifts.com
 // @author          Leomoty
 // @match           http://www.steamgifts.com/*
@@ -1606,7 +1606,7 @@ var ModuleDefinition;
                 'class': 'SGPP__popup_giveaway is-hidden',
             });
             this.handlePopupCreate = function (dom) {
-                $('a[href^="/giveaway/"]:not([href$="/entries"],[href$="/comments"])', dom).on("click", function (e) {
+                $('a[href^="/giveaway/"]:not([href$="/entries"],[href$="/comments"],[href$="/winners"])', dom).on("click", function (e) {
                     e.preventDefault();
                     _this.handlePopup($(e.currentTarget));
                 });
