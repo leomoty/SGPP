@@ -1089,11 +1089,9 @@ var ModuleDefinition;
                     var comment_id = parseInt(parent.data('comment-id'));
                     m.topicInfo.setCommentState(comment_id, false);
                 });
-                if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('beforeAddItems', function (event, dom, page, isReload) {
-                        _this.markComments(dom, page, true, isReload);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussionReplies", 'beforeAddItems', function (event, dom, page, isReload) {
+                    _this.markComments(dom, page, true, isReload);
+                });
             }
             else if (SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades') {
                 this.markTopics($(document));
@@ -1107,11 +1105,9 @@ var ModuleDefinition;
                     parent.find('.endless_badge_new').remove();
                     $this.remove();
                 });
-                if ("EndlessScrollDiscussion" in SGPP.modules) {
-                    $(SGPP.modules["EndlessScrollDiscussion"]).on('beforeAddItems', function (event, dom, page, isReload) {
-                        _this.markTopics(dom);
-                    });
-                }
+                SGPP.on("EndlessScrollDiscussion", 'beforeAddItems', function (event, dom, page, isReload) {
+                    _this.markTopics(dom);
+                });
             }
             else if (SGPP.location.pageKind == 'giveaways' && SGPP.location.subpage == '') {
                 this.markTopics($('.widget-container').last().prev().prev());
@@ -1564,11 +1560,9 @@ var ModuleDefinition;
         };
         MessagesFilterTest.prototype.render = function () {
             var _this = this;
-            if ("EndlessScrollDiscussionReplies" in SGPP.modules) {
-                $(SGPP.modules["EndlessScrollDiscussionReplies"]).on('addItem', function (event, el) {
-                    _this.filterItem(el);
-                });
-            }
+            SGPP.on("EndlessScrollDiscussionReplies", 'addItem', function (event, el) {
+                _this.filterItem(el);
+            });
             var m = this;
             this._filterElement = $('<span class="message-filters"></span>');
             this._filterElement.append('<span class="message-filter hideread"><i class="fa fa-square-o"></i> Hide Read</span>').click(function () {
@@ -1594,7 +1588,7 @@ var ModuleDefinition;
                 'class': 'SGPP__popup_giveaway is-hidden',
             });
             this.handlePopupCreate = function (dom) {
-                $('a[href^="/giveaway/"]:not([href$="/entries"],[href$="/comments"])', dom).on("click", function (e) {
+                $('a[href^="/giveaway/"]:not([href$="/entries"],[href$="/comments"],[href$="/winners"])', dom).on("click", function (e) {
                     e.preventDefault();
                     _this.handlePopup($(e.currentTarget));
                 });
@@ -2227,6 +2221,7 @@ var ModuleDefinition;
         EndlessScrollGiveaways.prototype.init = function () {
         };
         EndlessScrollGiveaways.prototype.render = function () {
+            var _this = this;
             this.preparePage();
             $(this).on('afterAddItems', function (event, pageContainer, page, isReload) {
                 pageContainer.find(".giveaway__hide").click(function () {
@@ -2241,6 +2236,24 @@ var ModuleDefinition;
                         modalColor: "#3c424d"
                     });
                 });
+            });
+            $('.popup--hide-games .js__submit-form').after('<div class="form__submit-button ajax_submit-form"><i class="fa fa-check-circle"></i> Yes</div>');
+            $('.popup--hide-games .js__submit-form').hide();
+            $('.popup--hide-games .ajax_submit-form').click(function (event) {
+                var form = $('.popup--hide-games form').first();
+                $.post('/', form.serialize(), function (data) {
+                    $('.popup--hide-games').bPopup().close();
+                    _this.hideGiveawaysByGameID($(".popup--hide-games input[name=game_id]").val());
+                });
+                return false;
+            });
+        };
+        EndlessScrollGiveaways.prototype.hideGiveawaysByGameID = function (game) {
+            $('.giveaway__row-outer-wrap').each(function (i, e) {
+                var $e = $(e);
+                if ($e.find('.giveaway__hide').data('game-id') == game) {
+                    $e.hide();
+                }
             });
         };
         EndlessScrollGiveaways.prototype.createPageContainerElement = function () {
