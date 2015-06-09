@@ -6,6 +6,8 @@
 /// <reference path="Core.ts" />
 /// <reference path="ModuleDefinition.ts" />
 
+/// <reference path="Modules/GiveawaysFilter.ts" />
+
 /// <reference path="Modules/CommentAndEnter.ts" />
 /// <reference path="Modules/EntryCommenters.ts" />
 /// <reference path="Modules/FixedNavbar.ts" />
@@ -17,6 +19,7 @@
 /// <reference path="Modules/UserHoverInfo.ts" />
 /// <reference path="Modules/UserTags.ts" />
 /// <reference path="Modules/MarkComments.ts" />
+/// <reference path="Modules/MarkOwnedGames.ts" />
 /// <reference path="Modules/MessagesFilterTest.ts" />
 /// <reference path="Modules/PopupGiveaway.ts" />
 
@@ -30,6 +33,7 @@ var SGPP: ModuleDefinition.Core = new ModuleDefinition.Core();
 
 //list of available modules
 var modulesNames: Array<string> = new Array<string>(
+    "GiveawaysFilter", // Needs to be before any modules containing giveaway filters
     "CommentAndEnter",
     "EntryCommenters",
     "FixedNavbar",
@@ -39,6 +43,7 @@ var modulesNames: Array<string> = new Array<string>(
     "UserHoverInfo",
     "UserTags",
     "MarkComments",
+    "MarkOwnedGames",
     "MessagesFilterTest",
     "PopupGiveaway",
     "EndlessScrollDiscussion",
@@ -46,6 +51,7 @@ var modulesNames: Array<string> = new Array<string>(
     "EndlessScrollGiveaways",
     "EndlessScrollGiveawayComments",
     "EndlessScrollLists"
+
     );
 
 var defaultModules = {
