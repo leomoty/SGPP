@@ -491,9 +491,7 @@ var ModuleDefinition;
                     _this.updateGridview(pageContainer);
                 });
                 SGPP.on("GiveawaysFilter", "gameFiltered", function (event, el, visible) {
-                    console.log(el);
                     var $grid = $("#" + $(el).data('gridview'));
-                    console.log($grid);
                     $grid.toggleClass('giveaway-filtered', visible);
                 });
                 _this.updateGridview(esg);
@@ -529,8 +527,11 @@ var ModuleDefinition;
                         return;
                     var id = _this.getNextGridID();
                     $el.parent().attr('data-gridview', id);
-                    var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded'));
+                    console.log($el);
+                    console.log($el.hasClass('giveaway-filtered'));
+                    var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded')).toggleClass('giveaway-filtered', $el.parent().hasClass('giveaway-filtered'));
                     thisTile.attr('id', id);
+                    console.log(thisTile);
                     var gameImg = $el.children('.global__image-outer-wrap--game-medium').appendTo(thisTile).css('position', 'relative');
                     var gaColumns = $el.find('.giveaway__columns').children();
                     var timeLeft = gaColumns.eq(0).addClass('SGPP__gridTileTime').appendTo(gameImg);
@@ -1621,7 +1622,7 @@ var ModuleDefinition;
                 'class': 'SGPP__popup_giveaway is-hidden',
             });
             this.handlePopupCreate = function (dom) {
-                $('a[href^="/giveaway/"]:not([href$="/entries"],[href$="/comments"],[href$="/winners"])', dom).on("click", function (e) {
+                $('a[href^="/giveaway/"]:not([href$="/entries"],[href$="/comments"],[href$="/winners"],[href$="/groups"])', dom).on("click", function (e) {
                     e.preventDefault();
                     _this.handlePopup($(e.currentTarget));
                 });

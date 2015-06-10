@@ -59,7 +59,7 @@ var defaultModules = {
     "ScrollingSidebar": { "enabled": true }
     };
 
-var currentVersion = "0.3.0";
+var currentVersion = "0.4.2";
 
 (function ($) {
 

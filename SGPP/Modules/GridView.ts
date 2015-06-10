@@ -95,7 +95,7 @@ module ModuleDefinition {
 
                 $el.parent().attr('data-gridview', id);
 
-                var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded'));
+                var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded')).toggleClass('giveaway-filtered', $el.parent().hasClass('giveaway-filtered'));
 
                 thisTile.attr('id', id);
 
