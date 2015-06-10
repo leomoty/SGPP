@@ -30,7 +30,7 @@ module ModuleDefinition {
         }
 
         private handlePopupCreate = (dom) => {
-            $('a[href^="/giveaway/"]:not([href$="/entries"],[href$="/comments"],[href$="/winners"])', dom).on("click",(e) => {
+            $('a[href^="/giveaway/"]:not([href$="/entries"],[href$="/comments"],[href$="/winners"],[href$="/groups"])', dom).on("click",(e) => {
                 e.preventDefault();
                 this.handlePopup($(e.currentTarget));
             });

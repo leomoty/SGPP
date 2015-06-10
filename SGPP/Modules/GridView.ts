@@ -42,11 +42,7 @@ module ModuleDefinition {
             });
 
             SGPP.on("GiveawaysFilter", "gameFiltered", (event: JQueryEventObject, el: Element, visible: boolean) => {
-                console.log(el);
-
                 var $grid = $("#" + $(el).data('gridview'));
-
-                console.log($grid);
 
                 $grid.toggleClass('giveaway-filtered', visible);
             });
