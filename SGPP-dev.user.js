@@ -278,6 +278,7 @@ var ModuleDefinition;
                     hide = true;
             }
             $el.toggleClass('giveaway-filtered', hide);
+            $(this).trigger('gameFiltered', [el, hide]);
         };
         GiveawaysFilter.prototype.name = function () {
             return "Giveaways Filter";
@@ -489,14 +490,25 @@ var ModuleDefinition;
                 SGPP.on("EndlessScrollGiveaways", "afterAddItems", function (event, pageContainer, page, isReload) {
                     _this.updateGridview(pageContainer);
                 });
+                SGPP.on("GiveawaysFilter", "gameFiltered", function (event, el, visible) {
+                    console.log(el);
+                    var $grid = $("#" + $(el).data('gridview'));
+                    console.log($grid);
+                    $grid.toggleClass('giveaway-filtered', visible);
+                });
                 _this.updateGridview(esg);
+            };
+            this.gridID = 0;
+            this.getNextGridID = function () {
+                _this.gridID++;
+                return 'sgpp_gridview_' + _this.gridID;
             };
             this.updateGridview = function (esg) {
                 var giveawaysList = esg.children('.giveaway__row-outer-wrap');
                 if (!giveawaysList.length)
                     return;
-                var giveaways = $(document.createElement('div')).wrapInner(giveawaysList);
-                var gridview = _this.generateGridview(giveaways);
+                $(giveawaysList).hide();
+                var gridview = _this.generateGridview(giveawaysList);
                 esg.append(gridview);
             };
             this.generateGridview = function (root) {
@@ -511,11 +523,14 @@ var ModuleDefinition;
                 var gridTile = $('<div>', { 'class': 'SGPP__gridTile' });
                 var tileInfo = $('<h2>', { 'class': 'SGPP__gridTileInfo global__image-outer-wrap' });
                 var tileIcns = $('<div>', { 'class': 'SGPP__gridTileIcons' });
-                root.find('.giveaway__row-inner-wrap').each(function () {
-                    var $el = $(this);
+                root.find('.giveaway__row-inner-wrap').each(function (index, el) {
+                    var $el = $(el);
                     if ($el.parents('.pinned-giveaways').length != 0)
                         return;
+                    var id = _this.getNextGridID();
+                    $el.parent().attr('data-gridview', id);
                     var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded'));
+                    thisTile.attr('id', id);
                     var gameImg = $el.children('.global__image-outer-wrap--game-medium').appendTo(thisTile).css('position', 'relative');
                     var gaColumns = $el.find('.giveaway__columns').children();
                     var timeLeft = gaColumns.eq(0).addClass('SGPP__gridTileTime').appendTo(gameImg);
