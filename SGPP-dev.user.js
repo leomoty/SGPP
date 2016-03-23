@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Steamgifts++
 // @namespace       https://github.com/leomoty/SGPP
-// @version         0.4.1 beta
+// @version         0.4.3 beta
 // @description     SG++ for Steamgifts.com
 // @author          Leomoty
 // @match           http://www.steamgifts.com/*
@@ -44,6 +44,8 @@ var ModuleDefinition;
     })();
     ModuleDefinition.LocalStorage = LocalStorage;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="ModuleDefinition.ts" />
+/// <reference path="LocalStorage.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var Core = (function () {
@@ -102,9 +104,7 @@ var ModuleDefinition;
                     pageKind = "giveaways";
                 }
                 else {
-                    var split = windowLocation.pathname.split("/").filter(function (a, b, c) {
-                        return Boolean(a);
-                    });
+                    var split = windowLocation.pathname.split("/").filter(function (a, b, c) { return Boolean(a); });
                     pageKind = split[0] || '';
                     description = split[2] || '';
                     if (split[0] == 'giveaway' || split[0] == 'trade' || split[0] == 'discussion' || split[0] == 'user' || split[0] == 'group') {
@@ -115,9 +115,7 @@ var ModuleDefinition;
                         subpage = split[1] || '';
                     }
                 }
-                var match, pl = /\+/g, search = /([^&=]+)=?([^&]*)/g, decode = function (s) {
-                    return decodeURIComponent(s.replace(pl, " "));
-                }, query = windowLocation.search.substring(1);
+                var match, pl = /\+/g, search = /([^&=]+)=?([^&]*)/g, decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); }, query = windowLocation.search.substring(1);
                 var urlParams = {};
                 while (match = search.exec(query)) {
                     urlParams[decode(match[1])] = decode(match[2]);
@@ -180,6 +178,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.Core = Core;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var HideEnteredFilter = (function () {
@@ -218,7 +217,10 @@ var ModuleDefinition;
     ModuleDefinition.HideEnteredFilter = HideEnteredFilter;
     var GiveawaysFilter = (function () {
         function GiveawaysFilter() {
-            this.style = "#sidebar_sgpp_filters { color: #4B72D4; font-size: 11px; padding-bottom: 15px; }\n" + "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 2px; padding-left: 10px; }\n" + "#sidebar_sgpp_filters .filter-name { font-weight: bold; } " + ".giveaway-filtered { display:none; }";
+            this.style = "#sidebar_sgpp_filters { color: #4B72D4; font-size: 11px; padding-bottom: 15px; }\n" +
+                "#sidebar_sgpp_filters .filter_row { cursor: pointer; padding: 2px; padding-left: 10px; }\n" +
+                "#sidebar_sgpp_filters .filter-name { font-weight: bold; } " +
+                ".giveaway-filtered { display:none; }";
             this.filters = {};
         }
         GiveawaysFilter.prototype.shouldRun = function () {
@@ -287,6 +289,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.GiveawaysFilter = GiveawaysFilter;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var CommentAndEnter = (function () {
@@ -331,6 +334,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.CommentAndEnter = CommentAndEnter;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EntryCommenters = (function () {
@@ -341,7 +345,18 @@ var ModuleDefinition;
             this.isLoading = false;
             this.commenters = {};
             this.pageStart = 1337;
-            this.style = ".SGPP_EntryComm {margin: 0 10px}\n" + ".SGPP_EntryComm > i {margin: 0}\n" + ".SGPP_EntryComm:not(.loading) > .fa-spin {display: none}\n" + ".SGPP_EntryComm.loading > .fa-comments-o {display: none}\n" + ".SGPP_EntryComm.active > .fa-comments-o {opacity: 0.7}\n" + ".SGPP_EntryComm:hover > .fa-comments-o {opacity: 1}\n" + "span.SGPP_EntryComm_comment {vertical-align: inherit; text-shadow: none}\n" + ".SGPP_EntryComm_disabled .SGPP_EntryComm_comment {visibility: hidden}\n" + ".SGPP_EntryComm_comment > i.fa.fa-check, .SGPP_EntryComm_comment > i.fa.fa-times {font-size: 0.7em}\n" + ".SGPP_EntryComm_comment > i.fa.fa-check {color: #719A47}\n" + ".SGPP_EntryComm_comment > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" + '';
+            this.style = ".SGPP_EntryComm {margin: 0 10px}\n" +
+                ".SGPP_EntryComm > i {margin: 0}\n" +
+                ".SGPP_EntryComm:not(.loading) > .fa-spin {display: none}\n" +
+                ".SGPP_EntryComm.loading > .fa-comments-o {display: none}\n" +
+                ".SGPP_EntryComm.active > .fa-comments-o {opacity: 0.7}\n" +
+                ".SGPP_EntryComm:hover > .fa-comments-o {opacity: 1}\n" +
+                "span.SGPP_EntryComm_comment {vertical-align: inherit; text-shadow: none}\n" +
+                ".SGPP_EntryComm_disabled .SGPP_EntryComm_comment {visibility: hidden}\n" +
+                ".SGPP_EntryComm_comment > i.fa.fa-check, .SGPP_EntryComm_comment > i.fa.fa-times {font-size: 0.7em}\n" +
+                ".SGPP_EntryComm_comment > i.fa.fa-check {color: #719A47}\n" +
+                ".SGPP_EntryComm_comment > i.fa.fa-times {color: rgba(166, 93, 92, 0.85)}\n" +
+                '';
             this.render = function () {
                 _this.button.appendTo('.page__heading__breadcrumbs').one('click', _this.firstRun);
             };
@@ -428,18 +443,21 @@ var ModuleDefinition;
         EntryCommenters.prototype.name = function () {
             return "Checks if entries/winners commented on Giveaways";
         };
-        EntryCommenters.prototype.shouldRun = function (loc) {
-            return loc.pageKind == 'giveaway' && (loc.subpage == 'entries' || loc.subpage == 'winners');
-        };
+        EntryCommenters.prototype.shouldRun = function (loc) { return loc.pageKind == 'giveaway' && (loc.subpage == 'entries' || loc.subpage == 'winners'); };
         return EntryCommenters;
     })();
     ModuleDefinition.EntryCommenters = EntryCommenters;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
         function FixedNavbar() {
-            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" + "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" + ".comment__summary {margin-top: -44px !important; padding-top: 48px !important;}\n" + ".comment__actions > div, .comment__actions__button {position: relative; z-index: 5;}\n" + ".page__heading__breadcrumbs {z-index: 5;}";
+            this.style = "body.SPGG_FixedNavbar {padding-top: 39px}\n" +
+                "header.SPGG_FixedNavbar {position: fixed; top: 0px; width: 100%; z-index: 100}\n" +
+                ".comment__summary {margin-top: -44px !important; padding-top: 48px !important;}\n" +
+                ".comment__actions > div, .comment__actions__button {position: relative; z-index: 5;}\n" +
+                ".page__heading__breadcrumbs {z-index: 5;}";
             this.shouldRun = function (location) { return true; };
         }
         FixedNavbar.prototype.init = function () {
@@ -455,11 +473,14 @@ var ModuleDefinition;
     })();
     ModuleDefinition.FixedNavbar = FixedNavbar;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedFooter = (function () {
         function FixedFooter() {
-            this.style = "body.SGPP_FixedFooter {padding-bottom: 45px}\n" + ".footer__outer-wrap.SGPP_FixedFooter_outerWrap {padding: 15px 0px; z-index: 100; bottom: 0px; position: fixed; width: 100%; background: inherit}\n" + ".footer__inner-wrap.SGPP_FixedFooter_innerWrap {margin: 0px 25px}\n";
+            this.style = "body.SGPP_FixedFooter {padding-bottom: 45px}\n" +
+                ".footer__outer-wrap.SGPP_FixedFooter_outerWrap {padding: 15px 0px; z-index: 100; bottom: 0px; position: fixed; width: 100%; background: inherit}\n" +
+                ".footer__inner-wrap.SGPP_FixedFooter_innerWrap {margin: 0px 25px}\n";
             this.shouldRun = function (location) { return true; };
         }
         FixedFooter.prototype.init = function () {
@@ -476,13 +497,32 @@ var ModuleDefinition;
     })();
     ModuleDefinition.FixedFooter = FixedFooter;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var GridView = (function () {
         function GridView() {
             var _this = this;
             this.shouldRun = function (location) { return location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1; };
-            this.style = ".SGPP__gridView {display: flex; flex-wrap: wrap; justify-content: space-around; margin: 5px;}\n" + ".tile_view_header {font-size: 12px; border-bottom: 1px solid #D2D6E0; box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.3); margin-bottom: 3px; text-align: center}\n" + ".SGPP__gridAvatar_outer {float: right; display: inline-block; margin-left: 5px}\n" + ".SGPP__gridAvatar {height: 27px; width: 27px; padding: 2px}\n" + ".SGPP__gridTile {margin: 5px}\n" + ".SGPP__gridTile > .global__image-outer-wrap--game-medium {position: relative}\n" + ".SGPP__gridTile:not(:hover) .SGPP__gridTileTime {display: none}\n" + ".SGPP__gridTile:hover {opacity: 1}\n" + ".SGPP__gridTile:hover > .global__image-outer-wrap--game-medium {border-radius: 4px 4px 0 0; border-bottom: 1px dotted transparent}\n" + ".SGPP__gridTile:hover > .SGPP__gridTileInfo {display: block; border-radius: 0 0 4px 4px}\n" + ".SGPP__gridTileInfo {display: none; position:absolute; width:184px; border-top: none; z-index: 10}\n" + ".SGPP__gridTileInfo .giveaway__icon {opacity: 0.7}\n" + ".SGPP__gridTileTime {position: absolute; bottom: 5px; left: 5px; height: 16px; text-align: center; background-color: #FFF; border-radius: 0 3px 0 0; padding: 2px 4px}\n" + ".SGPP__gridTileTime i {font-size: inherit; color:inherit}\n" + ".SGPP__gridTileIcons {position: absolute; bottom: 5px; right: 5px}\n" + ".SGPP__gridTileIcons > * {display: inline-block; width: 20px; height: 16px; text-align: center; padding: 2px; border-radius: 3px 0 0; vertical-align: middle}\n" + ".SGPP__gridTileIcons > :not(:last-child) {padding-right: 4px; margin-right: -3px}\n" + ".SGPP__gridTileIcons i {font-size: inherit; color: inherit}\n" + "";
+            this.style = ".SGPP__gridView {display: flex; flex-wrap: wrap; justify-content: space-around; margin: 5px;}\n" +
+                ".tile_view_header {font-size: 12px; border-bottom: 1px solid #D2D6E0; box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.3); margin-bottom: 3px; text-align: center}\n" +
+                ".SGPP__gridAvatar_outer {float: right; display: inline-block; margin-left: 5px}\n" +
+                ".SGPP__gridAvatar {height: 27px; width: 27px; padding: 2px}\n" +
+                ".SGPP__gridTile {margin: 5px}\n" +
+                ".SGPP__gridTile > .global__image-outer-wrap--game-medium {position: relative}\n" +
+                ".SGPP__gridTile:not(:hover) .SGPP__gridTileTime {display: none}\n" +
+                ".SGPP__gridTile:hover {opacity: 1}\n" +
+                ".SGPP__gridTile:hover > .global__image-outer-wrap--game-medium {border-radius: 4px 4px 0 0; border-bottom: 1px dotted transparent}\n" +
+                ".SGPP__gridTile:hover > .SGPP__gridTileInfo {display: block; border-radius: 0 0 4px 4px}\n" +
+                ".SGPP__gridTileInfo {display: none; position:absolute; width:184px; border-top: none; z-index: 10}\n" +
+                ".SGPP__gridTileInfo .giveaway__icon {opacity: 0.7}\n" +
+                ".SGPP__gridTileTime {position: absolute; bottom: 5px; left: 5px; height: 16px; text-align: center; background-color: #FFF; border-radius: 0 3px 0 0; padding: 2px 4px}\n" +
+                ".SGPP__gridTileTime i {font-size: inherit; color:inherit}\n" +
+                ".SGPP__gridTileIcons {position: absolute; bottom: 5px; right: 5px}\n" +
+                ".SGPP__gridTileIcons > * {display: inline-block; width: 20px; height: 16px; text-align: center; padding: 2px; border-radius: 3px 0 0; vertical-align: middle}\n" +
+                ".SGPP__gridTileIcons > :not(:last-child) {padding-right: 4px; margin-right: -3px}\n" +
+                ".SGPP__gridTileIcons i {font-size: inherit; color: inherit}\n" +
+                "";
             this.init = function () {
             };
             this.render = function () {
@@ -527,11 +567,8 @@ var ModuleDefinition;
                         return;
                     var id = _this.getNextGridID();
                     $el.parent().attr('data-gridview', id);
-                    console.log($el);
-                    console.log($el.hasClass('giveaway-filtered'));
                     var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded')).toggleClass('giveaway-filtered', $el.parent().hasClass('giveaway-filtered'));
                     thisTile.attr('id', id);
-                    console.log(thisTile);
                     var gameImg = $el.children('.global__image-outer-wrap--game-medium').appendTo(thisTile).css('position', 'relative');
                     var gaColumns = $el.find('.giveaway__columns').children();
                     var timeLeft = gaColumns.eq(0).addClass('SGPP__gridTileTime').appendTo(gameImg);
@@ -563,6 +600,8 @@ var ModuleDefinition;
     })();
     ModuleDefinition.GridView = GridView;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
+/// <reference path="../Scripts/pagedown/MarkdownConverter.d.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var LivePreview = (function () {
@@ -581,6 +620,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.LivePreview = LivePreview;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var ScrollingSidebar = (function () {
@@ -658,6 +698,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.ScrollingSidebar = ScrollingSidebar;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var Settings = (function () {
@@ -665,7 +706,13 @@ var ModuleDefinition;
             var _this = this;
             this._lsSettings = {};
             this.style = ".SGPP__settings { cursor: pointer; }\n";
-            this.settingsNavIcon = '<a class="nav__row SGPP__settings" href="/sgpp">\n' + '<i class="icon-red fa fa-fw fa-bars"> </i>\n' + '<div class="nav__row__summary">\n' + '<p class="nav__row__summary__name" > SG++ Settings</p>\n' + '<p class="nav__row__summary__description"> Steamgifts++ settings.</p>\n' + '</div>\n' + '</a>\n';
+            this.settingsNavIcon = '<a class="nav__row SGPP__settings" href="/sgpp">\n' +
+                '<i class="icon-red fa fa-fw fa-bars"> </i>\n' +
+                '<div class="nav__row__summary">\n' +
+                '<p class="nav__row__summary__name" > SG++ Settings</p>\n' +
+                '<p class="nav__row__summary__description"> Steamgifts++ settings.</p>\n' +
+                '</div>\n' +
+                '</a>\n';
             this.init = function (storage) {
                 _this._lsSettings = storage.getItem(ModuleDefinition.Settings.SETTINGS_KEY, {});
                 if (window.location.pathname == '/sgpp') {
@@ -737,11 +784,29 @@ var ModuleDefinition;
     })();
     ModuleDefinition.Settings = Settings;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var UserHoverInfo = (function () {
         function UserHoverInfo() {
-            this.style = '.SGPP_UserInfo_balloon {position: absolute; border: solid 2px black; z-index: 99; min-width: 200px; border-radius: 3px; min-height: 100px; background-color: inherit}\n' + '.SGPP_UserInfo_balloon:after {position: absolute; right: 100%; top: 5px; content: ""; height: 0; width: 0; border-style: solid; border-color: transparent black; border-width: 15px 20px 15px 0px}\n' + '.SGPP_UserInfo_balloon.right:after {right: -20px; border-width: 15px 0 15px 20px}\n' + '.SGPP_UserInfo_balloon .featured__outer-wrap.featured__outer-wrap--user {width: auto; padding: 15px 0}\n' + '.SGPP_UserInfo_balloon .featured__heading i {font-size: inherit}\n' + '.SGPP_UserInfo_balloon .featured__table__column {width: 175px}\n' + '.SGPP_UserInfo_balloon .featured__table .featured__table__row {padding: 5px 0px}\n' + '.SGPP_UserInfo_balloon .featured__table__column:not(:first-child) {margin-left: 15px}\n' + '.SGPP_UserInfo_balloon .featured__outer-wrap .global__image-outer-wrap {float: left; margin: 10px 7px 0px 0px; padding: 2px; width: 48px; height: 48px}\n' + '.SGPP_UserInfo_balloon .SGPP_UserOnline {background: linear-gradient(to bottom, #8FB93B 5%, #6E8C31 95%) repeat scroll 0% 0% transparent}\n' + '.SGPP_UserInfo_balloon .SGPP_UserOffline {background: linear-gradient(to bottom, rgba(106, 106, 106, 0.45) 5%, rgba(85, 85, 85, 1) 95%) repeat scroll 0% 0% transparent}\n' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap {width: 130px; color: rgba(255, 255, 255, 0.4)}\n' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > * {line-height: 10px; text-shadow: none; background: none; border: none}\n' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > .is-selected, ' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :hover, ' + '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :active ' + '{background: none; text-shadow: none; box-shadow: none}\n' + '';
+            this.style = '.SGPP_UserInfo_balloon {position: absolute; border: solid 2px black; z-index: 99; min-width: 200px; border-radius: 3px; min-height: 100px; background-color: inherit}\n' +
+                '.SGPP_UserInfo_balloon:after {position: absolute; right: 100%; top: 5px; content: ""; height: 0; width: 0; border-style: solid; border-color: transparent black; border-width: 15px 20px 15px 0px}\n' +
+                '.SGPP_UserInfo_balloon.right:after {right: -20px; border-width: 15px 0 15px 20px}\n' +
+                '.SGPP_UserInfo_balloon .featured__outer-wrap.featured__outer-wrap--user {width: auto; padding: 15px 0}\n' +
+                '.SGPP_UserInfo_balloon .featured__heading i {font-size: inherit}\n' +
+                '.SGPP_UserInfo_balloon .featured__table__column {width: 175px}\n' +
+                '.SGPP_UserInfo_balloon .featured__table .featured__table__row {padding: 5px 0px}\n' +
+                '.SGPP_UserInfo_balloon .featured__table__column:not(:first-child) {margin-left: 15px}\n' +
+                '.SGPP_UserInfo_balloon .featured__outer-wrap .global__image-outer-wrap {float: left; margin: 10px 7px 0px 0px; padding: 2px; width: 48px; height: 48px}\n' +
+                '.SGPP_UserInfo_balloon .SGPP_UserOnline {background: linear-gradient(to bottom, #8FB93B 5%, #6E8C31 95%) repeat scroll 0% 0% transparent}\n' +
+                '.SGPP_UserInfo_balloon .SGPP_UserOffline {background: linear-gradient(to bottom, rgba(106, 106, 106, 0.45) 5%, rgba(85, 85, 85, 1) 95%) repeat scroll 0% 0% transparent}\n' +
+                '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap {width: 130px; color: rgba(255, 255, 255, 0.4)}\n' +
+                '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > * {line-height: 10px; text-shadow: none; background: none; border: none}\n' +
+                '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > .is-selected, ' +
+                '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :hover, ' +
+                '.SGPP_UserInfo_balloon .sidebar__shortcut-inner-wrap > :active ' +
+                '{background: none; text-shadow: none; box-shadow: none}\n' +
+                '';
             this.shouldRun = function (location) { return true; };
         }
         UserHoverInfo.prototype.init = function () {
@@ -849,9 +914,7 @@ var ModuleDefinition;
                     }
                     delayedBubble.run($el.attr('href'), style, right);
                 },
-                mouseleave: function () {
-                    delayedBubble.close();
-                }
+                mouseleave: function () { delayedBubble.close(); }
             }, 'a[href^="/user/"]:not(.nav__avatar-outer-wrap)');
         };
         UserHoverInfo.prototype.name = function () {
@@ -861,6 +924,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.UserHoverInfo = UserHoverInfo;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var UserTagConfig = (function () {
@@ -896,10 +960,10 @@ var ModuleDefinition;
             this.callback = callback;
             $('<i>', { 'class': 'popup__icon fa fa-tag' }).appendTo(this.content);
             $('<p>', { 'class': 'popup__heading', append: [
-                'Edit custom tag for ',
-                this.$name = $('<span>', { 'class': 'popup__heading__bold' }),
-                ':'
-            ] }).appendTo(this.content);
+                    'Edit custom tag for ',
+                    this.$name = $('<span>', { 'class': 'popup__heading__bold' }),
+                    ':'
+                ] }).appendTo(this.content);
             var container = $('<div>', { 'class': 'SGPP__tagOptions' }).appendTo(this.content);
             var optionline = function (optionName, inputType) {
                 var input = $('<input>', { type: inputType });
@@ -919,7 +983,21 @@ var ModuleDefinition;
     var UserTags = (function () {
         function UserTags() {
             var _this = this;
-            this.style = '.SGPP__tagIcon {margin-left: 5px; transform: rotate(-45deg); opacity: 0.35; cursor: pointer; text-shadow: none}\n' + '.SGPP__tagIcon:hover {opacity: 0.7}\n' + '.comment__username--op .SGPP__tagIcon {color: #FFF}\n' + '.SGPP__userTag {display: inline-block; color: #465670; background-color: #FFF; font-weight: initial; text-shadow: none; padding: 0 4px; border-radius: 3px; border: 1px solid #D2D6E0; line-height: normal; margin-left: 5px; cursor: pointer}\n' + '.SGPP__tagModal_background {position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(60, 66, 77, 0.85); cursor: pointer; z-index: 9998}\n' + '.SGPP__tagModal {display: block; position: fixed; top: 50px; left: 50%; width: 300px; margin-left: -250px; z-index: 9999}\n' + '.SGPP__tagModal .popup__icon {width: 48px; text-indent: 5px}\n' + '.SGPP__tagOptions {margin-bottom: 15px}\n' + '.SGPP__tagOptions > div {display: flex; justify-content: space-between}\n' + '.SGPP__tagOptions > div > input {width: 125px; height: 30px;}\n' + '.SGPP__tagOptions > div :not(:first-child) { margin-top: 5px;}\n' + '.SGPP__tagOptions .popup__actions {margin-top: 15px}\n' + '.SGPP__tagOptions > div > span { line-height: 35px;}\n' + '.SGPP__tagOptions > div > input[type="color"] { padding: 3px 6px;}\n' + '';
+            this.style = '.SGPP__tagIcon {margin-left: 5px; transform: rotate(-45deg); opacity: 0.35; cursor: pointer; text-shadow: none}\n' +
+                '.SGPP__tagIcon:hover {opacity: 0.7}\n' +
+                '.comment__username--op .SGPP__tagIcon {color: #FFF}\n' +
+                '.SGPP__userTag {display: inline-block; color: #465670; background-color: #FFF; font-weight: initial; text-shadow: none; padding: 0 4px; border-radius: 3px; border: 1px solid #D2D6E0; line-height: normal; margin-left: 5px; cursor: pointer}\n' +
+                '.SGPP__tagModal_background {position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(60, 66, 77, 0.85); cursor: pointer; z-index: 9998}\n' +
+                '.SGPP__tagModal {display: block; position: fixed; top: 50px; left: 50%; width: 300px; margin-left: -250px; z-index: 9999}\n' +
+                '.SGPP__tagModal .popup__icon {width: 48px; text-indent: 5px}\n' +
+                '.SGPP__tagOptions {margin-bottom: 15px}\n' +
+                '.SGPP__tagOptions > div {display: flex; justify-content: space-between}\n' +
+                '.SGPP__tagOptions > div > input {width: 125px; height: 30px;}\n' +
+                '.SGPP__tagOptions > div :not(:first-child) { margin-top: 5px;}\n' +
+                '.SGPP__tagOptions .popup__actions {margin-top: 15px}\n' +
+                '.SGPP__tagOptions > div > span { line-height: 35px;}\n' +
+                '.SGPP__tagOptions > div > input[type="color"] { padding: 3px 6px;}\n' +
+                '';
             this.render = function () {
                 _this.tagConfigModal = new UserTagConfig(_this.updateTags);
                 var usersLinks = $('a[href^="/user/"]:not(.global__image-outer-wrap, .nav__avatar-outer-wrap)');
@@ -974,8 +1052,7 @@ var ModuleDefinition;
                 });
             };
         }
-        UserTags.prototype.init = function () {
-        };
+        UserTags.prototype.init = function () { };
         UserTags.prototype.name = function () {
             return "Custom Tags to Users";
         };
@@ -983,6 +1060,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.UserTags = UserTags;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var topicInfo = (function () {
@@ -1071,7 +1149,16 @@ var ModuleDefinition;
     })();
     var MarkComments = (function () {
         function MarkComments() {
-            this.style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" + ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" + ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" + ".endless_badge_new, .endless_badge_new_child {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}" + ".endless_badge_new_child { display: none; }" + ".comment--collapsed .endless_badge_new_child { display: block; }\n" + ".table__row-outer-wrap .markcomments_controls { display: none; }\n" + ".table__row-outer-wrap:hover .markcomments_controls { display: inline; }" + ".markcomments_controls i { opacity: 0.5; cursor: pointer; }\n" + ".markcomments_controls i:hover { opacity: 1; }";
+            this.style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" +
+                ".endless_not_new .comment__parent .comment__summary, .endless_not_new > .comment__child{}" +
+                ".endless_not_new:hover .comment__parent .comment__summary, .endless_not_new:hover > .comment__child{}" +
+                ".endless_badge_new, .endless_badge_new_child {border-radius: 4px; margin-left:5px; padding: 3px 5px; background-color: #C50000;text-shadow: none;color: white; font-weight: bold;}" +
+                ".endless_badge_new_child { display: none; }" +
+                ".comment--collapsed .endless_badge_new_child { display: block; }\n" +
+                ".table__row-outer-wrap .markcomments_controls { display: none; }\n" +
+                ".table__row-outer-wrap:hover .markcomments_controls { display: inline; }" +
+                ".markcomments_controls i { opacity: 0.5; cursor: pointer; }\n" +
+                ".markcomments_controls i:hover { opacity: 1; }";
         }
         Object.defineProperty(MarkComments.prototype, "topic", {
             get: function () {
@@ -1231,6 +1318,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.MarkComments = MarkComments;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var HideIgnored = (function () {
@@ -1472,10 +1560,7 @@ var ModuleDefinition;
                 if (wishlisted) {
                     $('div.featured__summary').addClass('wishlisted-giveaway');
                 }
-                $('.sidebar__ignored').click(function () {
-                    $('.sidebar__entry-insert').show();
-                    $('.sidebar__ignored').hide();
-                });
+                $('.sidebar__ignored').click(function () { $('.sidebar__entry-insert').show(); $('.sidebar__ignored').hide(); });
             }
             else if (SGPP.location.pageKind == 'giveaways') {
                 this.markGames();
@@ -1551,11 +1636,18 @@ var ModuleDefinition;
     })();
     ModuleDefinition.MarkOwnedGames = MarkOwnedGames;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var MessagesFilterTest = (function () {
         function MessagesFilterTest() {
-            this.style = ".message_filter_hidden { display: none; }\n" + ".message_filter_visible { }\n" + ".filterdrop { position: absolute; }\n" + ".filterdrop a { display: block; }\n" + ".message-filters { margin-left: 5px; }\n" + ".message-filter { cursor: pointer; }\n" + ".message-filter i { margin: 0; }";
+            this.style = ".message_filter_hidden { display: none; }\n" +
+                ".message_filter_visible { }\n" +
+                ".filterdrop { position: absolute; }\n" +
+                ".filterdrop a { display: block; }\n" +
+                ".message-filters { margin-left: 5px; }\n" +
+                ".message-filter { cursor: pointer; }\n" +
+                ".message-filter i { margin: 0; }";
             this._hideRead = false;
         }
         MessagesFilterTest.prototype.shouldRun = function () {
@@ -1612,12 +1704,20 @@ var ModuleDefinition;
     })();
     ModuleDefinition.MessagesFilterTest = MessagesFilterTest;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var PopupGiveaway = (function () {
         function PopupGiveaway() {
             var _this = this;
-            this.style = ".SGPP__popup_giveaway { text-align: justify; width: 90%; max-width: 1000px }\n" + ".SGPP__popup_giveaway .page__outer-wrap { padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right:20px }\n" + ".SGPP__popup_giveaway .comment__parent { margin-top: 10px }\n" + ".SGPP__popup_giveaway .global__image-outer-wrap--avatar-small { margin-right: 5px }\n" + ".SGPP__popup_giveaway .page__description { max-height: 200px; overflow-y: auto }\n" + ".SGPP__popup_giveaway .markdown li { position:relative }\n" + ".SGPP__popup_giveaway .featured__outer-wrap form > * { background-color: #f0f2f5 }\n" + ".SGPP__popup_giveaway .featured__outer-wrap form { margin-top: 5px; }\n";
+            this.style = ".SGPP__popup_giveaway { text-align: justify; width: 90%; max-width: 1000px }\n" +
+                ".SGPP__popup_giveaway .page__outer-wrap { padding-top: 10px; padding-bottom: 10px; padding-left: 20px; padding-right:20px }\n" +
+                ".SGPP__popup_giveaway .comment__parent { margin-top: 10px }\n" +
+                ".SGPP__popup_giveaway .global__image-outer-wrap--avatar-small { margin-right: 5px }\n" +
+                ".SGPP__popup_giveaway .page__description { max-height: 200px; overflow-y: auto }\n" +
+                ".SGPP__popup_giveaway .markdown li { position:relative }\n" +
+                ".SGPP__popup_giveaway .featured__outer-wrap form > * { background-color: #f0f2f5 }\n" +
+                ".SGPP__popup_giveaway .featured__outer-wrap form { margin-top: 5px; }\n";
             this.popupGiveaway = $('<div>', {
                 'class': 'SGPP__popup_giveaway is-hidden',
             });
@@ -1627,18 +1727,15 @@ var ModuleDefinition;
                     _this.handlePopup($(e.currentTarget));
                 });
             };
-            this.headingHelper = function (desc) {
-                return '<div class="page__heading"><div class="page__heading__breadcrumbs">' + desc + '</div></div>';
-            };
+            this.headingHelper = function (desc) { return '<div class="page__heading"><div class="page__heading__breadcrumbs">' + desc + '</div></div>'; };
             this.handlePopup = function (self) {
                 _this.popupGiveaway.bPopup({
                     onOpen: function () {
                         _this.popupGiveaway.removeClass('is-hidden');
-                        $.ajax({ url: self.attr('href') }).done(function (page) {
+                        $.ajax({ url: self.attr('href') }).
+                            done(function (page) {
                             var featured = $('.featured__outer-wrap', page);
-                            $('.featured__column--whitelist, .featured__column--group', featured).each(function () {
-                                this.childNodes[1].nodeValue = '';
-                            });
+                            $('.featured__column--whitelist, .featured__column--group', featured).each(function () { this.childNodes[1].nodeValue = ''; });
                             var pageOuterWrap = $('<div>', { 'class': 'page__outer-wrap' });
                             var enterButton = $('.sidebar form', page);
                             if (!enterButton.length)
@@ -1658,32 +1755,36 @@ var ModuleDefinition;
                             });
                             $(".sidebar__entry-insert, .sidebar__entry-delete", featured).on("click", function (e) {
                                 var t = $(e.currentTarget);
-                                t.addClass("is-hidden"), t.closest("form").find(".sidebar__entry-loading").removeClass("is-hidden"), t.closest("form").find("input[name=do]").val(t.attr("data-do")), $.ajax({
-                                    url: '/ajax.php',
-                                    type: "POST",
-                                    dataType: "json",
-                                    data: t.closest("form").serialize(),
-                                    success: function (e) {
-                                        t.closest("form").find(".sidebar__entry-loading").addClass("is-hidden");
-                                        if (e.type === "success") {
-                                            if (t.hasClass("sidebar__entry-insert")) {
-                                                t.closest("form").find(".sidebar__entry-delete").removeClass("is-hidden");
-                                                self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').addClass('is-faded');
+                                t.addClass("is-hidden"),
+                                    t.closest("form").find(".sidebar__entry-loading").removeClass("is-hidden"),
+                                    t.closest("form").find("input[name=do]").val(t.attr("data-do")),
+                                    $.ajax({
+                                        url: '/ajax.php', type: "POST",
+                                        dataType: "json",
+                                        data: t.closest("form").serialize(),
+                                        success: function (e) {
+                                            t.closest("form").find(".sidebar__entry-loading").addClass("is-hidden");
+                                            if (e.type === "success") {
+                                                if (t.hasClass("sidebar__entry-insert")) {
+                                                    t.closest("form").find(".sidebar__entry-delete").removeClass("is-hidden");
+                                                    self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').addClass('is-faded');
+                                                }
+                                                else if (t.hasClass("sidebar__entry-delete")) {
+                                                    t.closest("form").find(".sidebar__entry-insert").removeClass("is-hidden");
+                                                    self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').removeClass('is-faded');
+                                                }
                                             }
-                                            else if (t.hasClass("sidebar__entry-delete")) {
-                                                t.closest("form").find(".sidebar__entry-insert").removeClass("is-hidden");
-                                                self.closest('.giveaway__row-inner-wrap, .SGPP__gridTile').removeClass('is-faded');
+                                            else if (e.type === "error") {
+                                                t.closest("form").html("undefined" != typeof e.link && e.link !== !1 ?
+                                                    '<a href="' + e.link + '" class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</a>"
+                                                    : '<div class="sidebar__error is-disabled"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</div>");
+                                            }
+                                            if ("undefined" != typeof e.entry_count && e.entry_count !== !1) {
+                                                $(".live__entry-count").text(e.entry_count);
+                                                $(".nav__points").text(e.points);
                                             }
                                         }
-                                        else if (e.type === "error") {
-                                            t.closest("form").html("undefined" != typeof e.link && e.link !== !1 ? '<a href="' + e.link + '" class="sidebar__error"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</a>" : '<div class="sidebar__error is-disabled"><i class="fa fa-exclamation-circle"></i> ' + e.msg + "</div>");
-                                        }
-                                        if ("undefined" != typeof e.entry_count && e.entry_count !== !1) {
-                                            $(".live__entry-count").text(e.entry_count);
-                                            $(".nav__points").text(e.points);
-                                        }
-                                    }
-                                });
+                                    });
                             });
                             commentButton.on("click", function (e) {
                                 e.preventDefault();
@@ -1729,6 +1830,7 @@ var ModuleDefinition;
     })();
     ModuleDefinition.PopupGiveaway = PopupGiveaway;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScroll = (function () {
@@ -2083,7 +2185,9 @@ var ModuleDefinition;
     })();
     ModuleDefinition.EndlessScroll = EndlessScroll;
 })(ModuleDefinition || (ModuleDefinition = {}));
-var __extends = this.__extends || function (d, b) {
+/// <reference path="../../ModuleDefinition.ts" /> 
+/// <reference path="EndlessScroll.ts" /> 
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -2121,6 +2225,8 @@ var ModuleDefinition;
     })(ModuleDefinition.EndlessScroll);
     ModuleDefinition.EndlessScrollDiscussion = EndlessScrollDiscussion;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../../ModuleDefinition.ts" /> 
+/// <reference path="EndlessScroll.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScrollDiscussionReplies = (function (_super) {
@@ -2183,6 +2289,8 @@ var ModuleDefinition;
     })(ModuleDefinition.EndlessScroll);
     ModuleDefinition.EndlessScrollDiscussionReplies = EndlessScrollDiscussionReplies;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../../ModuleDefinition.ts" /> 
+/// <reference path="EndlessScroll.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScrollGiveawayComments = (function (_super) {
@@ -2233,6 +2341,8 @@ var ModuleDefinition;
     })(ModuleDefinition.EndlessScroll);
     ModuleDefinition.EndlessScrollGiveawayComments = EndlessScrollGiveawayComments;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../../ModuleDefinition.ts" /> 
+/// <reference path="EndlessScroll.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScrollGiveaways = (function (_super) {
@@ -2244,7 +2354,7 @@ var ModuleDefinition;
         }
         EndlessScrollGiveaways.prototype.shouldRun = function () {
             if (SGPP.location.pageKind == 'giveaways') {
-                return !(SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won');
+                return !(SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won' || SGPP.location.subpage == 'wishlist');
             }
             else if (/^\/user\/[^\/]+(\/giveaways\/won([^\/]+)?)?$/.test(location.pathname)) {
                 this._location = 'profile';
@@ -2306,6 +2416,8 @@ var ModuleDefinition;
     })(ModuleDefinition.EndlessScroll);
     ModuleDefinition.EndlessScrollGiveaways = EndlessScrollGiveaways;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="../../ModuleDefinition.ts" /> 
+/// <reference path="EndlessScroll.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScrollLists = (function (_super) {
@@ -2316,7 +2428,7 @@ var ModuleDefinition;
         }
         EndlessScrollLists.prototype.shouldRun = function () {
             if (SGPP.location.pageKind == 'giveaways') {
-                return SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won';
+                return SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won' || SGPP.location.subpage == 'wishlist';
             }
             else if (SGPP.location.pageKind == 'bundle-games') {
                 return true;
@@ -2371,13 +2483,38 @@ var ModuleDefinition;
     })(ModuleDefinition.EndlessScroll);
     ModuleDefinition.EndlessScrollLists = EndlessScrollLists;
 })(ModuleDefinition || (ModuleDefinition = {}));
+/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="Scripts/typings/jquery/jquery_bpopup.d.ts" />
+/// <reference path="Scripts/typings/greasemonkey/greasemonkey.d.ts" />
+/// <reference path="Core.ts" />
+/// <reference path="ModuleDefinition.ts" />
+/// <reference path="Modules/GiveawaysFilter.ts" />
+/// <reference path="Modules/CommentAndEnter.ts" />
+/// <reference path="Modules/EntryCommenters.ts" />
+/// <reference path="Modules/FixedNavbar.ts" />
+/// <reference path="Modules/FixedFooter.ts" />
+/// <reference path="Modules/GridView.ts" />
+/// <reference path="Modules/LivePreview.ts" />
+/// <reference path="Modules/ScrollingSidebar.ts" />
+/// <reference path="Modules/Settings.ts" />
+/// <reference path="Modules/UserHoverInfo.ts" />
+/// <reference path="Modules/UserTags.ts" />
+/// <reference path="Modules/MarkComments.ts" />
+/// <reference path="Modules/MarkOwnedGames.ts" />
+/// <reference path="Modules/MessagesFilterTest.ts" />
+/// <reference path="Modules/PopupGiveaway.ts" />
+/// <reference path="Modules/EndlessScroll/EndlessScrollDiscussion.ts" />
+/// <reference path="Modules/EndlessScroll/EndlessScrollDiscussionReplies.ts" />
+/// <reference path="Modules/EndlessScroll/EndlessScrollGiveawayComments.ts" />
+/// <reference path="Modules/EndlessScroll/EndlessScrollGiveaways.ts" />
+/// <reference path="Modules/EndlessScroll/EndlessScrollLists.ts" />
 var SGPP = new ModuleDefinition.Core();
 var modulesNames = new Array("GiveawaysFilter", "CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MarkOwnedGames", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
 var defaultModules = {
     "FixedNavbar": { "enabled": true },
     "ScrollingSidebar": { "enabled": true }
 };
-var currentVersion = "0.3.0";
+var currentVersion = "0.4.2";
 (function ($) {
     if (!SGPP.storage.containsItem("Version")) {
         SGPP.storage.clear();
