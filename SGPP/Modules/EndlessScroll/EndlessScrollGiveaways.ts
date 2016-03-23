@@ -12,7 +12,7 @@ module ModuleDefinition {
 
         shouldRun(): boolean {
             if (SGPP.location.pageKind == 'giveaways') {
-                return !(SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won');
+                return !(SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won' || SGPP.location.subpage == 'wishlist');
             } else if (/^\/user\/[^\/]+(\/giveaways\/won([^\/]+)?)?$/.test(location.pathname)) {
                 this._location = 'profile';
                 return true;
