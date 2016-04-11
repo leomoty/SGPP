@@ -127,6 +127,8 @@ module ModuleDefinition {
             }
 
             $el.toggleClass('giveaway-filtered', hide);
+
+            $(this).trigger('gameFiltered', [el, hide]);
         }
 
         name(): string {

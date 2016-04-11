@@ -59,7 +59,7 @@ var defaultModules = {
     "ScrollingSidebar": { "enabled": true }
     };
 
-var currentVersion = "0.3.0";
+var currentVersion = "0.4.2";
 
 (function ($) {
 
@@ -95,12 +95,12 @@ var currentVersion = "0.3.0";
     }
 
     //render each module once the DOM is loaded
-    $(document).on("DOMContentLoaded", function () {
+    //$(document).on("DOMContentLoaded", function () {
         SGPP.render(); //Render core first
         for (var module in SGPP.modules) {
             SGPP.log("Module " + module + " render() call.");
             SGPP.modules[module].render();
         }
-    });
+    //});
 
 })(jQuery);

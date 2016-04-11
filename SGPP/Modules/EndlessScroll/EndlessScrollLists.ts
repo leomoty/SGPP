@@ -11,7 +11,7 @@ module ModuleDefinition {
         shouldRun(): boolean {
 
             if (SGPP.location.pageKind == 'giveaways') {
-                return SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won';
+                return SGPP.location.subpage == 'entered' || SGPP.location.subpage == 'created' || SGPP.location.subpage == 'won' || SGPP.location.subpage == 'wishlist';
             } else if (SGPP.location.pageKind == 'bundle-games') {
                 return true;
             } else if (SGPP.location.pageKind == 'giveaway') {

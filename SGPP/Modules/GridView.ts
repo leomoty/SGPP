@@ -41,15 +41,31 @@ module ModuleDefinition {
                 this.updateGridview(pageContainer);
             });
 
+            SGPP.on("GiveawaysFilter", "gameFiltered", (event: JQueryEventObject, el: Element, visible: boolean) => {
+                var $grid = $("#" + $(el).data('gridview'));
+
+                $grid.toggleClass('giveaway-filtered', visible);
+            });
+
             this.updateGridview(esg);
+        }
+
+        private gridID = 0;
+
+        getNextGridID = () => {
+            this.gridID++;
+
+            return 'sgpp_gridview_' + this.gridID;
         }
 
         updateGridview = (esg) => {
             var giveawaysList = esg.children('.giveaway__row-outer-wrap');
             if (!giveawaysList.length)
                 return;
-            var giveaways = $(document.createElement('div')).wrapInner(giveawaysList);
-            var gridview = this.generateGridview(giveaways);
+
+            $(giveawaysList).hide();
+
+            var gridview = this.generateGridview(giveawaysList);
             esg.append(gridview);
         }
 
@@ -70,12 +86,18 @@ module ModuleDefinition {
             var tileInfo = $('<h2>', {'class': 'SGPP__gridTileInfo global__image-outer-wrap'});
             var tileIcns = $('<div>', {'class': 'SGPP__gridTileIcons'});
 
-            root.find('.giveaway__row-inner-wrap').each(function () {
-                var $el = $(this);
+            root.find('.giveaway__row-inner-wrap').each((index: number, el: Element) => {
+                var $el = $(el);
                 if ($el.parents('.pinned-giveaways').length != 0)
                     return;
 
-                var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded'));
+                var id = this.getNextGridID();
+
+                $el.parent().attr('data-gridview', id);
+
+                var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded')).toggleClass('giveaway-filtered', $el.parent().hasClass('giveaway-filtered'));
+
+                thisTile.attr('id', id);
 
                 var gameImg = $el.children('.global__image-outer-wrap--game-medium').appendTo(thisTile).css('position', 'relative');
 
