@@ -5,7 +5,7 @@
 // @description     SG++ for Steamgifts.com
 // @author          Leomoty
 // @match           http://www.steamgifts.com/*
-// @run-at          document-start
+// @run-at          document-end
 // @downloadURL     https://raw.githubusercontent.com/leomoty/SGPP/master/SGPP.user.js
 // @updateURL       https://raw.githubusercontent.com/leomoty/SGPP/master/SGPP.meta.js
 // @require         http://code.jquery.com/jquery-2.1.3.min.js
