@@ -48,6 +48,16 @@ module ModuleDefinition {
             });
 
             this.updateGridview(esg);
+
+            esg.find(".giveaway__hide").click(function () {
+
+                var $el = $(this);
+
+                setTimeout(function () {
+                    $(".popup--hide-games input[name=game_id]").val($el.parents('[data-game-id]').attr("data-game-id"));
+                    $(".popup--hide-games .popup__heading__bold").text($el.closest("h2").find(".giveaway__heading__name").text())
+                }, 100);
+            });
         }
 
         private gridID = 0;
@@ -98,6 +108,7 @@ module ModuleDefinition {
                 var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded')).toggleClass('giveaway-filtered', $el.parent().hasClass('giveaway-filtered'));
 
                 thisTile.attr('id', id);
+                thisTile.attr('data-game-id', $el.parent().attr('data-game-id'));
 
                 var gameImg = $el.children('.global__image-outer-wrap--game-medium').appendTo(thisTile).css('position', 'relative');
 
@@ -124,7 +135,7 @@ module ModuleDefinition {
                 var winChance = calcWinChance(copies, entries);
 
                 tileInfo.clone().append(
-                    $('<div>', {text: giveawayName, 'class': 'giveaway__heading__name tile_view_header'}),
+                    $('<div>', { text: giveawayName, 'class': 'giveaway__heading__name tile_view_header' }),
                     $('<div>', {'class': "SGPP__gridAvatar_outer", title: 'Created ' + gaColumns.eq(1).text(), append: avatar}),
                     $('<div>', {style: 'display: inline-block; width: 145px'}).append(
                         floatLeft(strong(copies) + (copies > 1 ? ' Copies' : ' Copy')),

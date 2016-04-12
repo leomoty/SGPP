@@ -28,8 +28,9 @@ module ModuleDefinition {
 
             $(this).on('afterAddItems',(event: JQueryEventObject, pageContainer: JQuery, page: number, isReload: boolean) => {
                 // Fix hide popups
+
                 pageContainer.find(".giveaway__hide").click(function () {
-                    $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
+                    $(".popup--hide-games input[name=game_id]").val($(this).parents('[data-game-id]').attr("data-game-id"));
                     $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text())
                 });
                 pageContainer.find(".trigger-popup").click(function () {

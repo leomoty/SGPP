@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Steamgifts++
 // @namespace       https://github.com/leomoty/SGPP
-// @version         0.4.3 beta
+// @version         0.4.4 beta
 // @description     SG++ for Steamgifts.com
 // @author          Leomoty
 // @match           http://www.steamgifts.com/*
@@ -535,6 +535,13 @@ var ModuleDefinition;
                     $grid.toggleClass('giveaway-filtered', visible);
                 });
                 _this.updateGridview(esg);
+                esg.find(".giveaway__hide").click(function () {
+                    var $el = $(this);
+                    setTimeout(function () {
+                        $(".popup--hide-games input[name=game_id]").val($el.parents('[data-game-id]').attr("data-game-id"));
+                        $(".popup--hide-games .popup__heading__bold").text($el.closest("h2").find(".giveaway__heading__name").text());
+                    }, 100);
+                });
             };
             this.gridID = 0;
             this.getNextGridID = function () {
@@ -569,6 +576,7 @@ var ModuleDefinition;
                     $el.parent().attr('data-gridview', id);
                     var thisTile = gridTile.clone().toggleClass('is-faded', $el.hasClass('is-faded')).toggleClass('giveaway-filtered', $el.parent().hasClass('giveaway-filtered'));
                     thisTile.attr('id', id);
+                    thisTile.attr('data-game-id', $el.parent().attr('data-game-id'));
                     var gameImg = $el.children('.global__image-outer-wrap--game-medium').appendTo(thisTile).css('position', 'relative');
                     var gaColumns = $el.find('.giveaway__columns').children();
                     var timeLeft = gaColumns.eq(0).addClass('SGPP__gridTileTime').appendTo(gameImg);
@@ -2368,8 +2376,9 @@ var ModuleDefinition;
             var _this = this;
             this.preparePage();
             $(this).on('afterAddItems', function (event, pageContainer, page, isReload) {
+                // Fix hide popups
                 pageContainer.find(".giveaway__hide").click(function () {
-                    $(".popup--hide-games input[name=game_id]").val($(this).attr("data-game-id"));
+                    $(".popup--hide-games input[name=game_id]").val($(this).parents('[data-game-id]').attr("data-game-id"));
                     $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text());
                 });
                 pageContainer.find(".trigger-popup").click(function () {
@@ -2514,7 +2523,7 @@ var defaultModules = {
     "FixedNavbar": { "enabled": true },
     "ScrollingSidebar": { "enabled": true }
 };
-var currentVersion = "0.4.2";
+var currentVersion = "0.4.4";
 (function ($) {
     if (!SGPP.storage.containsItem("Version")) {
         SGPP.storage.clear();
