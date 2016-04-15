@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name            Steamgifts++
 // @namespace       https://github.com/leomoty/SGPP
-// @version         0.4.4 beta
+// @version         0.4.5 beta
 // @description     SG++ for Steamgifts.com
 // @author          Leomoty
-// @match           http://www.steamgifts.com/*
+// @match           *://www.steamgifts.com/*
 // @run-at          document-end
 // @downloadURL     https://raw.githubusercontent.com/leomoty/SGPP/master/SGPP.user.js
 // @updateURL       https://raw.githubusercontent.com/leomoty/SGPP/master/SGPP.meta.js
@@ -16,6 +16,11 @@
 // @grant           GM_getResourceText
 // @grant           GM_xmlhttpRequest
 // ==/UserScript==
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var LocalStorage = (function () {
@@ -41,11 +46,9 @@ var ModuleDefinition;
             };
         }
         return LocalStorage;
-    })();
+    }());
     ModuleDefinition.LocalStorage = LocalStorage;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="ModuleDefinition.ts" />
-/// <reference path="LocalStorage.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var Core = (function () {
@@ -175,10 +178,9 @@ var ModuleDefinition;
             this._settings.render();
         };
         return Core;
-    })();
+    }());
     ModuleDefinition.Core = Core;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var HideEnteredFilter = (function () {
@@ -213,7 +215,7 @@ var ModuleDefinition;
             this.updateElement();
         };
         return HideEnteredFilter;
-    })();
+    }());
     ModuleDefinition.HideEnteredFilter = HideEnteredFilter;
     var GiveawaysFilter = (function () {
         function GiveawaysFilter() {
@@ -286,10 +288,9 @@ var ModuleDefinition;
             return "Giveaways Filter";
         };
         return GiveawaysFilter;
-    })();
+    }());
     ModuleDefinition.GiveawaysFilter = GiveawaysFilter;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var CommentAndEnter = (function () {
@@ -331,10 +332,9 @@ var ModuleDefinition;
             return "Comment and Enter on Giveaways";
         };
         return CommentAndEnter;
-    })();
+    }());
     ModuleDefinition.CommentAndEnter = CommentAndEnter;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EntryCommenters = (function () {
@@ -445,10 +445,9 @@ var ModuleDefinition;
         };
         EntryCommenters.prototype.shouldRun = function (loc) { return loc.pageKind == 'giveaway' && (loc.subpage == 'entries' || loc.subpage == 'winners'); };
         return EntryCommenters;
-    })();
+    }());
     ModuleDefinition.EntryCommenters = EntryCommenters;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedNavbar = (function () {
@@ -470,10 +469,9 @@ var ModuleDefinition;
             return "Fixed Navbar on top";
         };
         return FixedNavbar;
-    })();
+    }());
     ModuleDefinition.FixedNavbar = FixedNavbar;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var FixedFooter = (function () {
@@ -494,10 +492,9 @@ var ModuleDefinition;
             return "Fixed Footer on bottom";
         };
         return FixedFooter;
-    })();
+    }());
     ModuleDefinition.FixedFooter = FixedFooter;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var GridView = (function () {
@@ -605,11 +602,9 @@ var ModuleDefinition;
             return "GridView";
         };
         return GridView;
-    })();
+    }());
     ModuleDefinition.GridView = GridView;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
-/// <reference path="../Scripts/pagedown/MarkdownConverter.d.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var LivePreview = (function () {
@@ -625,10 +620,9 @@ var ModuleDefinition;
             return "LivePreview";
         };
         return LivePreview;
-    })();
+    }());
     ModuleDefinition.LivePreview = LivePreview;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var ScrollingSidebar = (function () {
@@ -703,10 +697,9 @@ var ModuleDefinition;
             return "Scrolling Sidebar";
         };
         return ScrollingSidebar;
-    })();
+    }());
     ModuleDefinition.ScrollingSidebar = ScrollingSidebar;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var Settings = (function () {
@@ -789,10 +782,9 @@ var ModuleDefinition;
         };
         Settings.SETTINGS_KEY = "Settings";
         return Settings;
-    })();
+    }());
     ModuleDefinition.Settings = Settings;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var UserHoverInfo = (function () {
@@ -929,10 +921,9 @@ var ModuleDefinition;
             return "Show User Profile on Hover";
         };
         return UserHoverInfo;
-    })();
+    }());
     ModuleDefinition.UserHoverInfo = UserHoverInfo;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var UserTagConfig = (function () {
@@ -987,7 +978,7 @@ var ModuleDefinition;
             this.hide();
         }
         return UserTagConfig;
-    })();
+    }());
     var UserTags = (function () {
         function UserTags() {
             var _this = this;
@@ -1065,10 +1056,9 @@ var ModuleDefinition;
             return "Custom Tags to Users";
         };
         return UserTags;
-    })();
+    }());
     ModuleDefinition.UserTags = UserTags;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var topicInfo = (function () {
@@ -1154,7 +1144,7 @@ var ModuleDefinition;
             localStorage[this.localStorageKey] = JSON.stringify(this._obj);
         };
         return topicInfo;
-    })();
+    }());
     var MarkComments = (function () {
         function MarkComments() {
             this.style = ".endless_new .comment__parent .comment__summary, .endless_new > .comment__child{}" +
@@ -1323,10 +1313,9 @@ var ModuleDefinition;
             return "Mark Comments";
         };
         return MarkComments;
-    })();
+    }());
     ModuleDefinition.MarkComments = MarkComments;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var HideIgnored = (function () {
@@ -1364,7 +1353,7 @@ var ModuleDefinition;
             this.updateElement();
         };
         return HideIgnored;
-    })();
+    }());
     ModuleDefinition.HideIgnored = HideIgnored;
     var HideOwned = (function () {
         function HideOwned(module) {
@@ -1401,7 +1390,7 @@ var ModuleDefinition;
             this.updateElement();
         };
         return HideOwned;
-    })();
+    }());
     ModuleDefinition.HideOwned = HideOwned;
     var HighlightWishlist = (function () {
         function HighlightWishlist(module) {
@@ -1437,7 +1426,7 @@ var ModuleDefinition;
             this.updateElement();
         };
         return HighlightWishlist;
-    })();
+    }());
     ModuleDefinition.HighlightWishlist = HighlightWishlist;
     var MarkOwnedGames = (function () {
         function MarkOwnedGames() {
@@ -1641,10 +1630,9 @@ var ModuleDefinition;
             return "Filter Games";
         };
         return MarkOwnedGames;
-    })();
+    }());
     ModuleDefinition.MarkOwnedGames = MarkOwnedGames;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var MessagesFilterTest = (function () {
@@ -1709,10 +1697,9 @@ var ModuleDefinition;
             return "Hide Read Comments";
         };
         return MessagesFilterTest;
-    })();
+    }());
     ModuleDefinition.MessagesFilterTest = MessagesFilterTest;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var PopupGiveaway = (function () {
@@ -1835,10 +1822,9 @@ var ModuleDefinition;
             return "Popup Giveaway";
         };
         return PopupGiveaway;
-    })();
+    }());
     ModuleDefinition.PopupGiveaway = PopupGiveaway;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../../ModuleDefinition.ts" />
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScroll = (function () {
@@ -2190,17 +2176,9 @@ var ModuleDefinition;
             $(window).scroll();
         };
         return EndlessScroll;
-    })();
+    }());
     ModuleDefinition.EndlessScroll = EndlessScroll;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../../ModuleDefinition.ts" /> 
-/// <reference path="EndlessScroll.ts" /> 
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScrollDiscussion = (function (_super) {
@@ -2230,11 +2208,9 @@ var ModuleDefinition;
             return "Endless Scroll on Discussions page";
         };
         return EndlessScrollDiscussion;
-    })(ModuleDefinition.EndlessScroll);
+    }(ModuleDefinition.EndlessScroll));
     ModuleDefinition.EndlessScrollDiscussion = EndlessScrollDiscussion;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../../ModuleDefinition.ts" /> 
-/// <reference path="EndlessScroll.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScrollDiscussionReplies = (function (_super) {
@@ -2294,11 +2270,9 @@ var ModuleDefinition;
             return "Endless Scroll on Discussion comments";
         };
         return EndlessScrollDiscussionReplies;
-    })(ModuleDefinition.EndlessScroll);
+    }(ModuleDefinition.EndlessScroll));
     ModuleDefinition.EndlessScrollDiscussionReplies = EndlessScrollDiscussionReplies;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../../ModuleDefinition.ts" /> 
-/// <reference path="EndlessScroll.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScrollGiveawayComments = (function (_super) {
@@ -2346,11 +2320,9 @@ var ModuleDefinition;
             return "Endless Scroll on Giveaway comments";
         };
         return EndlessScrollGiveawayComments;
-    })(ModuleDefinition.EndlessScroll);
+    }(ModuleDefinition.EndlessScroll));
     ModuleDefinition.EndlessScrollGiveawayComments = EndlessScrollGiveawayComments;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../../ModuleDefinition.ts" /> 
-/// <reference path="EndlessScroll.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScrollGiveaways = (function (_super) {
@@ -2376,7 +2348,6 @@ var ModuleDefinition;
             var _this = this;
             this.preparePage();
             $(this).on('afterAddItems', function (event, pageContainer, page, isReload) {
-                // Fix hide popups
                 pageContainer.find(".giveaway__hide").click(function () {
                     $(".popup--hide-games input[name=game_id]").val($(this).parents('[data-game-id]').attr("data-game-id"));
                     $(".popup--hide-games .popup__heading__bold").text($(this).closest("h2").find(".giveaway__heading__name").text());
@@ -2422,11 +2393,9 @@ var ModuleDefinition;
             return "Endless Scroll on Giveaways";
         };
         return EndlessScrollGiveaways;
-    })(ModuleDefinition.EndlessScroll);
+    }(ModuleDefinition.EndlessScroll));
     ModuleDefinition.EndlessScrollGiveaways = EndlessScrollGiveaways;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="../../ModuleDefinition.ts" /> 
-/// <reference path="EndlessScroll.ts" /> 
 var ModuleDefinition;
 (function (ModuleDefinition) {
     var EndlessScrollLists = (function (_super) {
@@ -2489,34 +2458,9 @@ var ModuleDefinition;
             return "Endless Scroll everywhere else";
         };
         return EndlessScrollLists;
-    })(ModuleDefinition.EndlessScroll);
+    }(ModuleDefinition.EndlessScroll));
     ModuleDefinition.EndlessScrollLists = EndlessScrollLists;
 })(ModuleDefinition || (ModuleDefinition = {}));
-/// <reference path="Scripts/typings/jquery/jquery.d.ts" />
-/// <reference path="Scripts/typings/jquery/jquery_bpopup.d.ts" />
-/// <reference path="Scripts/typings/greasemonkey/greasemonkey.d.ts" />
-/// <reference path="Core.ts" />
-/// <reference path="ModuleDefinition.ts" />
-/// <reference path="Modules/GiveawaysFilter.ts" />
-/// <reference path="Modules/CommentAndEnter.ts" />
-/// <reference path="Modules/EntryCommenters.ts" />
-/// <reference path="Modules/FixedNavbar.ts" />
-/// <reference path="Modules/FixedFooter.ts" />
-/// <reference path="Modules/GridView.ts" />
-/// <reference path="Modules/LivePreview.ts" />
-/// <reference path="Modules/ScrollingSidebar.ts" />
-/// <reference path="Modules/Settings.ts" />
-/// <reference path="Modules/UserHoverInfo.ts" />
-/// <reference path="Modules/UserTags.ts" />
-/// <reference path="Modules/MarkComments.ts" />
-/// <reference path="Modules/MarkOwnedGames.ts" />
-/// <reference path="Modules/MessagesFilterTest.ts" />
-/// <reference path="Modules/PopupGiveaway.ts" />
-/// <reference path="Modules/EndlessScroll/EndlessScrollDiscussion.ts" />
-/// <reference path="Modules/EndlessScroll/EndlessScrollDiscussionReplies.ts" />
-/// <reference path="Modules/EndlessScroll/EndlessScrollGiveawayComments.ts" />
-/// <reference path="Modules/EndlessScroll/EndlessScrollGiveaways.ts" />
-/// <reference path="Modules/EndlessScroll/EndlessScrollLists.ts" />
 var SGPP = new ModuleDefinition.Core();
 var modulesNames = new Array("GiveawaysFilter", "CommentAndEnter", "EntryCommenters", "FixedNavbar", "FixedFooter", "GridView", "ScrollingSidebar", "UserHoverInfo", "UserTags", "MarkComments", "MarkOwnedGames", "MessagesFilterTest", "PopupGiveaway", "EndlessScrollDiscussion", "EndlessScrollDiscussionReplies", "EndlessScrollGiveaways", "EndlessScrollGiveawayComments", "EndlessScrollLists");
 var defaultModules = {
