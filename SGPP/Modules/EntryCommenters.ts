@@ -6,7 +6,7 @@ module ModuleDefinition {
         // On the giveaway entries page, add an icon next to the user names 
         // indicating whether they commented or not.
 
-        private url: string = 'http://www.steamgifts.com/giveaway/';
+        private url: string = 'https://www.steamgifts.com/giveaway/';
         private cacheCompleted: boolean = false;
         private isLoading: boolean = false;
         commenters: any = {};
