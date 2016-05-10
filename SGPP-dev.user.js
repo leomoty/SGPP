@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Steamgifts++
 // @namespace       https://github.com/leomoty/SGPP
-// @version         0.4.6 beta
+// @version         0.4.7 beta
 // @description     SG++ for Steamgifts.com
 // @author          Leomoty
 // @match           *://www.steamgifts.com/*
@@ -707,9 +707,12 @@ var ModuleDefinition;
             var _this = this;
             this._lsSettings = {};
             this.style = ".SGPP__settings { cursor: pointer; }\n";
-            this.settingsNavIcon = '<a class="nav__button__child SGPP__settings" href="/sgpp">\n' +
+            this.settingsNavIcon = '<a class="nav__row SGPP__settings" href="/sgpp">\n' +
                 '<i class="icon-red fa fa-fw fa-bars"> </i>\n' +
-                '<div class="nav__button__child__name"> Steamgifts++ settings </div>\n' +
+                '<div class="nav__row__summary">\n' +
+                '<p class="nav__row__summary__name" > SG++ Settings</p>\n' +
+                '<p class="nav__row__summary__description"> Steamgifts++ settings.</p>\n' +
+                '</div>\n' +
                 '</a>\n';
             this.init = function (storage) {
                 _this._lsSettings = storage.getItem(ModuleDefinition.Settings.SETTINGS_KEY, {});
@@ -721,7 +724,7 @@ var ModuleDefinition;
             };
             this.render = function () {
                 if (SGPP.location.pageKind != 'sgpp') {
-                    $("a.nav__button__child[href^='/?logout']").before(_this.settingsNavIcon);
+                    $(".nav__absolute-dropdown a[href^='/?logout']").before(_this.settingsNavIcon);
                 }
                 else {
                     $('.SGPP__form__checkbox').each(function (index, el) {

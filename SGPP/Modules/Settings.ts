@@ -10,9 +10,12 @@ module ModuleDefinition {
 
         style = ".SGPP__settings { cursor: pointer; }\n";
 
-        private settingsNavIcon: string = '<a class="nav__button__child SGPP__settings" href="/sgpp">\n' +
+        private settingsNavIcon: string = '<a class="nav__row SGPP__settings" href="/sgpp">\n' +
         '<i class="icon-red fa fa-fw fa-bars"> </i>\n' +
-        '<div class="nav__button__child__name"> Steamgifts++ settings </div>\n' +
+        '<div class="nav__row__summary">\n' +
+        '<p class="nav__row__summary__name" > SG++ Settings</p>\n' +
+        '<p class="nav__row__summary__description"> Steamgifts++ settings.</p>\n' +
+        '</div>\n' +
         '</a>\n';
 
         init = (storage?: ModuleDefinition.LocalStorage) => {
@@ -27,7 +30,7 @@ module ModuleDefinition {
 
         render = () => {
             if (SGPP.location.pageKind != 'sgpp') {
-                $("a.nav__button__child[href^='/?logout']").before(this.settingsNavIcon);
+                $(".nav__absolute-dropdown a[href^='/?logout']").before(this.settingsNavIcon);
             } else {
                 $('.SGPP__form__checkbox').each((index, el) =>{
                     var elem = $(el);
