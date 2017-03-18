@@ -30,7 +30,7 @@ module ModuleDefinition {
 
         render = () => {
             if (SGPP.location.pageKind != 'sgpp') {
-                $(".nav__absolute-dropdown a[href^='/?logout']").before(this.settingsNavIcon);
+                $(".nav__absolute-dropdown div[data-form^='do=logout']").before(this.settingsNavIcon);
             } else {
                 $('.SGPP__form__checkbox').each((index, el) =>{
                     var elem = $(el);

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Steamgifts++
 // @namespace       https://github.com/leomoty/SGPP
-// @version         0.4.7 beta
+// @version         0.4.8 beta
 // @description     SG++ for Steamgifts.com
 // @author          Leomoty
 // @match           *://www.steamgifts.com/*
@@ -724,7 +724,7 @@ var ModuleDefinition;
             };
             this.render = function () {
                 if (SGPP.location.pageKind != 'sgpp') {
-                    $(".nav__absolute-dropdown a[href^='/?logout']").before(_this.settingsNavIcon);
+                    $(".nav__absolute-dropdown div[data-form^='do=logout']").before(_this.settingsNavIcon);
                 }
                 else {
                     $('.SGPP__form__checkbox').each(function (index, el) {
@@ -780,9 +780,9 @@ var ModuleDefinition;
         Settings.prototype.name = function () {
             return "Settings";
         };
-        Settings.SETTINGS_KEY = "Settings";
         return Settings;
     }());
+    Settings.SETTINGS_KEY = "Settings";
     ModuleDefinition.Settings = Settings;
 })(ModuleDefinition || (ModuleDefinition = {}));
 var ModuleDefinition;
@@ -2184,8 +2184,9 @@ var ModuleDefinition;
     var EndlessScrollDiscussion = (function (_super) {
         __extends(EndlessScrollDiscussion, _super);
         function EndlessScrollDiscussion() {
-            _super.apply(this, arguments);
-            this.style = "";
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.style = "";
+            return _this;
         }
         EndlessScrollDiscussion.prototype.shouldRun = function () {
             return SGPP.location.pageKind == 'discussions' || SGPP.location.pageKind == 'trades';
@@ -2216,8 +2217,9 @@ var ModuleDefinition;
     var EndlessScrollDiscussionReplies = (function (_super) {
         __extends(EndlessScrollDiscussionReplies, _super);
         function EndlessScrollDiscussionReplies() {
-            _super.apply(this, arguments);
-            this.style = "";
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.style = "";
+            return _this;
         }
         EndlessScrollDiscussionReplies.prototype.shouldRun = function () {
             return SGPP.location.pageKind == 'discussion' || SGPP.location.pageKind == 'trade';
@@ -2278,8 +2280,9 @@ var ModuleDefinition;
     var EndlessScrollGiveawayComments = (function (_super) {
         __extends(EndlessScrollGiveawayComments, _super);
         function EndlessScrollGiveawayComments() {
-            _super.apply(this, arguments);
-            this.style = "";
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.style = "";
+            return _this;
         }
         EndlessScrollGiveawayComments.prototype.shouldRun = function () {
             return SGPP.location.pageKind == 'giveaway' && SGPP.location.subpage == '';
@@ -2328,9 +2331,10 @@ var ModuleDefinition;
     var EndlessScrollGiveaways = (function (_super) {
         __extends(EndlessScrollGiveaways, _super);
         function EndlessScrollGiveaways() {
-            _super.apply(this, arguments);
-            this._location = 'frontpage';
-            this.style = "";
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this._location = 'frontpage';
+            _this.style = "";
+            return _this;
         }
         EndlessScrollGiveaways.prototype.shouldRun = function () {
             if (SGPP.location.pageKind == 'giveaways') {
@@ -2401,8 +2405,9 @@ var ModuleDefinition;
     var EndlessScrollLists = (function (_super) {
         __extends(EndlessScrollLists, _super);
         function EndlessScrollLists() {
-            _super.apply(this, arguments);
-            this.style = "";
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.style = "";
+            return _this;
         }
         EndlessScrollLists.prototype.shouldRun = function () {
             if (SGPP.location.pageKind == 'giveaways') {
@@ -2467,7 +2472,7 @@ var defaultModules = {
     "FixedNavbar": { "enabled": true },
     "ScrollingSidebar": { "enabled": true }
 };
-var currentVersion = "0.4.6";
+var currentVersion = "0.4.8";
 (function ($) {
     if (!SGPP.storage.containsItem("Version")) {
         SGPP.storage.clear();
