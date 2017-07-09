@@ -17,7 +17,7 @@ module ModuleDefinition{
             '.SGPP_UserInfo_balloon .featured__table__column:not(:first-child) {margin-left: 15px}\n' +
 
             // avatar
-            '.SGPP_UserInfo_balloon .featured__outer-wrap .global__image-outer-wrap {float: left; margin: 10px 7px 0px 0px; padding: 2px; width: 48px; height: 48px}\n' +
+            '.SGPP_UserInfo_balloon .featured__outer-wrap .global__image-outer-wrap {float: left; margin: 7px 7px 0px 0px; padding: 2px}\n' +
             '.SGPP_UserInfo_balloon .SGPP_UserOnline {background: linear-gradient(to bottom, #8FB93B 5%, #6E8C31 95%) repeat scroll 0% 0% transparent}\n' +
             '.SGPP_UserInfo_balloon .SGPP_UserOffline {background: linear-gradient(to bottom, rgba(106, 106, 106, 0.45) 5%, rgba(85, 85, 85, 1) 95%) repeat scroll 0% 0% transparent}\n' +
 
@@ -40,8 +40,9 @@ module ModuleDefinition{
                 var username = $('.featured__heading', userHeader).css('display', 'block');
 
                 // move avatar
-                var avatar = $('.global__image-outer-wrap', userHeader).prependTo(username);
-
+                var avatar = $('.global__image-outer-wrap', userHeader).prependTo(username).css({'width': '48px', 'height': '48px', 'box-sizing': 'content-box'});
+				avatar.children().css('background-size', 'cover');
+				
                 // add color to represent online status
                 var status = tableCells.eq(1).children().last().text().trim();
                 if (status.toLowerCase().indexOf('online') > -1)

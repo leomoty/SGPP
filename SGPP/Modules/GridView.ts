@@ -11,24 +11,23 @@ module ModuleDefinition {
         shouldRun = (location: SGLocation) => location.pageKind == 'giveaways' && ['created', 'entered', 'won'].indexOf(location.subpage) == -1;
 
         style = ".SGPP__gridView {display: flex; flex-wrap: wrap; justify-content: space-around; margin: 5px;}\n" +
-            ".tile_view_header {font-size: 12px; border-bottom: 1px solid #D2D6E0; box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.3); margin-bottom: 3px; text-align: center}\n" +
-            ".SGPP__gridAvatar_outer {float: right; display: inline-block; margin-left: 5px}\n" +
-            ".SGPP__gridAvatar {height: 27px; width: 27px; padding: 2px}\n" +
-            ".SGPP__gridTile {margin: 5px}\n" +
-            ".SGPP__gridTile > .global__image-outer-wrap--game-medium {position: relative}\n" +
-            ".SGPP__gridTile:not(:hover) .SGPP__gridTileTime {display: none}\n" +
-            ".SGPP__gridTile:hover {opacity: 1}\n" +
-            ".SGPP__gridTile:hover > .global__image-outer-wrap--game-medium {border-radius: 4px 4px 0 0; border-bottom: 1px dotted transparent}\n" +
-            ".SGPP__gridTile:hover > .SGPP__gridTileInfo {display: block; border-radius: 0 0 4px 4px}\n" +
-            ".SGPP__gridTileInfo {display: none; position:absolute; width:184px; border-top: none; z-index: 10}\n" +
-            ".SGPP__gridTileInfo .giveaway__icon {opacity: 0.7}\n" +
-            ".SGPP__gridTileTime {position: absolute; bottom: 5px; left: 5px; height: 16px; text-align: center; background-color: #FFF; border-radius: 0 3px 0 0; padding: 2px 4px}\n" +
-            ".SGPP__gridTileTime i {font-size: inherit; color:inherit}\n" +
-            ".SGPP__gridTileIcons {position: absolute; bottom: 5px; right: 5px}\n" +
-            ".SGPP__gridTileIcons > * {display: inline-block; width: 20px; height: 16px; text-align: center; padding: 2px; border-radius: 3px 0 0; vertical-align: middle}\n" +
-            ".SGPP__gridTileIcons > :not(:last-child) {padding-right: 4px; margin-right: -3px}\n" +
-            ".SGPP__gridTileIcons i {font-size: inherit; color: inherit}\n" +
-            "";
+			".tile_view_header {font-size: 12px; border-bottom: 1px solid #D2D6E0; box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.3); margin-bottom: 3px; text-align: center}\n" +
+			".SGPP__gridAvatar_outer {float: right; display: inline-block; margin-left: 5px}\n" +
+			".SGPP__gridAvatar {height: 27px; width: 27px}\n" +
+			".SGPP__gridTile {margin: 5px}\n" +
+			".SGPP__gridTile:not(:hover) .SGPP__gridTileTime {display: none}\n" +
+			".SGPP__gridTile:hover {opacity: 1}\n" +
+			".SGPP__gridTile:hover > .giveaway_image_thumbnail, .SGPP__gridTile:hover > .giveaway_image_thumbnail_missing {border-radius: 2px 2px 0 0}\n" +
+			".SGPP__gridTile:hover > .SGPP__gridTileInfo {display: block; border-radius: 0 0 2px 2px}\n" +
+			".SGPP__gridTileInfo {display: none; position:absolute; width:174px; border-width: 1px 0 0 0; border-top: 1px dotted #d2d6e0; z-index: 10}\n" +
+			".SGPP__gridTileInfo .giveaway__icon {opacity: 0.7}\n" +
+			".SGPP__gridTileTime {position: absolute; bottom: 0; left: 0; height: 16px; text-align: center; background-color: #FFF; border-radius: 0 3px 0 0; padding: 2px 4px}\n" +
+			".SGPP__gridTileTime i {font-size: inherit; color:inherit}\n" +
+			".SGPP__gridTileIcons {position: absolute; bottom: 0; right: 0}\n" +
+			".SGPP__gridTileIcons > * {display: inline-block; width: 20px; height: 16px; text-align: center; padding: 2px; border-radius: 3px 0 0; vertical-align: middle}\n" +
+			".SGPP__gridTileIcons > :not(:last-child) {padding-right: 4px; margin-right: -3px}\n" +
+			".SGPP__gridTileIcons i {font-size: inherit; color: inherit}\n" +
+			"";
 
         init = () => {
 
@@ -110,7 +109,7 @@ module ModuleDefinition {
                 thisTile.attr('id', id);
                 thisTile.attr('data-game-id', $el.parent().attr('data-game-id'));
 
-                var gameImg = $el.children('.global__image-outer-wrap--game-medium').appendTo(thisTile).css('position', 'relative');
+                var gameImg = $el.children('.giveaway_image_thumbnail, .giveaway_image_thumbnail_missing').appendTo(thisTile).css('position', 'relative');
 
                 var gaColumns = $el.find('.giveaway__columns').children();
                 var timeLeft = gaColumns.eq(0).addClass('SGPP__gridTileTime').appendTo(gameImg);
@@ -122,7 +121,7 @@ module ModuleDefinition {
                 }
 
                 var giveawayName = $el.find('.giveaway__heading__name').text();
-                var avatar = $el.find('.global__image-outer-wrap--avatar-small').addClass('SGPP__gridAvatar');
+                var avatar = $el.find('.giveaway_image_avatar').addClass('SGPP__gridAvatar');
 
                 var thinText = $el.find('.giveaway__heading__thin').toArray();
                 var cost = parseInt(thinText.pop().textContent.replace(/\D+/g, ""));
@@ -137,7 +136,7 @@ module ModuleDefinition {
                 tileInfo.clone().append(
                     $('<div>', { text: giveawayName, 'class': 'giveaway__heading__name tile_view_header' }),
                     $('<div>', {'class': "SGPP__gridAvatar_outer", title: 'Created ' + gaColumns.eq(1).text(), append: avatar}),
-                    $('<div>', {style: 'display: inline-block; width: 145px'}).append(
+                    $('<div>', {style: 'display: inline-block; width: 140px'}).append(
                         floatLeft(strong(copies) + (copies > 1 ? ' Copies' : ' Copy')),
                         floatRight(strong(cost + 'P')),
                         $('<div>', {style: 'clear: both'}),
